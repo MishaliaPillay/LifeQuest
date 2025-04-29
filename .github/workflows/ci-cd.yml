@@ -1,0 +1,41 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - development
+      - main
+  pull_request:
+    branches:
+      - development
+      - main
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: "npm"
+          cache-dependency-path: "./Frontend/package-lock.json"
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: ./Frontend # Adjusted to correct folder structure
+
+      - name: Build project
+        run: npm run build
+        working-directory: ./Frontend # Adjusted
+
+      - name: Run linting
+        run: npm run lint
+        working-directory: ./Frontend # Adjusted
