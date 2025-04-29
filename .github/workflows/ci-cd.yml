@@ -26,16 +26,16 @@ jobs:
         with:
           node-version: 18
           cache: "npm"
-          cache-dependency-path: "./Frontend/package-lock.json"
+          cache-dependency-path: "./Frontend/life-quest/package-lock.json"
 
       - name: Install dependencies
         run: npm install
-        working-directory: ./Frontend # Adjusted to correct folder structure
+        working-directory: ./Frontend/life-quest # Adjusted to correct folder structure
 
       - name: Build project
         run: npm run build
-        working-directory: ./Frontend # Adjusted
+        working-directory: ./Frontend/life-quest   # Adjusted
 
       - name: Run linting
         run: npm run lint
-        working-directory: ./Frontend # Adjusted
+        working-directory: ./Frontend/life-quest # Adjusted
