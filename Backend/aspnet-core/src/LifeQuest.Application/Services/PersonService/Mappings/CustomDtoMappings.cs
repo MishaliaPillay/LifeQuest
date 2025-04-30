@@ -17,7 +17,7 @@ namespace LifeQuest.Services.PersonService.Mappings
             CreateMap<Person, PersonDto>()
             .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.UserName));
             CreateMap<Person, PersonResponseDto>();
-            CreateMap<User, UserResponseDto>(); // 👈 Add this if it doesn't exist
+            CreateMap<User, UserResponseDto>();
 
             CreateMap<CreateUpdatePersonDto, Person>();
         }
