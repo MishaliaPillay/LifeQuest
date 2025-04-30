@@ -7,11 +7,11 @@ public static class LifeQuestDbContextConfigurer
 {
     public static void Configure(DbContextOptionsBuilder<LifeQuestDbContext> builder, string connectionString)
     {
-        builder.UseSqlServer(connectionString);
+        builder.UseNpgsql(connectionString);
     }
 
     public static void Configure(DbContextOptionsBuilder<LifeQuestDbContext> builder, DbConnection connection)
     {
-        builder.UseSqlServer(connection);
+        builder.UseNpgsql(connection);
     }
 }
