@@ -5,13 +5,18 @@ using LifeQuest.Authorization.Roles;
 using LifeQuest.Authorization.Users;
 using LifeQuest.MultiTenancy;
 using Microsoft.EntityFrameworkCore;
+using LifeQuest.Domain.Person;
+using LifeQuest.Authorization;
+using Abp.Authorization.Users;
 
 namespace LifeQuest.EntityFrameworkCore;
 
-public class LifeQuestDbContext : AbpZeroDbContext<Tenant, Role, User, LifeQuestDbContext>
+public class LifeQuestDbContext
+    : AbpZeroDbContext<Tenant, Role, User, LifeQuestDbContext>
+
 {
     /* Define a DbSet for each entity of the application */
-
+    public DbSet<Person> Persons { get; set; }
     public LifeQuestDbContext(DbContextOptions<LifeQuestDbContext> options)
         : base(options)
     {
