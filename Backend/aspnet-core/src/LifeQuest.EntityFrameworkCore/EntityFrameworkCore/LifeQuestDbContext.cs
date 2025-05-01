@@ -12,47 +12,47 @@ using LifeQuest.Domain.Fitness.Activity;
 
 namespace LifeQuest.EntityFrameworkCore;
 
-public class LifeQuestDbContext
-    : AbpZeroDbContext<Tenant, Role, User, LifeQuestDbContext>
-
+public class LifeQuestDbContext : AbpZeroDbContext<Tenant, Role, User, LifeQuestDbContext>
 {
-    /* Define a DbSet for each entity of the application */
     public DbSet<Person> Persons { get; set; }
     public DbSet<ActivityType> ActivityTypes { get; set; }
+    public DbSet<Activity> Activities { get; set; }
+    public DbSet<ActivityActivityType> ActivityActivityTypes { get; set; } // Add join table
+
     public LifeQuestDbContext(DbContextOptions<LifeQuestDbContext> options)
         : base(options)
     {
     }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
-
     {
-
         base.OnModelCreating(modelBuilder);
 
-        // Force all DateTime and DateTime? to be treated as UTC
-
+        // Configure UTC for all DateTime
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
-
         {
-
-            foreach (var property in entityType.GetProperties()
-
-                .Where(p => p.ClrType == typeof(DateTime) || p.ClrType == typeof(DateTime?)))
-
+            foreach (var property in entityType.GetProperties().Where(p => p.ClrType == typeof(DateTime) || p.ClrType == typeof(DateTime?)))
             {
-
                 property.SetValueConverter(new Microsoft.EntityFrameworkCore.Storage.ValueConversion.ValueConverter<DateTime, DateTime>(
-
                     v => v.Kind == DateTimeKind.Utc ? v : v.ToUniversalTime(),
-
                     v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
-
                 ));
-
             }
-
         }
 
-    }
+        // Configure many-to-many via join entity
+        modelBuilder.Entity<ActivityActivityType>()
+            .HasKey(x => new { x.ActivityId, x.ActivityTypeId });
 
+        modelBuilder.Entity<ActivityActivityType>()
+            .HasOne(at => at.Activity)
+            .WithMany(a => a.ActivityActivityTypes)
+            .HasForeignKey(at => at.ActivityId);
+
+        modelBuilder.Entity<ActivityActivityType>()
+            .HasOne(at => at.ActivityType)
+            .WithMany()
+            .HasForeignKey(at => at.ActivityTypeId);
+    }
 }
+

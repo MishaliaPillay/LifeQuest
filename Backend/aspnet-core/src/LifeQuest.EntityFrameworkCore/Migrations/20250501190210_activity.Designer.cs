@@ -3,6 +3,7 @@ using System;
 using LifeQuest.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LifeQuest.Migrations
 {
     [DbContext(typeof(LifeQuestDbContext))]
-    partial class LifeQuestDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250501190210_activity")]
+    partial class activity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1612,33 +1615,13 @@ namespace LifeQuest.Migrations
                     b.ToTable("Activities");
                 });
 
-            modelBuilder.Entity("LifeQuest.Domain.Fitness.Activity.ActivityActivityType", b =>
-                {
-                    b.Property<Guid>("ActivityId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ActivityTypeId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("ActivityTypeId1")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("ActivityId", "ActivityTypeId");
-
-                    b.HasIndex("ActivityTypeId");
-
-                    b.HasIndex("ActivityTypeId1");
-
-                    b.ToTable("ActivityActivityTypes");
-                });
-
             modelBuilder.Entity("LifeQuest.Domain.Fitness.Activity.ActivityType", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("ActivityId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Category")
@@ -1651,6 +1634,8 @@ namespace LifeQuest.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ActivityId");
 
                     b.ToTable("ActivityTypes");
                 });
@@ -1983,27 +1968,11 @@ namespace LifeQuest.Migrations
                     b.Navigation("LastModifierUser");
                 });
 
-            modelBuilder.Entity("LifeQuest.Domain.Fitness.Activity.ActivityActivityType", b =>
+            modelBuilder.Entity("LifeQuest.Domain.Fitness.Activity.ActivityType", b =>
                 {
-                    b.HasOne("LifeQuest.Domain.Fitness.Activity.Activity", "Activity")
-                        .WithMany("ActivityActivityTypes")
-                        .HasForeignKey("ActivityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("LifeQuest.Domain.Fitness.Activity.ActivityType", "ActivityType")
-                        .WithMany()
-                        .HasForeignKey("ActivityTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("LifeQuest.Domain.Fitness.Activity.ActivityType", null)
+                    b.HasOne("LifeQuest.Domain.Fitness.Activity.Activity", null)
                         .WithMany("Activities")
-                        .HasForeignKey("ActivityTypeId1");
-
-                    b.Navigation("Activity");
-
-                    b.Navigation("ActivityType");
+                        .HasForeignKey("ActivityId");
                 });
 
             modelBuilder.Entity("LifeQuest.Domain.Person.Person", b =>
@@ -2116,11 +2085,6 @@ namespace LifeQuest.Migrations
                 });
 
             modelBuilder.Entity("LifeQuest.Domain.Fitness.Activity.Activity", b =>
-                {
-                    b.Navigation("ActivityActivityTypes");
-                });
-
-            modelBuilder.Entity("LifeQuest.Domain.Fitness.Activity.ActivityType", b =>
                 {
                     b.Navigation("Activities");
                 });
