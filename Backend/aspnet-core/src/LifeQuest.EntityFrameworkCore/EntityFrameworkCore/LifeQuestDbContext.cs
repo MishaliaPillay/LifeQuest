@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using LifeQuest.Domain.Person;
 using LifeQuest.Authorization;
 using Abp.Authorization.Users;
+using LifeQuest.Domain.Fitness.Activity;
 
 namespace LifeQuest.EntityFrameworkCore;
 
@@ -17,6 +18,7 @@ public class LifeQuestDbContext
 {
     /* Define a DbSet for each entity of the application */
     public DbSet<Person> Persons { get; set; }
+    public DbSet<ActivityType> ActivityTypes { get; set; }
     public LifeQuestDbContext(DbContextOptions<LifeQuestDbContext> options)
         : base(options)
     {
