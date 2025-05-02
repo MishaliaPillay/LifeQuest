@@ -5,7 +5,7 @@ import styled from "styled-components";
 import LoginComponent from "../../components/login/login";
 import SignupComponent from "../../components/signup/signup";
 
-const { TabPane } = Tabs;
+
 
 const PageContainer = styled.div`
   display: flex;
@@ -155,7 +155,11 @@ const StyledTabs = styled(Tabs)`
   }
 
   .ant-tabs-ink-bar {
-    background: linear-gradient(90deg,rgb(255, 32, 99) 0%,rgb(249, 80, 28) 100%);
+    background: linear-gradient(
+      90deg,
+      rgb(255, 32, 99) 0%,
+      rgb(249, 80, 28) 100%
+    );
     height: 3px;
     border-radius: 3px;
   }
@@ -189,14 +193,23 @@ const AuthPage: React.FC = () => {
       </LeftSide>
 
       <RightSide>
-        <StyledTabs activeKey={activeTab} onChange={handleTabChange} centered>
-          <TabPane tab="Login" key="login">
-            <LoginComponent />
-          </TabPane>
-          <TabPane tab="Sign Up" key="signup">
-            <SignupComponent />
-          </TabPane>
-        </StyledTabs>
+        <StyledTabs
+          activeKey={activeTab}
+          onChange={handleTabChange}
+          centered
+          items={[
+            {
+              label: "Login",
+              key: "login",
+              children: <LoginComponent />,
+            },
+            {
+              label: "Sign Up",
+              key: "signup",
+              children: <SignupComponent />,
+            },
+          ]}
+        />
       </RightSide>
     </PageContainer>
   );
