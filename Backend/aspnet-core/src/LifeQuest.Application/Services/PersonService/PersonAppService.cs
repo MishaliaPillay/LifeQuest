@@ -35,13 +35,14 @@ namespace LifeQuest.Services.PersonService
         public override async Task<PersonResponseDto> CreateAsync(PersonRequestDto input)
         {
             var person = await _personManager.CreatePersonAsync(
-          input.UserName,
-          input.EmailAddress,
-          input.Name,
-          input.Surname,
-          input.Password,
-          input.Avatar
-      );
+    input.User.UserName,
+    input.User.EmailAddress,
+    input.User.Name,
+    input.User.Surname,
+    input.User.Password,
+    input.Avatar
+);
+
 
 
             return _mapper.Map<PersonResponseDto>(person);
