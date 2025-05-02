@@ -7,16 +7,15 @@ using System.Threading.Tasks;
 
 namespace LifeQuest.Services.PersonService.Dtos
 {
-    public class PersonRequestDto : UserRequestDto
+    public class PersonRequestDto
     {
-        public UserResponseDto User { get; set; }
+        public UserRequestDto User { get; set; }
 
         public int Xp { get; set; }
 
         public int Level { get; set; }
 
         public string? Avatar { get; set; }
-
-
     }
+
 }
