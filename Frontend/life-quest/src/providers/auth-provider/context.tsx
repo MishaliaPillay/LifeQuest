@@ -3,7 +3,6 @@ import { createContext } from "react";
 
 // Context shape interface
 
-
 export interface UserRequestDto {
   name: string;
   surname: string;
@@ -14,9 +13,9 @@ export interface UserRequestDto {
 
 export interface IAuth {
   user: UserRequestDto;
-  xp: number;
-  level: number;
-  avatar: string;
+  xp: 0;
+  level: 0;
+  avatar: "url";
 }
 
 export interface ISignInRequest {

@@ -22,28 +22,29 @@ const AuthPage: React.FC = () => {
     if (isPending) setLoading(true);
 
     if (isError) {
-   console.log("Your authentication was unsuccessful!");
+      console.log("Your authentication was unsuccessful!");
       setLoading(false);
     }
 
-    if (isSuccess) {
+    if (isSuccess && authMode === "login") {
       const role = getRole(token);
 
-      if (authMode === "signup") {
-        // Switch to login tab after successful signup
-        setActiveTab("login");
-      } else {
-        // Login success → redirect to dashboard based on role
+      setTimeout(() => {
         if (role === "default") {
           router.push("/user-page");
         } else {
           router.push("/");
         }
-      }
-
-      setLoading(false);
+      }, 2500);
+    } else if (isSuccess && authMode === "signup") {
+      setTimeout(() => {
+        setActiveTab("login");
+      }, 2500);
     }
+
+    setLoading(false);
   }, [isPending, isError, isSuccess, router, authMode, setActiveTab]);
+
   const handleTabChange = (key: string) => {
     setActiveTab(key);
   };
@@ -111,8 +112,21 @@ const AuthPage: React.FC = () => {
           onChange={handleTabChange}
           centered
           items={[
-            { label: "Login", key: "login", children: <LoginComponent /> },
-            { label: "Sign Up", key: "signup", children: <SignupComponent /> },
+            {
+              label: "Login",
+              key: "login",
+              children: <LoginComponent />,
+            },
+            {
+              label: "Sign Up",
+              key: "signup",
+              children: (
+                <SignupComponent
+                  onBeforeSubmit={() => setAuthMode("signup")}
+                  onSignupSuccess={() => setActiveTab("login")}
+                />
+              ),
+            },
           ]}
         />
       </div>
