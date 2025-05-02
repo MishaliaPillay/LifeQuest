@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { Form, Input, Button, Checkbox, message } from 'antd';
-import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons';
-import styled from 'styled-components';
+import React, { useState } from "react";
+import { Form, Input, Button, message } from "antd";
+import { UserOutlined, LockOutlined, MailOutlined } from "@ant-design/icons";
+import styled from "styled-components";
 
 const SignupContainer = styled.div`
   width: 100%;
@@ -15,76 +15,23 @@ const StyledButton = styled(Button)`
   border: none;
   border-radius: 6px;
   font-weight: 500;
-  
-  &:hover, &:focus {
+
+  &:hover,
+  &:focus {
     background: linear-gradient(90deg, #ff5289 0%, #ff8060 100%);
-  }
-`;
-
-const SocialButton = styled(Button)`
-  height: 45px;
-  margin-bottom: 10px;
-  border-radius: 6px;
-  font-weight: 500;
-  width: 100%;
-`;
-
-const TwitterButton = styled(SocialButton)`
-  background-color: #1DA1F2;
-  color: white;
-  border: none;
-  
-  &:hover, &:focus {
-    background-color: #0d8ecf;
-    color: white;
-  }
-`;
-
-const FacebookButton = styled(SocialButton)`
-  background-color: #4267B2;
-  color: white;
-  border: none;
-  
-  &:hover, &:focus {
-    background-color: #365899;
-    color: white;
-  }
-`;
-
-const OrText = styled.div`
-  text-align: center;
-  margin: 20px 0;
-  color: #888;
-  position: relative;
-  
-  &:before, &:after {
-    content: "";
-    position: absolute;
-    top: 50%;
-    width: 40%;
-    height: 1px;
-    background-color: #ddd;
-  }
-  
-  &:before {
-    left: 0;
-  }
-  
-  &:after {
-    right: 0;
   }
 `;
 
 const SignupComponent: React.FC = () => {
   const [loading, setLoading] = useState(false);
-  
-  const onFinish = (values: any) => {
+
+  const onFinish = (values: unknown) => {
     setLoading(true);
-    
+
     // Simulate API call
     setTimeout(() => {
-      console.log('Signup values:', values);
-      message.success('Account created successfully!');
+      console.log("Signup values:", values);
+      message.success("Account created successfully!");
       setLoading(false);
     }, 1500);
   };
@@ -92,7 +39,7 @@ const SignupComponent: React.FC = () => {
   return (
     <SignupContainer>
       <h1 style={{ marginBottom: 24, fontWeight: 600 }}>Sign Up</h1>
-      
+
       <Form
         name="signup"
         initialValues={{ agreement: true }}
@@ -102,57 +49,59 @@ const SignupComponent: React.FC = () => {
       >
         <Form.Item
           name="fullName"
-          rules={[{ required: true, message: 'Please input your full name!' }]}
+          rules={[{ required: true, message: "Please input your full name!" }]}
         >
-          <Input 
-            prefix={<UserOutlined style={{ color: '#bfbfbf' }} />} 
-            placeholder="Full Name" 
+          <Input
+            prefix={<UserOutlined style={{ color: "#bfbfbf" }} />}
+            placeholder="Full Name"
           />
         </Form.Item>
 
         <Form.Item
           name="email"
           rules={[
-            { required: true, message: 'Please input your email!' },
-            { type: 'email', message: 'Please enter a valid email!' }
+            { required: true, message: "Please input your email!" },
+            { type: "email", message: "Please enter a valid email!" },
           ]}
         >
-          <Input 
-            prefix={<MailOutlined style={{ color: '#bfbfbf' }} />} 
-            placeholder="Email Address" 
+          <Input
+            prefix={<MailOutlined style={{ color: "#bfbfbf" }} />}
+            placeholder="Email Address"
           />
         </Form.Item>
 
         <Form.Item
           name="password"
           rules={[
-            { required: true, message: 'Please input your password!' },
-            { min: 8, message: 'Password must be at least 8 characters!' }
+            { required: true, message: "Please input your password!" },
+            { min: 8, message: "Password must be at least 8 characters!" },
           ]}
         >
           <Input.Password
-            prefix={<LockOutlined style={{ color: '#bfbfbf' }} />}
+            prefix={<LockOutlined style={{ color: "#bfbfbf" }} />}
             placeholder="Password"
           />
         </Form.Item>
 
         <Form.Item
           name="confirmPassword"
-          dependencies={['password']}
+          dependencies={["password"]}
           rules={[
-            { required: true, message: 'Please confirm your password!' },
+            { required: true, message: "Please confirm your password!" },
             ({ getFieldValue }) => ({
               validator(_, value) {
-                if (!value || getFieldValue('password') === value) {
+                if (!value || getFieldValue("password") === value) {
                   return Promise.resolve();
                 }
-                return Promise.reject(new Error('The two passwords do not match!'));
+                return Promise.reject(
+                  new Error("The two passwords do not match!")
+                );
               },
             }),
           ]}
         >
           <Input.Password
-            prefix={<LockOutlined style={{ color: '#bfbfbf' }} />}
+            prefix={<LockOutlined style={{ color: "#bfbfbf" }} />}
             placeholder="Confirm Password"
           />
         </Form.Item>
@@ -163,26 +112,25 @@ const SignupComponent: React.FC = () => {
           rules={[
             {
               validator: (_, value) =>
-                value ? Promise.resolve() : Promise.reject(new Error('You must accept the terms and conditions')),
+                value
+                  ? Promise.resolve()
+                  : Promise.reject(
+                      new Error("You must accept the terms and conditions")
+                    ),
             },
           ]}
-        >
-          
-        </Form.Item>
+        ></Form.Item>
 
         <Form.Item>
-          <StyledButton 
-            type="primary" 
-            htmlType="submit" 
+          <StyledButton
+            type="primary"
+            htmlType="submit"
             loading={loading}
             block
           >
             CREATE ACCOUNT
           </StyledButton>
         </Form.Item>
-        
- 
-
       </Form>
     </SignupContainer>
   );
