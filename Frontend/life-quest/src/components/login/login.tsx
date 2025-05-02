@@ -2,6 +2,13 @@ import React, { useState } from "react";
 import { Form, Input, Button, message } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import styled from "styled-components";
+import { ISignInRequest } from "@/providers/auth-provider/context";
+import { useAuthActions } from "@/providers/auth-provider";
+import { useUserActions } from "@/providers/user-provider";
+interface LoginFormProps {
+  onLoginSuccess?: () => void;
+  onBeforeSubmit?: () => void;
+}
 
 const LoginContainer = styled.div`
   width: 100%;
@@ -22,33 +29,85 @@ const StyledButton = styled(Button)`
   }
 `;
 
-const LoginComponent: React.FC = () => {
+const LoginComponent: React.FC = ({
+  onLoginSuccess,
+  onBeforeSubmit,
+}: LoginFormProps) => {
+  const { signIn } = useAuthActions();
+
+  const { getCurrentUser } = useUserActions();
   const [loading, setLoading] = useState(false);
 
-  const onFinish = (values: unknown) => {
-    setLoading(true);
+  // Configure toast message options
+  const [messageApi, contextHolder] = message.useMessage();
 
-    // Simulate API call
-    setTimeout(() => {
-      console.log("Login values:", values);
-      message.success("Successfully logged in!");
+  // Toast message display functions
+  const showSuccessToast = (msg = "Successfully logged in!") => {
+    messageApi.success({
+      content: msg,
+      duration: 3,
+      style: {
+        marginTop: "20px",
+      },
+    });
+  };
+
+  const showErrorToast = (
+    msg = "Login failed! Please check your credentials."
+  ) => {
+    messageApi.error({
+      content: msg,
+      duration: 5,
+      style: {
+        marginTop: "20px",
+      },
+    });
+  };
+  const onFinishLogin = async (values: ISignInRequest) => {
+    onBeforeSubmit?.();
+    setLoading(true);
+    console.log(values);
+    try {
+      const loginResult = await signIn(values);
+
+      if (loginResult) {
+        const token = sessionStorage.getItem("jwt");
+        getCurrentUser(token);
+        setLoading(false);
+        showSuccessToast();
+        onLoginSuccess?.();
+      } else {
+        setLoading(false);
+        showErrorToast();
+      }
+    } catch (error) {
       setLoading(false);
-    }, 1500);
+      console.error("Login error:", error);
+      if (error.response && error.response.data) {
+        showErrorToast(
+          error.response.data.errorMessage ||
+            "Login failed! Please check your credentials."
+        );
+      } else {
+        showErrorToast();
+      }
+    }
   };
 
   return (
     <LoginContainer>
+      {contextHolder}
       <h1 style={{ marginBottom: 24, fontWeight: 600 }}>Sign In</h1>
 
       <Form
         name="login"
         initialValues={{ remember: true }}
-        onFinish={onFinish}
+        onFinish={onFinishLogin}
         layout="vertical"
         size="large"
       >
         <Form.Item
-          name="email"
+          name="userNameOrEmailAddress"
           rules={[
             { required: true, message: "Please input your email!" },
             { type: "email", message: "Please enter a valid email!" },
