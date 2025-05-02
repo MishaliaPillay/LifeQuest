@@ -28,14 +28,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const endpoint =
       "https://lifequest-backend.onrender.com/api/services/app/Person/Create";
-    await axios
-      .post<IAuth>(endpoint, Auth)
-      .then((response) => {
-        dispatch(signUpSuccess(response.data));
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+
+    try {
+      const response = await axios.post<IAuth>(endpoint, Auth);
+      dispatch(signUpSuccess(response.data));
+    } catch (error: any) {
+      console.error("Signup error:", error.response?.data?.message || error);
+      throw error; // Throw so component can handle
+    }
   };
 
   const signIn = async (

@@ -3,9 +3,9 @@
 import React, { useState } from "react";
 import { Form, Input, message } from "antd";
 import { UserOutlined, LockOutlined, MailOutlined } from "@ant-design/icons";
-import { SignupContainer, StyledButton } from "./styles"; // Adjust path as needed
+import { SignupContainer, StyledButton } from "./styles";
 import { useAuthActions } from "@/providers/auth-provider";
-import { IAuth, UserRequestDto } from "@/providers/auth-provider/context";
+import { IAuth } from "@/providers/auth-provider/context";
 
 interface SignupFormProps {
   onSignupSuccess?: () => void;
@@ -18,39 +18,49 @@ const SignupComponent: React.FC<SignupFormProps> = ({
 }) => {
   const [loading, setLoading] = useState(false);
   const { signUp } = useAuthActions();
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const showSuccessToast = (msg = "Account created successfully!") => {
+    messageApi.success({
+      content: msg,
+      duration: 3,
+      style: { marginTop: "20px" },
+    });
+  };
+
+  const showErrorToast = (msg = "Signup failed.") => {
+    messageApi.error({
+      content: msg,
+      duration: 5,
+      style: { marginTop: "20px" },
+    });
+  };
 
   const onFinishSignup = async (values: {
     name: string;
     surname: string;
+    emailAddress: string;
     userName: string;
-    email: string;
     password: string;
   }) => {
-    console.log(values);
     try {
       onBeforeSubmit?.();
       setLoading(true);
 
-      const user: UserRequestDto = {
-        name: values.name,
-        surname: values.surname,
-        emailAddress: values.email,
-        userName: values.userName,
-        password: values.password,
-      };
-
       const auth: IAuth = {
-        user,
+        user: values,
         xp: 0,
         level: 0,
-        avatar: "url", // placeholder
+        avatar: "url", // default avatar
       };
 
       await signUp(auth);
-      message.success("Account created successfully!");
+      showSuccessToast();
       onSignupSuccess?.();
     } catch (error: any) {
-      message.error("Signup failed. Please try again.");
+      const backendMsg =
+        error?.response?.data?.error?.message || error?.message;
+      showErrorToast(backendMsg);
     } finally {
       setLoading(false);
     }
@@ -58,36 +68,38 @@ const SignupComponent: React.FC<SignupFormProps> = ({
 
   return (
     <SignupContainer>
+      {contextHolder}
       <h1 style={{ marginBottom: 24, fontWeight: 600 }}>Sign Up</h1>
 
       <Form
         name="signup"
-        initialValues={{ agreement: true }}
-        onFinish={onFinishSignup}
         layout="vertical"
         size="large"
+        onFinish={onFinishSignup}
       >
         <Form.Item
           name="name"
-          rules={[{ required: true, message: "Please input your full name!" }]}
+          rules={[{ required: true, message: "Please input your name!" }]}
         >
           <Input
             prefix={<UserOutlined style={{ color: "#bfbfbf" }} />}
-            placeholder="Name"
+            placeholder="First Name"
           />
         </Form.Item>
+
         <Form.Item
           name="surname"
-          rules={[{ required: true, message: "Please input your full name!" }]}
+          rules={[{ required: true, message: "Please input your surname!" }]}
         >
           <Input
             prefix={<UserOutlined style={{ color: "#bfbfbf" }} />}
             placeholder="Surname"
           />
         </Form.Item>
+
         <Form.Item
           name="userName"
-          rules={[{ required: true, message: "Please input your full name!" }]}
+          rules={[{ required: true, message: "Please input your username!" }]}
         >
           <Input
             prefix={<UserOutlined style={{ color: "#bfbfbf" }} />}
@@ -96,7 +108,7 @@ const SignupComponent: React.FC<SignupFormProps> = ({
         </Form.Item>
 
         <Form.Item
-          name="email"
+          name="emailAddress"
           rules={[
             { required: true, message: "Please input your email!" },
             { type: "email", message: "Please enter a valid email!" },
