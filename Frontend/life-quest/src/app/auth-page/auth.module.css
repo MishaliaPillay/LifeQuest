@@ -1,0 +1,232 @@
+/* Auth.module.css */
+:root {
+    --color-pink: #ff55aa;
+    --color-orange: #ff884d;
+    --color-purple: #9933ff;
+    --color-light-purple: #c17dff;
+    --gradient-bg: linear-gradient(135deg, var(--color-purple) 0%, var(--color-pink) 100%);
+  }
+  
+  .pageContainer {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--gradient-bg);
+    padding: 20px;
+  }
+  
+  .authCard {
+    width: 100%;
+    max-width: 900px;
+    display: flex;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    border-radius: 15px;
+    overflow: hidden;
+    background-color: white;
+  }
+  
+  .leftPanel {
+    flex: 0 0 45%;
+    background: var(--gradient-bg);
+    padding: 40px;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+  
+  .rightPanel {
+    flex: 0 0 55%;
+    background-color: white;
+    padding: 30px 40px;
+  }
+  
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 50px;
+    position: relative;
+  }
+  
+  .logoCircle,
+  .logoCircleOverlay {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: white;
+    position: absolute;
+  }
+  
+  .logoCircleOverlay {
+    left: 15px;
+    background-color: rgba(255, 255, 255, 0.7);
+  }
+  
+  .logo span {
+    margin-left: 50px;
+    font-weight: bold;
+    letter-spacing: 1px;
+  }
+  
+  .welcomeContent {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  
+  .welcomeContent h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    color: white;
+  }
+  
+  .welcomeContent p {
+    font-size: 1rem;
+    opacity: 0.9;
+  }
+  
+  .websiteUrl {
+    margin-top: auto;
+    opacity: 0.8;
+  }
+  
+  .tabs {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  
+  .tabs :global(.ant-tabs-nav) {
+    margin-bottom: 10px;
+  }
+  
+  .tabs :global(.ant-tabs-nav::before) {
+    border-bottom: none;
+  }
+  
+  .tabs :global(.ant-tabs-tab) {
+    font-size: 16px;
+    padding: 12px 16px;
+  }
+  
+  .tabs :global(.ant-tabs-tab-active .ant-tabs-tab-btn) {
+    color: var(--color-pink) !important;
+    font-weight: bold;
+  }
+  
+  .tabs :global(.ant-tabs-ink-bar) {
+    background-color: var(--color-pink) !important;
+    height: 3px !important;
+  }
+  
+  .rightPanel h2 {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    color: var(--color-purple);
+  }
+  
+  .form {
+    margin-bottom: 20px;
+  }
+  
+  .input {
+    border-radius: 4px;
+    border: 1px solid #e8e8e8;
+    background-color: #f5f8ff;
+    margin-bottom: 15px;
+    height: 50px;
+  }
+  
+  .input:hover,
+  .input:focus {
+    border-color: var(--color-pink);
+    box-shadow: 0 0 0 2px rgba(255, 85, 170, 0.1);
+  }
+  
+  .inputIcon {
+    color: #bfbfbf;
+  }
+  
+  .continueButton {
+    height: 50px;
+    background: linear-gradient(90deg, var(--color-pink) 0%, var(--color-orange) 100%) !important;
+    border: none !important;
+    border-radius: 6px;
+    font-weight: bold;
+    margin-top: 10px;
+  }
+  
+  .continueButton:hover {
+    opacity: 0.9;
+    box-shadow: 0 5px 15px rgba(255, 85, 170, 0.3);
+  }
+  
+  .divider {
+    margin: 30px 0;
+  }
+  
+  .dividerText {
+    color: #8c8c8c;
+    font-size: 0.9rem;
+  }
+  
+  .socialButtons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .twitterButton {
+    background-color: #1DA1F2 !important;
+    border: none !important;
+    height: 48px;
+  }
+  
+  .facebookButton {
+    background-color: #4267B2 !important;
+    border: none !important;
+    height: 48px;
+  }
+  
+  /* Add decorative circles for the background similar to the design */
+  .leftPanel::before,
+  .leftPanel::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    z-index: 0;
+  }
+  
+  .leftPanel::before {
+    width: 150px;
+    height: 150px;
+    background: radial-gradient(circle, var(--color-light-purple) 0%, transparent 70%);
+    bottom: 20%;
+    left: 10%;
+  }
+  
+  .leftPanel::after {
+    width: 80px;
+    height: 80px;
+    background: radial-gradient(circle, var(--color-pink) 0%, transparent 70%);
+    bottom: 10%;
+    right: 10%;
+  }
+  
+  /* Media queries for responsive design */
+  @media (max-width: 768px) {
+    .authCard {
+      flex-direction: column;
+    }
+    
+    .leftPanel, .rightPanel {
+      flex: none;
+      width: 100%;
+    }
+    
+    .leftPanel {
+      padding-bottom: 60px;
+    }
+  }
