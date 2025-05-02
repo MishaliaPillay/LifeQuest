@@ -44,8 +44,10 @@ const SignupComponent: React.FC<SignupFormProps> = ({
       await signUp(auth);
 
       showSuccessToast();
-      form.resetFields(); // Clear form
-      onSignupSuccess?.(); // Switch tab
+      setTimeout(() => {
+        form.resetFields();
+        onSignupSuccess?.(); // Switches tab after delay
+      }, 5000);
     } catch (error: any) {
       const backendMsg =
         error?.response?.data?.error?.message ||

@@ -28,17 +28,23 @@ const AuthPage: React.FC = () => {
 
     if (isSuccess && authMode === "login") {
       const role = getRole(token);
-      if (role === "default") {
-        router.push("/user-page");
-      } else {
-        router.push("/");
-      }
+
+      setTimeout(() => {
+        if (role === "default") {
+          router.push("/user-page");
+        } else {
+          router.push("/");
+        }
+      }, 2500);
     } else if (isSuccess && authMode === "signup") {
-      setActiveTab("login"); // Switch to login tab only
+      setTimeout(() => {
+        setActiveTab("login");
+      }, 2500);
     }
 
     setLoading(false);
   }, [isPending, isError, isSuccess, router, authMode, setActiveTab]);
+
   const handleTabChange = (key: string) => {
     setActiveTab(key);
   };
