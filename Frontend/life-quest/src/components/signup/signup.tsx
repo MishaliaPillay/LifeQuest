@@ -1,20 +1,59 @@
 "use client";
+
 import React, { useState } from "react";
 import { Form, Input, message } from "antd";
 import { UserOutlined, LockOutlined, MailOutlined } from "@ant-design/icons";
-import { SignupContainer, StyledButton } from "./styles"; // Adjust the path if needed
+import { SignupContainer, StyledButton } from "./styles"; // Adjust path as needed
+import { useAuthActions } from "@/providers/auth-provider";
+import { IAuth, UserRequestDto } from "@/providers/auth-provider/context";
 
-const SignupComponent: React.FC = () => {
+interface SignupFormProps {
+  onSignupSuccess?: () => void;
+  onBeforeSubmit?: () => void;
+}
+
+const SignupComponent: React.FC<SignupFormProps> = ({
+  onBeforeSubmit,
+  onSignupSuccess,
+}) => {
   const [loading, setLoading] = useState(false);
+  const { signUp } = useAuthActions();
 
-  const onFinish = (values: unknown) => {
-    setLoading(true);
+  const onFinishSignup = async (values: {
+    name: string;
+    surname: string;
+    userName: string;
+    email: string;
+    password: string;
+  }) => {
+    console.log(values);
+    try {
+      onBeforeSubmit?.();
+      setLoading(true);
 
-    setTimeout(() => {
-      console.log("Signup values:", values);
+      const user: UserRequestDto = {
+        name: values.name,
+        surname: values.surname,
+        emailAddress: values.email,
+        userName: values.userName,
+        password: values.password,
+      };
+
+      const auth: IAuth = {
+        user,
+        xp: 0,
+        level: 0,
+        avatar: "url", // placeholder
+      };
+
+      await signUp(auth);
       message.success("Account created successfully!");
+      onSignupSuccess?.();
+    } catch (error: any) {
+      message.error("Signup failed. Please try again.");
+    } finally {
       setLoading(false);
-    }, 1500);
+    }
   };
 
   return (
@@ -24,17 +63,35 @@ const SignupComponent: React.FC = () => {
       <Form
         name="signup"
         initialValues={{ agreement: true }}
-        onFinish={onFinish}
+        onFinish={onFinishSignup}
         layout="vertical"
         size="large"
       >
         <Form.Item
-          name="fullName"
+          name="name"
           rules={[{ required: true, message: "Please input your full name!" }]}
         >
           <Input
             prefix={<UserOutlined style={{ color: "#bfbfbf" }} />}
-            placeholder="Full Name"
+            placeholder="Name"
+          />
+        </Form.Item>
+        <Form.Item
+          name="surname"
+          rules={[{ required: true, message: "Please input your full name!" }]}
+        >
+          <Input
+            prefix={<UserOutlined style={{ color: "#bfbfbf" }} />}
+            placeholder="Surname"
+          />
+        </Form.Item>
+        <Form.Item
+          name="userName"
+          rules={[{ required: true, message: "Please input your full name!" }]}
+        >
+          <Input
+            prefix={<UserOutlined style={{ color: "#bfbfbf" }} />}
+            placeholder="Username"
           />
         </Form.Item>
 
