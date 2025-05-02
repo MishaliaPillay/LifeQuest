@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getRole } from "@/utils/decoder";
@@ -15,7 +14,7 @@ const withAuth = (WrappedLayout: React.ComponentType<LayoutProps>) => {
       const token = sessionStorage.getItem("jwt");
 
       if (!token) {
-        router.push("/login");
+        router.push("/auth-page");
         return;
       }
 

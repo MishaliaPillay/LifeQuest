@@ -1,13 +1,49 @@
 "use client";
 import React, { useState } from "react";
 import { Tabs } from "antd";
+import { useEffect } from "react";
 import LoginComponent from "../../components/login/login";
 import SignupComponent from "../../components/signup/signup";
 import styles from "./auth.module.css";
+import { useAuthState } from "@/providers/auth-provider";
 
+import { useRouter } from "next/navigation";
+import { getRole } from "@/utils/decoder";
 const AuthPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState("login");
+  const [loading, setLoading] = useState(false);
+  const { isSuccess, isError, isPending } = useAuthState();
+  const [authMode, setAuthMode] = useState<"login" | "signup">("login");
+  const router = useRouter();
 
+  useEffect(() => {
+    const token = sessionStorage.getItem("jwt");
+
+    if (isPending) setLoading(true);
+
+    if (isError) {
+   console.log("Your authentication was unsuccessful!");
+      setLoading(false);
+    }
+
+    if (isSuccess) {
+      const role = getRole(token);
+
+      if (authMode === "signup") {
+        // Switch to login tab after successful signup
+        setActiveTab("login");
+      } else {
+        // Login success → redirect to dashboard based on role
+        if (role === "default") {
+          router.push("/user-page");
+        } else {
+          router.push("/");
+        }
+      }
+
+      setLoading(false);
+    }
+  }, [isPending, isError, isSuccess, router, authMode, setActiveTab]);
   const handleTabChange = (key: string) => {
     setActiveTab(key);
   };
