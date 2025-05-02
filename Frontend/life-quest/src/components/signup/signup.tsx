@@ -17,49 +17,41 @@ const SignupComponent: React.FC<SignupFormProps> = ({
   onSignupSuccess,
 }) => {
   const [loading, setLoading] = useState(false);
+  const [form] = Form.useForm(); // Add form instance
   const { signUp } = useAuthActions();
   const [messageApi, contextHolder] = message.useMessage();
 
   const showSuccessToast = (msg = "Account created successfully!") => {
-    messageApi.success({
-      content: msg,
-      duration: 3,
-      style: { marginTop: "20px" },
-    });
+    messageApi.success({ content: msg, duration: 3, style: { marginTop: 20 } });
   };
 
   const showErrorToast = (msg = "Signup failed.") => {
-    messageApi.error({
-      content: msg,
-      duration: 5,
-      style: { marginTop: "20px" },
-    });
+    messageApi.error({ content: msg, duration: 5, style: { marginTop: 20 } });
   };
 
-  const onFinishSignup = async (values: {
-    name: string;
-    surname: string;
-    emailAddress: string;
-    userName: string;
-    password: string;
-  }) => {
+  const onFinishSignup = async (values: any) => {
     try {
       onBeforeSubmit?.();
       setLoading(true);
 
       const auth: IAuth = {
-        user: values,
+        user: values, // Directly use form values, no manual remapping needed
         xp: 0,
         level: 0,
-        avatar: "url", // default avatar
+        avatar: "url", // placeholder
       };
 
       await signUp(auth);
+
       showSuccessToast();
-      onSignupSuccess?.();
+      form.resetFields(); // Clear form
+      onSignupSuccess?.(); // Switch tab
     } catch (error: any) {
       const backendMsg =
-        error?.response?.data?.error?.message || error?.message;
+        error?.response?.data?.error?.message ||
+        error?.response?.data?.message ||
+        error?.message ||
+        "Signup failed.";
       showErrorToast(backendMsg);
     } finally {
       setLoading(false);
@@ -70,8 +62,8 @@ const SignupComponent: React.FC<SignupFormProps> = ({
     <SignupContainer>
       {contextHolder}
       <h1 style={{ marginBottom: 24, fontWeight: 600 }}>Sign Up</h1>
-
       <Form
+        form={form}
         name="signup"
         layout="vertical"
         size="large"
@@ -81,30 +73,21 @@ const SignupComponent: React.FC<SignupFormProps> = ({
           name="name"
           rules={[{ required: true, message: "Please input your name!" }]}
         >
-          <Input
-            prefix={<UserOutlined style={{ color: "#bfbfbf" }} />}
-            placeholder="First Name"
-          />
+          <Input prefix={<UserOutlined />} placeholder="First Name" />
         </Form.Item>
 
         <Form.Item
           name="surname"
           rules={[{ required: true, message: "Please input your surname!" }]}
         >
-          <Input
-            prefix={<UserOutlined style={{ color: "#bfbfbf" }} />}
-            placeholder="Surname"
-          />
+          <Input prefix={<UserOutlined />} placeholder="Surname" />
         </Form.Item>
 
         <Form.Item
           name="userName"
           rules={[{ required: true, message: "Please input your username!" }]}
         >
-          <Input
-            prefix={<UserOutlined style={{ color: "#bfbfbf" }} />}
-            placeholder="Username"
-          />
+          <Input prefix={<UserOutlined />} placeholder="Username" />
         </Form.Item>
 
         <Form.Item
@@ -114,10 +97,7 @@ const SignupComponent: React.FC<SignupFormProps> = ({
             { type: "email", message: "Please enter a valid email!" },
           ]}
         >
-          <Input
-            prefix={<MailOutlined style={{ color: "#bfbfbf" }} />}
-            placeholder="Email Address"
-          />
+          <Input prefix={<MailOutlined />} placeholder="Email Address" />
         </Form.Item>
 
         <Form.Item
@@ -127,10 +107,7 @@ const SignupComponent: React.FC<SignupFormProps> = ({
             { min: 8, message: "Password must be at least 8 characters!" },
           ]}
         >
-          <Input.Password
-            prefix={<LockOutlined style={{ color: "#bfbfbf" }} />}
-            placeholder="Password"
-          />
+          <Input.Password prefix={<LockOutlined />} placeholder="Password" />
         </Form.Item>
 
         <Form.Item>
