@@ -14,24 +14,33 @@ import {
 import Image from "next/image";
 import { styles } from "./styles";
 import { useRouter } from "next/navigation";
+
 const { Title, Paragraph, Text } = Typography;
 
 const LifeQuestLandingPage: React.FC = () => {
-  const [expandedFeatures, setExpandedFeatures] = useState<
-    Record<string, boolean>
-  >({
+  const [expandedFeatures, setExpandedFeatures] = useState<{
+    [key: string]: boolean;
+  }>({
     activity: false,
     nutrition: false,
     productivity: false,
   });
+
   const router = useRouter();
 
   const handleClick = () => {
     router.push("/auth-page");
   };
+
+  const toggleFeature = (feature: string) => {
+    setExpandedFeatures((prev) => ({
+      ...prev,
+      [feature]: !prev[feature],
+    }));
+  };
+
   return (
     <div className="landing-page" style={styles.landingPage}>
-      {/* Header */}
       <header style={styles.header}>
         <div className="logo" style={styles.logo}>
           <RocketOutlined style={styles.logoIcon} />
@@ -54,7 +63,6 @@ const LifeQuestLandingPage: React.FC = () => {
       {/* Hero Section */}
       <section style={styles.heroSection}>
         <div style={styles.heroImageContainer}>
-          {/* Hero image placeholder */}
           <Image
             src="/images/trophy.png"
             alt="Hero"
@@ -62,9 +70,6 @@ const LifeQuestLandingPage: React.FC = () => {
             objectFit="contain"
           />
         </div>
-
-        <div style={styles.heroCircle1} />
-        <div style={styles.heroCircle2} />
 
         <Row gutter={48} style={styles.heroContent}>
           <Col xs={24} md={12}>
@@ -117,12 +122,7 @@ const LifeQuestLandingPage: React.FC = () => {
               </Paragraph>
               <div>
                 <div
-                  onClick={() =>
-                    setExpandedFeatures((prev) => ({
-                      ...prev,
-                      activity: !prev.activity,
-                    }))
-                  }
+                  onClick={() => toggleFeature("activity")}
                   style={styles.learnMoreButton("#9733EE")}
                 >
                   Learn More
@@ -150,6 +150,8 @@ const LifeQuestLandingPage: React.FC = () => {
               </div>
             </div>
           </Col>
+
+          {/* Add other feature columns here */}
           <Col xs={24} sm={12} md={8}>
             <div style={styles.featureCard}>
               <div style={styles.featureIconContainer("#FF5E62")}>
@@ -195,6 +197,7 @@ const LifeQuestLandingPage: React.FC = () => {
               </div>
             </div>
           </Col>
+
           <Col xs={24} md={8}>
             <div style={styles.featureCard}>
               <div style={styles.featureIconContainer("#2575fc")}>
