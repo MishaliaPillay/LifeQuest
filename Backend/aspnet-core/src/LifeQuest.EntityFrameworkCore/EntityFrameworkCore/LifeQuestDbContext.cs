@@ -10,6 +10,7 @@ using LifeQuest.Authorization;
 using Abp.Authorization.Users;
 using LifeQuest.Domain.Fitness.Activity;
 using LifeQuest.Domain.Weight;
+using LifeQuest.Domain.Steps;
 
 namespace LifeQuest.EntityFrameworkCore;
 
@@ -20,6 +21,7 @@ public class LifeQuestDbContext : AbpZeroDbContext<Tenant, Role, User, LifeQuest
     public DbSet<Activity> Activities { get; set; }
     public DbSet<ActivityActivityType> ActivityActivityTypes { get; set; } // Add join table
     public DbSet<WeightEntry> WeightEntries { get; set; }
+    public DbSet<StepEntry> StepEntries { get; set; }
 
 
     public LifeQuestDbContext(DbContextOptions<LifeQuestDbContext> options)
