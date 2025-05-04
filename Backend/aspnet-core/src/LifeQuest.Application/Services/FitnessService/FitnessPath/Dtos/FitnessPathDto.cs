@@ -18,6 +18,6 @@ namespace LifeQuest.Services.FitnessService.FitnessPath.Dtos
 
         public List<StepEntryResponseDto> StepEntries { get; set; }
         public List<WeightEntryResponseDto> WeightEntries { get; set; }
-        public List<ActivityDto> Activities { get; set; }
+        public List<ActivityResponseDto> Activities { get; set; }
     }
 }

@@ -73,16 +73,34 @@ namespace LifeQuest.Services.FitnessService.FitnessPath
                 _logger.LogInformation("Updating FitnessPath with ID: {Id}", input.Id);
                 var path = await _fitnessPathManager.GetWithDetailsAsync(input.Id);
 
+                // Update scalar values
                 path.Title = input.Title;
                 path.Description = input.Description;
 
-                // Reassign collections based on IDs
-                path.StepEntries = await _stepEntryRepo.GetAllListAsync(se => input.StepEntryIds.Contains(se.Id));
-                path.WeightEntries = await _weightEntryRepo.GetAllListAsync(we => input.WeightEntryIds.Contains(we.Id));
-                path.Activities = await _activityRepo.GetAllListAsync(act => input.ActivityIds.Contains(act.Id));
+                // Clear and reassign collections
+                path.StepEntries.Clear();
+                path.WeightEntries.Clear();
+                path.Activities.Clear();
 
+                // Re-fetch and assign based on new IDs
+                var newStepEntries = await _stepEntryRepo.GetAllListAsync(se => input.StepEntryIds.Contains(se.Id));
+                var newWeightEntries = await _weightEntryRepo.GetAllListAsync(we => input.WeightEntryIds.Contains(we.Id));
+                var newActivities = await _activityRepo.GetAllListAsync(act => input.ActivityIds.Contains(act.Id));
+
+                foreach (var entry in newStepEntries)
+                    path.StepEntries.Add(entry);
+
+                foreach (var entry in newWeightEntries)
+                    path.WeightEntries.Add(entry);
+
+                foreach (var activity in newActivities)
+                    path.Activities.Add(activity);
+
+                // Now update
                 await _fitnessPathManager.UpdateAsync(path);
                 return ObjectMapper.Map<FitnessPathDto>(path);
+
+
             }
             catch (Exception ex)
             {
