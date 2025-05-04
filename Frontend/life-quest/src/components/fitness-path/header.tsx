@@ -53,8 +53,15 @@ const Header: React.FC<HeaderProps> = ({
     },
   ];
 
-  // Mock notifications
-  const notifications: any[] = [
+  interface Notification {
+    id: string;
+    title: string;
+    message: string;
+    time: string;
+    read: boolean;
+  }
+  
+  const notifications: Notification[] = [
     {
       id: '1',
       title: 'New Achievement',
@@ -68,8 +75,9 @@ const Header: React.FC<HeaderProps> = ({
       message: 'keep going',
       time: '2 hours ago',
       read: true,
-    }
+    },
   ];
+  
 
   const notificationItems: MenuProps['items'] = notifications.map(notification => ({
     key: notification.id,

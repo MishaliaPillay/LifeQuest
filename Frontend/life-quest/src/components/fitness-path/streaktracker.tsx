@@ -32,7 +32,7 @@ const StreakTracker: React.FC<{ streaks: Streaks }> = ({ streaks }) => (
             prefix={<FireOutlined style={{ color: streaks.steps > 5 ? '#ff4d4f' : '#faad14' }} />}
             valueStyle={{ color: streaks.steps > 5 ? '#ff4d4f' : '#faad14' }}
           />
-          <Text type="secondary">Keep walking, you're crushing it!</Text>
+          <Text type="secondary">Keep walking, you&apos;re crushing it!</Text>
         </Card>
       </Col>
       <Col xs={24} sm={8}>
