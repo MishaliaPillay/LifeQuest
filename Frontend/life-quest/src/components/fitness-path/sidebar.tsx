@@ -140,40 +140,44 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
   // Regular sidebar for desktop
   return (
     <Sider
-      trigger={null}
-      collapsible
-      collapsed={collapsed}
-      style={{
-        overflow: 'auto',
-        height: '100vh',
-        position: 'fixed',
-        left: 0,
-        top: 0,
-        bottom: 0,
-        zIndex: 100,
-      }}
-      width={200}
-      collapsedWidth={80}
-    >
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          margin: '16px 0',
-          color: 'white',
-        }}
-      >
-        <Avatar style={{ backgroundColor: '#1890ff' }}>A</Avatar>
-        {!collapsed && <div style={{ margin: '12px 0' }}>Alex Chen</div>}
-      </div>
-      <Menu
-        theme="dark"
-        mode="inline"
-        selectedKeys={[getSelectedKey()]}
-        items={menuItems}
-      />
-    </Sider>
+  trigger={null}
+  collapsible
+  collapsed={collapsed}
+  style={{
+    overflow: 'auto',
+    height: '100vh',
+    position: 'fixed',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    zIndex: 100,
+    backgroundColor: 'pink',  // 🌸 sidebar background
+  }}
+  width={200}
+  collapsedWidth={80}
+>
+  <div
+    style={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      margin: '16px 0',
+      color: 'white',
+    }}
+  >
+    <Avatar style={{ backgroundColor: '#fff', color: '#000' }}>A</Avatar>
+    {!collapsed && <div style={{ margin: '12px 0', color: '#000' }}>Alex Chen</div>}
+  </div>
+  <Menu
+    mode="inline"
+    selectedKeys={[getSelectedKey()]}
+    items={menuItems}
+    style={{
+      backgroundColor: 'pink',  // 🌸 menu background
+    }}
+  />
+</Sider>
+
   );
 };
 
