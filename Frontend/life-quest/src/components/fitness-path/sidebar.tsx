@@ -2,15 +2,15 @@
 
 import React, { useState, useEffect } from 'react';
 import { Layout, Menu, Avatar, Drawer, Button } from 'antd';
-import { 
-  DashboardOutlined, 
-  TrophyOutlined, 
-  FireOutlined, 
-  UserOutlined, 
-  BarChartOutlined, 
+import {
+  DashboardOutlined,
+  TrophyOutlined,
+  FireOutlined,
+  UserOutlined,
+  BarChartOutlined,
   SettingOutlined,
   LogoutOutlined,
-  MenuOutlined
+  MenuOutlined,
 } from '@ant-design/icons';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -21,9 +21,10 @@ const { Sider } = Layout;
 interface SidebarProps {
   collapsed: boolean;
   setCollapsed: (collapsed: boolean) => void;
+  drawerOpen: boolean;
+  setDrawerOpen: (open: boolean) => void;
 }
 
-// Define the menu items for the sidebar
 const menuItems: MenuProps['items'] = [
   {
     key: '/dashboard',
@@ -60,30 +61,28 @@ const menuItems: MenuProps['items'] = [
     icon: <LogoutOutlined />,
     label: 'Logout',
     onClick: () => {
-      // Handle logout logic here
       console.log('Logout clicked');
     },
-  }
+  },
 ];
 
-const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
+const Sidebar: React.FC<SidebarProps> = ({
+  collapsed,
+  setCollapsed,
+  drawerOpen,
+  setDrawerOpen,
+}) => {
   const pathname = usePathname();
   const [isMobile, setIsMobile] = useState(false);
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  
-  // Handle window resize and check if it's mobile view
+
   useEffect(() => {
     const checkIsMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
-    // Initial check
+
     checkIsMobile();
-    
-    // Add event listener for window resize
     window.addEventListener('resize', checkIsMobile);
-    
-    // Cleanup event listener
+
     return () => window.removeEventListener('resize', checkIsMobile);
   }, []);
 
@@ -91,7 +90,6 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
     return pathname || '/dashboard';
   };
 
-  // For mobile: show drawer and mobile trigger
   if (isMobile) {
     return (
       <>
@@ -127,57 +125,51 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
             <Avatar style={{ backgroundColor: '#1890ff' }}>A</Avatar>
             <div style={{ margin: '12px 0' }}>Alex Chen</div>
           </div>
-          <Menu
-            mode="inline"
-            selectedKeys={[getSelectedKey()]}
-            items={menuItems}
-          />
+          <Menu mode="inline" selectedKeys={[getSelectedKey()]} items={menuItems} />
         </Drawer>
       </>
     );
   }
 
-  // Regular sidebar for desktop
   return (
     <Sider
-  trigger={null}
-  collapsible
-  collapsed={collapsed}
-  style={{
-    overflow: 'auto',
-    height: '100vh',
-    position: 'fixed',
-    left: 0,
-    top: 0,
-    bottom: 0,
-    zIndex: 100,
-    backgroundColor: 'pink',  // 🌸 sidebar background
-  }}
-  width={200}
-  collapsedWidth={80}
->
-  <div
-    style={{
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      margin: '16px 0',
-      color: 'white',
-    }}
-  >
-    <Avatar style={{ backgroundColor: '#fff', color: '#000' }}>A</Avatar>
-    {!collapsed && <div style={{ margin: '12px 0', color: '#000' }}>Alex Chen</div>}
-  </div>
-  <Menu
-    mode="inline"
-    selectedKeys={[getSelectedKey()]}
-    items={menuItems}
-    style={{
-      backgroundColor: 'pink',  // 🌸 menu background
-    }}
-  />
-</Sider>
-
+      trigger={null}
+      collapsible
+      collapsed={collapsed}
+      style={{
+        overflow: 'auto',
+        height: '100vh',
+        position: 'fixed',
+        left: 0,
+        top: 0,
+        bottom: 0,
+        zIndex: 100,
+        backgroundColor: 'pink',
+      }}
+      width={200}
+      collapsedWidth={80}
+    >
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          margin: '16px 0',
+          color: 'white',
+        }}
+      >
+        <Avatar style={{ backgroundColor: '#fff', color: '#000' }}>A</Avatar>
+        {!collapsed && <div style={{ margin: '12px 0', color: '#000' }}>Alex Chen</div>}
+      </div>
+      <Menu
+        mode="inline"
+        selectedKeys={[getSelectedKey()]}
+        items={menuItems}
+        style={{
+          backgroundColor: 'pink',
+        }}
+      />
+    </Sider>
   );
 };
 
