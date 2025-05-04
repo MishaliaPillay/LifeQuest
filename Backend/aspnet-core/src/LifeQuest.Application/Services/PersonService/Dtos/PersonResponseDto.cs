@@ -11,13 +11,10 @@ using Microsoft.DotNet.Scaffolding.Shared;
 
 namespace LifeQuest.Services.PersonService.Dtos
 {
-    [AutoMap(typeof(Person))]
+
     public class PersonResponseDto : EntityDto<Guid>
     {
-        public string Name { get; set; }
-        public string Surname { get; set; }
-        public string EmailAddress { get; set; }
-        public string UserName { get; set; }
+        public UserResponseDto User { get; set; }
 
         public int Xp { get; set; }
 
