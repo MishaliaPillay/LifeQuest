@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Abp.Application.Services.Dto;
 using LifeQuest.Domain.Fitness.Activity;
 
 namespace LifeQuest.Services.FitnessService.Activity.Dtos
 {
-    public class ActivityResponseDto
+    public class ActivityResponseDto : EntityDto<Guid>
     {
         public int Calories { get; set; }
         public int Duration { get; set; }

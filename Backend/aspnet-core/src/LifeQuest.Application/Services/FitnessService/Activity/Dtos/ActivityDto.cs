@@ -21,8 +21,9 @@ namespace LifeQuest.Services.FitnessService.Activity.Dtos
 
         public ActivityDto() { }
 
-        public ActivityDto(int calories, int duration, int xp, int level, List<ActivityTypeDto> activities, bool isComplete, ActivityRating rating, string description)
+        public ActivityDto(Guid id, int calories, int duration, int xp, int level, List<ActivityTypeDto> activities, bool isComplete, ActivityRating rating, string description)
         {
+            Id = id;
             Calories = calories;
             Duration = duration;
             Xp = xp;
@@ -32,5 +33,6 @@ namespace LifeQuest.Services.FitnessService.Activity.Dtos
             Rating = rating;
             Description = description;
         }
+
     }
 }

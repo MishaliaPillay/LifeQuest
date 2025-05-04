@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Abp.Application.Services;
 using LifeQuest.Domain.Fitness.Activity;
 using LifeQuest.Services.FitnessService.Activity.Dtos;
-// Add EntityFrameworkCore for Include/ThenInclude extension methods
 using Microsoft.EntityFrameworkCore;
 
 namespace LifeQuest.Services.FitnessService.Activity
@@ -32,7 +31,7 @@ namespace LifeQuest.Services.FitnessService.Activity
                 input.Duration,
                 input.Xp,
                 input.Level,
-                selectedActivityTypes,  // Now passing List<ActivityType>
+                selectedActivityTypes,
                 input.IsComplete,
                 input.Rating,
                 input.Description
@@ -40,6 +39,7 @@ namespace LifeQuest.Services.FitnessService.Activity
 
             return new ActivityResponseDto
             {
+                Id = activity.Id, // ✅ Added
                 Calories = activity.Calories,
                 Duration = activity.Duration,
                 Xp = activity.Xp,
@@ -68,6 +68,7 @@ namespace LifeQuest.Services.FitnessService.Activity
 
             return activities.Select(a => new ActivityResponseDto
             {
+                Id = a.Id, // ✅ Added
                 Calories = a.Calories,
                 Duration = a.Duration,
                 Xp = a.Xp,
@@ -98,7 +99,7 @@ namespace LifeQuest.Services.FitnessService.Activity
                 input.Duration,
                 input.Xp,
                 input.Level,
-                updatedActivityTypes,  // Now passing List<ActivityType>
+                updatedActivityTypes,
                 input.IsComplete,
                 input.Rating,
                 input.Description
@@ -106,6 +107,7 @@ namespace LifeQuest.Services.FitnessService.Activity
 
             return new ActivityResponseDto
             {
+                Id = updated.Id, // ✅ Added
                 Calories = updated.Calories,
                 Duration = updated.Duration,
                 Xp = updated.Xp,
