@@ -1,7 +1,7 @@
 "use client"
+
 import React, { useState } from 'react';
 import { 
-  Layout, 
   Card, 
   Row, 
   Col, 
@@ -12,25 +12,20 @@ import {
   Tabs, 
   List, 
   Tag, 
-  Typography, 
-  Divider,
+  Typography,
   Space
 } from 'antd';
 import { 
   FireOutlined, 
   TrophyOutlined, 
   ArrowUpOutlined,
-  ArrowDownOutlined,
   UserOutlined,
-  CalendarOutlined,
   StarOutlined
 } from '@ant-design/icons';
 
-const { Header, Content } = Layout;
 const { Title, Text } = Typography;
 
-// Define component function first, export later
-const DashboardPage = () => {
+const DashboardPage: React.FC = () => {
   // Mock data - in real app these would come from API calls
   const [userData] = useState({
     name: "Alex Chen",
@@ -75,10 +70,6 @@ const DashboardPage = () => {
   ]);
 
   const activityTypes = ["Running", "Cycling", "Swimming", "Yoga", "Strength", "Other"];
-
-  const weightTrend = weightData[0].weight - weightData[weightData.length - 1].weight;
-  const averageSteps = stepData.reduce((sum, day) => sum + day.steps, 0) / stepData.length;
-  const totalActivitiesXP = activities.reduce((sum, activity) => sum + activity.xp, 0);
 
   // Create tabs items array for the new Tabs API
   const activityTabItems = [
@@ -140,120 +131,113 @@ const DashboardPage = () => {
       )
     }))
   ];
-
+  
   return (
-    <Layout className="layout" style={{ minHeight: '100vh' }}>
-      <Header style={{ background: '#fff', padding: '0 20px', display: 'flex', alignItems: 'center' }}>
-        <Title level={3} style={{ margin: 0, color: '#1890ff' }}>LifeQuest Fitness Dashboard</Title>
-      </Header>
-      
-      <Content style={{ padding: '20px 50px' }}>
-        {/* XP & Level Section */}
-        <Card 
-          variant="borderless"
-          className="mb-4"
-          style={{ 
-            background: 'linear-gradient(135deg, #1890ff 0%, #52c41a 100%)', 
-            color: 'white',
-            marginBottom: 20
-          }}
-        >
-          <Row gutter={24} align="middle">
-            <Col xs={24} sm={4} md={3} className="text-center">
-              <Badge count={userData.level} overflowCount={999}>
-                <Avatar 
-                  size={80} 
-                  icon={<UserOutlined />} 
-                  style={{ backgroundColor: '#fff', color: '#1890ff' }}
-                />
-              </Badge>
-            </Col>
-            
-            <Col xs={24} sm={16} md={18}>
-              <Title level={4} style={{ color: 'white', marginBottom: 5 }}>{userData.name}</Title>
-              <Text style={{ color: 'white', marginBottom: 10, display: 'block' }}>
-                Level {userData.level} Fitness Warrior
-              </Text>
-              <Progress 
-                percent={Math.round((userData.xp / userData.xpToNextLevel) * 100)} 
-                status="active" 
-                showInfo={false}
-                strokeColor="#ffd700"
-                trailColor="rgba(255,255,255,0.3)"
+    <div>
+      {/* XP & Level Section */}
+      <Card 
+        variant="borderless"
+        style={{ 
+          background: 'linear-gradient(90deg, #ff6b98 0%, #ff9171 100%)', 
+          color: 'white',
+          marginBottom: 20
+        }}
+      >
+        <Row gutter={24} align="middle">
+          <Col xs={24} sm={4} md={3} style={{ textAlign: 'center' }}>
+            <Badge count={userData.level} overflowCount={999}>
+              <Avatar 
+                size={80} 
+                icon={<UserOutlined />} 
+                style={{ backgroundColor: '#fff', color: '#1890ff' }}
               />
-              <Text style={{ color: 'white' }}>
-                {userData.xp.toLocaleString()} / {userData.xpToNextLevel.toLocaleString()} XP to Level {userData.level + 1}
-              </Text>
-            </Col>
-            
-            <Col xs={24} sm={4} md={3} style={{ textAlign: 'center' }}>
-              <Statistic 
-                title={<span style={{ color: 'white' }}>Total XP</span>} 
-                value={userData.xp} 
-                prefix={<TrophyOutlined />} 
-                valueStyle={{ color: 'white' }}
-              />
-            </Col>
-          </Row>
+            </Badge>
+          </Col>
           
-          <Row gutter={16} style={{ marginTop: 20 }}>
-            <Col span={24}>
-              <Space size="small" wrap>
-                {userData.badges.map((badge, index) => (
-                  <Tag key={index} color="gold" icon={<StarOutlined />}>
-                    {badge}
-                  </Tag>
-                ))}
-              </Space>
-            </Col>
-          </Row>
-        </Card>
+          <Col xs={24} sm={16} md={18}>
+            <Title level={4} style={{ color: 'white', marginBottom: 5 }}>{userData.name}</Title>
+            <Text style={{ color: 'white', marginBottom: 10, display: 'block' }}>
+              Level {userData.level} Fitness Warrior
+            </Text>
+            <Progress 
+              percent={Math.round((userData.xp / userData.xpToNextLevel) * 100)} 
+              status="active" 
+              showInfo={false}
+              strokeColor="#cb44b2"
+              trailColor="rgba(255,255,255,0.3)"
+            />
+            <Text style={{ color: 'white' }}>
+              {userData.xp.toLocaleString()} / {userData.xpToNextLevel.toLocaleString()} XP to Level {userData.level + 1}
+            </Text>
+          </Col>
+          
+          <Col xs={24} sm={4} md={3} style={{ textAlign: 'center' }}>
+            <Statistic 
+              title={<span style={{ color: 'white' }}>Total XP</span>} 
+              value={userData.xp} 
+              prefix={<TrophyOutlined />} 
+              valueStyle={{ color: 'white' }}
+            />
+          </Col>
+        </Row>
+        
+        <Row gutter={16} style={{ marginTop: 20 }}>
+          <Col span={24}>
+            <Space size="small" wrap>
+              {userData.badges.map((badge, index) => (
+                <Tag key={index} color="purple" icon={<StarOutlined />}>
+                  {badge}
+                </Tag>
+              ))}
+            </Space>
+          </Col>
+        </Row>
+      </Card>
 
-        {/* Streak Tracker Section */}
-        <Card title={<><FireOutlined /> Streak Tracker</>} style={{ marginBottom: 20 }} variant="outlined">
-          <Row gutter={16}>
-            <Col xs={24} sm={8}>
-              <Card type="inner" title="Weight Logging" variant="outlined">
-                <Statistic 
-                  value={userData.streaks.weight} 
-                  suffix="days" 
-                  prefix={<FireOutlined style={{ color: userData.streaks.weight > 5 ? '#ff4d4f' : '#faad14' }} />}
-                  valueStyle={{ color: userData.streaks.weight > 5 ? '#ff4d4f' : '#faad14' }}
-                />
-                <Text type="secondary">Keep logging your weight daily!</Text>
-              </Card>
-            </Col>
-            <Col xs={24} sm={8}>
-              <Card type="inner" title="Step Goals" variant="outlined">
-                <Statistic 
-                  value={userData.streaks.steps} 
-                  suffix="days" 
-                  prefix={<FireOutlined style={{ color: userData.streaks.steps > 5 ? '#ff4d4f' : '#faad14' }} />}
-                  valueStyle={{ color: userData.streaks.steps > 5 ? '#ff4d4f' : '#faad14' }}
-                />
-                <Text type="secondary">Keep walking, you're crushing it!</Text>
-              </Card>
-            </Col>
-            <Col xs={24} sm={8}>
-              <Card type="inner" title="Activity Consistency" variant="outlined">
-                <Statistic 
-                  value={userData.streaks.activities} 
-                  suffix="days" 
-                  prefix={<FireOutlined style={{ color: userData.streaks.activities > 5 ? '#ff4d4f' : '#faad14' }} />}
-                  valueStyle={{ color: userData.streaks.activities > 5 ? '#ff4d4f' : '#faad14' }}
-                />
-                <Text type="secondary">Consistency pays off!</Text>
-              </Card>
-            </Col>
-          </Row>
-        </Card>
+      {/* Streak Tracker Section */}
+      <Card title={<><FireOutlined /> Streak Tracker</>} style={{ marginBottom: 20 }}>
+        <Row gutter={16}>
+          <Col xs={24} sm={8}>
+            <Card type="inner" title="Weight Logging">
+              <Statistic 
+                value={userData.streaks.weight} 
+                suffix="days" 
+                prefix={<FireOutlined style={{ color: userData.streaks.weight > 5 ? '#ff4d4f' : '#faad14' }} />}
+                valueStyle={{ color: userData.streaks.weight > 5 ? '#ff4d4f' : '#faad14' }}
+              />
+              <Text type="secondary">Keep logging your weight daily!</Text>
+            </Card>
+          </Col>
+          <Col xs={24} sm={8}>
+            <Card type="inner" title="Step Goals">
+              <Statistic 
+                value={userData.streaks.steps} 
+                suffix="days" 
+                prefix={<FireOutlined style={{ color: userData.streaks.steps > 5 ? '#ff4d4f' : '#faad14' }} />}
+                valueStyle={{ color: userData.streaks.steps > 5 ? '#ff4d4f' : '#faad14' }}
+              />
+              <Text type="secondary">Keep walking, you're crushing it!</Text>
+            </Card>
+          </Col>
+          <Col xs={24} sm={8}>
+            <Card type="inner" title="Activity Consistency">
+              <Statistic 
+                value={userData.streaks.activities} 
+                suffix="days" 
+                prefix={<FireOutlined style={{ color: userData.streaks.activities > 5 ? '#ff4d4f' : '#faad14' }} />}
+                valueStyle={{ color: userData.streaks.activities > 5 ? '#ff4d4f' : '#faad14' }}
+              />
+              <Text type="secondary">Consistency pays off!</Text>
+            </Card>
+          </Col>
+        </Row>
+      </Card>
 
-        {/* Activity Tabs Section */}
-        <Card title={<><ArrowUpOutlined /> Recent Activities</>} style={{ marginBottom: 20 }}>
-          <Tabs items={activityTabItems} />
-        </Card>
-      </Content>
-    </Layout>
+      {/* Activity Tabs Section */}
+      <Card title={<><ArrowUpOutlined /> Recent Activities</>} style={{ marginBottom: 20 }}>
+        <Tabs items={activityTabItems} />
+      </Card>
+    </div>
   );
 };
 
