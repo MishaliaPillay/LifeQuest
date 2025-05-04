@@ -68,7 +68,7 @@ const menuItems: MenuProps['items'] = [
 
 const Sidebar: React.FC<SidebarProps> = ({
   collapsed,
-  setCollapsed,
+
   drawerOpen,
   setDrawerOpen,
 }) => {
