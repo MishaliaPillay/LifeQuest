@@ -28,5 +28,4 @@ namespace LifeQuest.Services.FitnessService.FitnessPath.Mappings
             CreateMap<Domain.Fitness.Activity.Activity, ActivityResponseDto>();
         }
     }
-
 }
