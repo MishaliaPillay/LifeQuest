@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Abp.Domain.Repositories;
 using Abp.Domain.Services;
 using Abp.UI;
+using Microsoft.EntityFrameworkCore;
 
 namespace LifeQuest.Domain.Weight
 {
@@ -20,6 +21,17 @@ namespace LifeQuest.Domain.Weight
 
         public async Task<WeightEntry> CreateAsync(Guid personId, float weight, DateTime date, string? note)
         {
+            var startOfDay = date.Date;
+            var endOfDay = startOfDay.AddDays(1);
+
+            var existingEntry = await _weightEntryRepository
+                .GetAll()
+                .Where(e => e.PersonId == personId && e.Date >= startOfDay && e.Date < endOfDay)
+                .FirstOrDefaultAsync();
+
+            if (existingEntry != null)
+                throw new UserFriendlyException("A weight entry for this day already exists.");
+
             var entry = new WeightEntry
             {
                 PersonId = personId,
@@ -27,9 +39,12 @@ namespace LifeQuest.Domain.Weight
                 Date = date,
                 Note = note
             };
+
             await _weightEntryRepository.InsertAsync(entry);
             return entry;
         }
+
+
 
         public async Task<WeightEntry> UpdateAsync(Guid id, float weight, DateTime date, string? note)
         {

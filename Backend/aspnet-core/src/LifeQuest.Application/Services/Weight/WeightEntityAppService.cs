@@ -17,17 +17,26 @@ namespace LifeQuest.Services.Weight
     public class WeightEntryAppService : ApplicationService, IWeightEntryAppService
     {
         private readonly IRepository<WeightEntry, Guid> _weightEntryRepository;
+        private readonly WeightEntryManager _weightEntryManager;
 
-        public WeightEntryAppService(IRepository<WeightEntry, Guid> weightEntryRepository)
+        public WeightEntryAppService(
+            IRepository<WeightEntry, Guid> weightEntryRepository,
+            WeightEntryManager weightEntryManager)
         {
             _weightEntryRepository = weightEntryRepository;
+            _weightEntryManager = weightEntryManager;
         }
 
         public async Task<WeightEntryResponseDto> CreateAsync(CreateWeightEntryDto input)
         {
-            var weightEntry = ObjectMapper.Map<WeightEntry>(input);
-            await _weightEntryRepository.InsertAsync(weightEntry);
-            return ObjectMapper.Map<WeightEntryResponseDto>(weightEntry);
+            var entry = await _weightEntryManager.CreateAsync(
+                input.PersonId,
+                input.Weight,
+                input.Date,
+                input.Note
+            );
+
+            return ObjectMapper.Map<WeightEntryResponseDto>(entry);
         }
 
         public async Task<WeightEntryResponseDto> GetAsync(Guid id)
