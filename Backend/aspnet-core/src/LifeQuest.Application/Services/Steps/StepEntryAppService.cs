@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Abp.Application.Services;
 using Abp.Domain.Repositories;
 using Abp.UI;
-using AutoMapper.Internal.Mappers;
 using LifeQuest.Domain.Steps;
 using Microsoft.EntityFrameworkCore;
 using LifeQuest.Services.Steps.Dtos;
@@ -31,8 +29,23 @@ namespace LifeQuest.Services.Steps
         {
             // For demo purposes, assuming fixed weight of 70kg; replace with actual Person lookup
             float weightKg = 70f;
+
+            // Check if a step entry already exists for the person on the same day
+            var startOfDay = input.Date.Date;
+            var endOfDay = startOfDay.AddDays(1);
+
+            var existingEntry = await _stepEntryRepository
+                .GetAll()
+                .Where(e => e.PersonId == input.PersonId && e.Date >= startOfDay && e.Date < endOfDay)
+                .FirstOrDefaultAsync();
+
+            if (existingEntry != null)
+                throw new UserFriendlyException("A step entry for this day already exists.");
+
+            // Create new step entry
             var entry = ObjectMapper.Map<StepEntry>(input);
             entry.CaloriesBurned = CalculateCalories(input.Steps, weightKg);
+
             await _stepEntryRepository.InsertAsync(entry);
             return ObjectMapper.Map<StepEntryResponseDto>(entry);
         }
