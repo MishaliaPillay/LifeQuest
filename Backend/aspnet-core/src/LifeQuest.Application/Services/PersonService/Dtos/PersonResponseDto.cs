@@ -11,7 +11,7 @@ using Microsoft.DotNet.Scaffolding.Shared;
 
 namespace LifeQuest.Services.PersonService.Dtos
 {
-    [AutoMap(typeof(Person))]
+
     public class PersonResponseDto : EntityDto<Guid>
     {
         public UserResponseDto User { get; set; }
