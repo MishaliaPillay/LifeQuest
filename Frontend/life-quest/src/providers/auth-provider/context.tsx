@@ -17,6 +17,7 @@ export interface IAuth {
   xp: number;
   level: number;
   avatar: "url";
+  id?:string;
 }
 
 export interface ISignInRequest {

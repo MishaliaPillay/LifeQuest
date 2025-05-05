@@ -27,15 +27,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [state, dispatch] = useReducer(AuthReducer, INITIAL_STATE);
 
   // SignUp Function
-  const signUp = async (Auth: IAuth): Promise<void> => {
+  const signUp = async (Auth: IAuth): Promise<any> => {
     dispatch(signUpPending());
 
     const endpoint =
       "https://lifequest-backend.onrender.com/api/services/app/Person/Create";
 
     try {
-      const response = await axios.post<IAuth>(endpoint, Auth);
+      const response = await axios.post(endpoint, Auth);
       dispatch(signUpSuccess(response.data));
+      return response.data;
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         console.error("Signup error:", error.response?.data?.message || error.message);
@@ -78,7 +79,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       });
   };
 
-  // Get Current Person Function (now returning IAuth)
+  // Get Current Person Function
   const getCurrentPerson = async (userId: number): Promise<IAuth> => {
     dispatch(getCurrentPersonPending());
 
@@ -86,14 +87,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     try {
       const response = await axios.get(endpoint);
-      const authData: IAuth = {
-        user: response.data.user,
-        xp: response.data.xp,
-        level: response.data.level,
-        avatar: response.data.avatar,
-      };
-      dispatch(getCurrentPersonSuccess({ Auth: authData }));
-      return authData; // Return IAuth
+      // Extract the IAuth object from the response data
+      const personData: IAuth = response.data.result;
+      dispatch(getCurrentPersonSuccess(personData));
+      return personData; // Return IAuth object
     } catch (error) {
       console.error(
         "Error during getCurrentPerson:",
@@ -106,7 +103,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <AuthStateContext.Provider value={state}>
-      <AuthActionContext.Provider value={{ signIn, signUp, getCurrentPerson }}>
+      <AuthActionContext.Provider 
+        value={{ signUp, signIn, getCurrentPerson }}
+      >
         {children}
       </AuthActionContext.Provider>
     </AuthStateContext.Provider>
