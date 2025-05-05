@@ -78,7 +78,7 @@ namespace LifeQuest.Services.FitnessService.Activity
             try
             {
                 var httpClient = new HttpClient();
-                var apiKey = "put this in";
+                var apiKey = "Enter Api Key here";
                 var prompt = BuildPromptFromDto(input);
 
                 var requestBody = new
@@ -95,8 +95,6 @@ namespace LifeQuest.Services.FitnessService.Activity
                         "application/json")
                 };
                 request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
-                request.Headers.Add("HTTP-Referer", "https://your-site.com");
-                request.Headers.Add("X-Title", "LifeQuest");
 
                 var response = await httpClient.SendAsync(request);
                 response.EnsureSuccessStatusCode();
