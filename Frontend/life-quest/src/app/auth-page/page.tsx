@@ -61,7 +61,8 @@ const AuthPage: React.FC = () => {
           <h1>Welcome Page</h1>
           <p>Sign in to continue access to your account and all our features</p>
         </div>
-
+  {/* Loading indicator */}
+  {loading && <div className={styles.loading}>Loading...</div>}
         {/* Background circles */}
         <div
           className={styles.circle}

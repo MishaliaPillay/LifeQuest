@@ -1,6 +1,6 @@
 import React from 'react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, within } from '@testing-library/react';
+import { render, screen, fireEvent} from '@testing-library/react';
 import '@testing-library/jest-dom';
 import LifeQuestLandingPage from '../app/landing-page/landing-page';
 
@@ -82,7 +82,7 @@ vi.mock('next/navigation', () => ({
 
 // Mock antd components
 vi.mock('antd', () => {
-  const MockButton = ({ children, onClick, type, shape, size }) => (
+  const MockButton = ({ children, onClick }) => (
     <button onClick={onClick} data-testid="button">
       {children}
     </button>
@@ -94,9 +94,9 @@ vi.mock('antd', () => {
     Text: ({ children }) => <span data-testid="text">{children}</span>,
   };
   
-  const Row = ({ children, gutter, align }) => <div data-testid="row">{children}</div>;
-  const Col = ({ children, xs, sm, md }) => <div data-testid="col">{children}</div>;
-  const Space = ({ children, direction, size }) => <div data-testid="space">{children}</div>;
+  const Row = ({ children }) => <div data-testid="row">{children}</div>;
+  const Col = ({ children}) => <div data-testid="col">{children}</div>;
+  const Space = ({ children}) => <div data-testid="space">{children}</div>;
   
   return {
     Button: MockButton,

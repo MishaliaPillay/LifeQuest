@@ -6,7 +6,7 @@ import { UserOutlined, LockOutlined, MailOutlined } from "@ant-design/icons";
 import { SignupContainer, StyledButton } from "./styles";
 import { useAuthActions } from "@/providers/auth-provider";
 import { IAuth } from "@/providers/auth-provider/context";
-
+import axios from "axios";
 interface SignupFormProps {
   onSignupSuccess?: () => void;
   onBeforeSubmit?: () => void;
@@ -28,14 +28,20 @@ const SignupComponent: React.FC<SignupFormProps> = ({
   const showErrorToast = (msg = "Signup failed.") => {
     messageApi.error({ content: msg, duration: 5, style: { marginTop: 20 } });
   };
-
-  const onFinishSignup = async (values: any) => {
+  interface SignupFormValues {
+    name: string;
+    surname: string;
+    userName: string;
+    emailAddress: string;
+    password: string;
+  }
+  const onFinishSignup = async (values: SignupFormValues) => {
     try {
       onBeforeSubmit?.();
       setLoading(true);
 
       const auth: IAuth = {
-        user: values, // Directly use form values, no manual remapping needed
+        user: values,
         xp: 0,
         level: 0,
         avatar: "url", // placeholder
@@ -46,18 +52,27 @@ const SignupComponent: React.FC<SignupFormProps> = ({
       showSuccessToast();
       setTimeout(() => {
         form.resetFields();
-        onSignupSuccess?.(); // Switches tab after delay
+        onSignupSuccess?.();
       }, 5000);
-    } catch (error: any) {
-      const backendMsg =
-        error?.response?.data?.error?.message ||
-        error?.response?.data?.message ||
-        error?.message ||
-        "Signup failed.";
+    } catch (error: unknown) {
+      let backendMsg = "Signup failed.";
+
+      if (axios.isAxiosError(error)) {
+        backendMsg =
+          error.response?.data?.error?.message ||
+          error.response?.data?.message ||
+          error.message ||
+          backendMsg;
+      } else if (error instanceof Error) {
+        backendMsg = error.message;
+      }
+
       showErrorToast(backendMsg);
     } finally {
       setLoading(false);
     }
+
+    window.location.reload();
   };
 
   return (

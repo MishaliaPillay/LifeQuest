@@ -1,34 +1,45 @@
-"use client";
-
-import React, { useEffect, useState } from "react";
+"use client"
+import React, { useEffect, useState, useRef } from "react";
 import { Typography, Card, Spin } from "antd";
 import { useUserState } from "@/providers/user-provider";
+import { useUserActions } from "@/providers/user-provider"; // Importing actions
 import withAuth from "../../hoc/withAuth";
-import styles from "./userDashboard.module.css"; // You can create this CSS module
+import styles from "./userDashboard.module.css";
 
 const { Title, Paragraph } = Typography;
 
 const UserDashboard: React.FC = () => {
   const { currentUser } = useUserState();
   const [loading, setLoading] = useState(true);
+  const { getCurrentUser } = useUserActions(); // Hook to access the actions
+  const hasFetched = useRef(false); // Ref to track if data has been fetched
 
   useEffect(() => {
-    if (currentUser?.name) {
-      setLoading(false);
+    const token = sessionStorage.getItem("jwt");
+
+    if (token && !currentUser && !hasFetched.current) {
+      hasFetched.current = true; // Mark as fetched
+      getCurrentUser(token).finally(() => {
+        setLoading(false); // Set loading to false after the request completes
+      });
+    } else {
+      setLoading(false); // Stop loading immediately if token doesn't exist or user is loaded
     }
-  }, [currentUser]);
+  }, [currentUser, getCurrentUser]);
 
   if (loading || !currentUser?.name) {
     return (
-      <div className={styles.loadingContainer}>
-        <Spin tip="Loading your dashboard..." size="large" />
-      </div>
+      <Spin size="large">
+        <div className={styles.loadingContainer}>
+          <div className={styles.loadingContent}>Loading your dashboard...</div>
+        </div>
+      </Spin>
     );
   }
 
   return (
     <div className={styles.dashboardWrapper}>
-      <Card bordered={false} className={styles.welcomeCard}>
+      <Card className={styles.welcomeCard}>
         <Title level={2}>
           🚀 Welcome,{" "}
           <span className={styles.userName}>{currentUser.name}</span>
