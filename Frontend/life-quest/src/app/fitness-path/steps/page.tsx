@@ -1,11 +1,20 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
-import { Input, Button, Card, Spin, message, Modal, InputNumber, Statistic } from "antd";
-import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
+import { Input, Button, Card, Spin, message, Modal, InputNumber, Statistic, Row, Col, Progress, Typography } from "antd";
+import { 
+  LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, 
+  ResponsiveContainer, AreaChart, Area, BarChart, Bar, Legend
+} from "recharts";
+import { 
+  PlusOutlined, ReloadOutlined, TrophyOutlined,
+  FireOutlined, CalendarOutlined, ArrowUpOutlined, ArrowDownOutlined
+} from '@ant-design/icons';
 import { useStepsActions, useStepsState } from "../../../providers/fitnesspath/step-provider/index";
 import { useAuthState, useAuthActions } from "../../../providers/auth-provider";
 import { getId } from "../../../utils/decoder";
+
+const { Title, Text } = Typography;
 
 const StepsGraphPage: React.FC = () => {
   const [personId, setPersonId] = useState<string>("");
@@ -13,6 +22,7 @@ const StepsGraphPage: React.FC = () => {
   const [adding, setAdding] = useState(false);
   const [newSteps, setNewSteps] = useState<number>(0);
   const [loadingAuth, setLoadingAuth] = useState(false);
+  const [activeChartType, setActiveChartType] = useState<'area' | 'line' | 'bar'>('area');
 
   const { getSteps, createStep, updateStep } = useStepsActions();
   const { steps } = useStepsState();
@@ -41,9 +51,7 @@ const StepsGraphPage: React.FC = () => {
                 // Get person data using the user ID from token
                 const response = await getCurrentPerson(userIdNum);
                 
-                // Handle the nested structure in the API response
-                // The actual person data is in response.result
-                console.log(response)
+                // Handle data from response
                 if (response && response) {
                   const personData = response;
                   console.log("Person data:", personData);
@@ -82,7 +90,7 @@ const StepsGraphPage: React.FC = () => {
     };
 
     fetchUserData();
-  }, []); // Include getCurrentPerson in dependencies
+  }, []);
 
   const handleFetchSteps = async (id = personId) => {
     if (!id) {
@@ -137,9 +145,19 @@ const StepsGraphPage: React.FC = () => {
     setNewSteps(0);
   };
 
-  // Calculate weekly average
-  const weeklyAverage = useMemo(() => {
+  // Calculate stats
+  const stats = useMemo(() => {
+    if (!steps.length) return {
+      weeklyAverage: 0,
+      todaySteps: 0,
+      totalSteps: 0,
+      caloriesBurned: 0,
+      weeklyProgress: 0,
+      bestDay: { date: '', count: 0 }
+    };
+
     const today = new Date();
+    const todayStr = today.toISOString().split('T')[0];
     const oneWeekAgo = new Date(today);
     oneWeekAgo.setDate(today.getDate() - 7);
 
@@ -148,74 +166,355 @@ const StepsGraphPage: React.FC = () => {
       return stepDate >= oneWeekAgo && stepDate <= today;
     });
 
-    if (last7DaysSteps.length === 0) return 0;
+    const weeklyAverage = last7DaysSteps.length > 0 
+      ? Math.round(last7DaysSteps.reduce((sum, step) => sum + step.steps, 0) / last7DaysSteps.length)
+      : 0;
 
-    const totalSteps = last7DaysSteps.reduce((sum, step) => sum + step.steps, 0);
-    return Math.round(totalSteps / last7DaysSteps.length);
+    const todayEntry = steps.find(
+      (step) => new Date(step.date).toISOString().split('T')[0] === todayStr
+    );
+
+    const totalSteps = steps.reduce((sum, step) => sum + step.steps, 0);
+    const caloriesBurned = Math.round(totalSteps * 0.04);
+    
+    const weeklyProgress = Math.min(100, Math.round((weeklyAverage / 10000) * 100));
+    
+    const sortedSteps = [...steps].sort((a, b) => b.steps - a.steps);
+    const bestDay = sortedSteps.length > 0 
+      ? { 
+          date: new Date(sortedSteps[0].date).toLocaleDateString(),
+          count: sortedSteps[0].steps
+        }
+      : { date: '', count: 0 };
+
+    return {
+      weeklyAverage,
+      todaySteps: todayEntry ? todayEntry.steps : 0,
+      totalSteps,
+      caloriesBurned,
+      weeklyProgress,
+      bestDay
+    };
   }, [steps]);
 
-  return (
-    <div style={{ padding: 24, maxWidth: 900, margin: "0 auto" }}>
-      <Card
-        title="🚶‍♂️ Step Tracker Graph"
-        bordered={false}
-        style={{ borderRadius: 16, boxShadow: "0 4px 20px rgba(0,0,0,0.1)" }}
-        loading={loadingAuth}
-      >
-        <div style={{ display: "flex", alignItems: "center", marginBottom: 16 }}>
-          <Input
-            placeholder="Person ID (Auto-detected from login)"
-            value={personId}
-            onChange={(e) => setPersonId(e.target.value)}
-            style={{ width: 300, marginRight: 16 }}
-            disabled={!!Auth?.id || loadingAuth} // Disable manual entry when authenticated or loading
-          />
-          <Button type="primary" onClick={() => handleFetchSteps()} loading={loading}>
-            Refresh Steps
-          </Button>
+  // Process chart data
+  const chartData = useMemo(() => {
+    return steps.map((item) => ({
+      date: new Date(item.date).toLocaleDateString(),
+      steps: item.steps,
+      calories: Math.round(item.steps * 0.04),
+    })).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  }, [steps]);
+
+  // Custom tooltip style
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="custom-tooltip" style={{ 
+          backgroundColor: '#fff', 
+          padding: '10px', 
+          border: '1px solid #ccc',
+          borderRadius: '8px',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
+        }}>
+          <p className="label" style={{ margin: 0, fontWeight: 'bold' }}>{`Date: ${label}`}</p>
+          <p style={{ margin: '5px 0', color: '#52c41a' }}>{`Steps: ${payload[0].value.toLocaleString()}`}</p>
+          {payload[1] && <p style={{ margin: '5px 0', color: '#ff7a45' }}>{`Calories: ${payload[1].value.toLocaleString()}`}</p>}
         </div>
-        
-        <Button type="dashed" onClick={() => setAdding(true)} style={{ marginBottom: 16 }}>
-          ➕ Add/Update Today
-        </Button>
+      );
+    }
+    return null;
+  };
 
-        <div style={{ marginTop: 32, background: "#f0f2f5", padding: 16, borderRadius: 12 }}>
-          {loading ? (
-            <div style={{ textAlign: "center", padding: 40 }}>
-              <Spin size="large" />
-              <p style={{ marginTop: 16 }}>Loading steps data...</p>
-            </div>
-          ) : steps && steps.length > 0 ? (
-            <>
-              <LineChart
-                width={800}
-                height={400}
-                data={steps.map((item) => ({
-                  date: new Date(item.date).toLocaleDateString(),
-                  count: item.steps,
-                }))}
-                margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+  return (
+    <div style={{ 
+      padding: 24,
+      maxWidth: 1200,
+      margin: "0 auto",
+      background: 'linear-gradient(to bottom, #f0f8ff, #ffffff)'
+    }}>
+      <Card
+        title={
+          <Title level={2} style={{ margin: 0 }}>
+            <span style={{ marginRight: 10 }}>🚶‍♂️</span>
+            Step Tracker Dashboard
+          </Title>
+        }
+        bordered={false}
+        style={{ 
+          borderRadius: 16, 
+          boxShadow: "0 8px 30px rgba(0,0,0,0.12)",
+          overflow: "hidden"
+        }}
+        loading={loadingAuth}
+        headStyle={{ 
+          backgroundColor: "#1890ff", 
+          color: "#fff",
+          padding: "16px 24px"
+         }}
+        bodyStyle={{ padding: "24px" }}
+      >
+        <Row gutter={[24, 24]}>
+          <Col xs={24} md={18}>
+            <div style={{ display: "flex", alignItems: "center", marginBottom: 16 }}>
+              <Input
+                placeholder="Person ID (Auto-detected from login)"
+                value={personId}
+                onChange={(e) => setPersonId(e.target.value)}
+                style={{ 
+                  width: 300, 
+                  marginRight: 16,
+                  borderRadius: 8,
+                  height: 40
+                }}
+                disabled={!!Auth?.id || loadingAuth}
+              />
+              <Button 
+                type="primary" 
+                onClick={() => handleFetchSteps()} 
+                loading={loading}
+                icon={<ReloadOutlined />}
+                style={{ 
+                  borderRadius: 8,
+                  height: 40,
+                  background: "#52c41a"
+                }}
               >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
-                <YAxis />
-                <Tooltip />
-                <Line type="monotone" dataKey="count" stroke="#52c41a" strokeWidth={3} dot={{ r: 4 }} />
-              </LineChart>
+                Refresh Steps
+              </Button>
+            </div>
+            
+            <Button 
+              type="primary"
+              onClick={() => setAdding(true)} 
+              style={{ 
+                marginBottom: 16,
+                borderRadius: 8,
+                height: 40,
+                background: "#722ed1"
+              }}
+              icon={<PlusOutlined />}
+            >
+              Add/Update Today
+            </Button>
+          </Col>
+          
+          <Col xs={24} md={6}>
+            <Card 
+              size="small" 
+              style={{ 
+                backgroundColor: "#f6ffed", 
+                borderRadius: 8, 
+                border: "1px solid #b7eb8f"
+              }}
+            >
+              <Statistic
+                title={<Text strong>Today's Steps</Text>}
+                value={stats.todaySteps}
+                suffix="steps"
+                valueStyle={{ color: '#52c41a' }}
+                prefix={<CalendarOutlined />}
+              />
+            </Card>
+          </Col>
+        </Row>
 
-              <div style={{ marginTop: 24 }}>
+        <div style={{ marginTop: 24 }}>
+          <Row gutter={[16, 16]}>
+            <Col xs={24} sm={12} md={6}>
+              <Card 
+                size="small" 
+                style={{ 
+                  borderRadius: 8,
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.09)",
+                  background: "linear-gradient(135deg, #ffd6e7, #ffc9c9)"
+                }}
+              >
                 <Statistic
-                  title="📊 Average Steps (Past 7 Days)"
-                  value={weeklyAverage}
-                  suffix="steps/day"
+                  title="Daily Average"
+                  value={stats.weeklyAverage}
+                  suffix="steps"
+                  valueStyle={{ color: '#eb2f96' }}
+                  prefix={<TrophyOutlined />}
                 />
+              </Card>
+            </Col>
+            <Col xs={24} sm={12} md={6}>
+              <Card 
+                size="small" 
+                style={{ 
+                  borderRadius: 8,
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.09)",
+                  background: "linear-gradient(135deg, #d3adf7, #b7daff)"
+                }}
+              >
+                <Statistic
+                  title="Total Steps"
+                  value={stats.totalSteps}
+                  valueStyle={{ color: '#722ed1' }}
+                />
+              </Card>
+            </Col>
+            <Col xs={24} sm={12} md={6}>
+              <Card 
+                size="small" 
+                style={{ 
+                  borderRadius: 8,
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.09)",
+                  background: "linear-gradient(135deg, #fff1b8, #ffe58f)"
+                }}
+              >
+                <Statistic
+                  title="Calories Burned"
+                  value={stats.caloriesBurned}
+                  valueStyle={{ color: '#fa8c16' }}
+                  prefix={<FireOutlined />}
+                />
+              </Card>
+            </Col>
+            <Col xs={24} sm={12} md={6}>
+              <Card 
+                size="small" 
+                style={{ 
+                  borderRadius: 8,
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.09)",
+                  background: "linear-gradient(135deg, #b7eb8f, #87e8de)"
+                }}
+              >
+                <Statistic
+                  title="Best Day"
+                  value={stats.bestDay.count}
+                  suffix={`(${stats.bestDay.date})`}
+                  valueStyle={{ color: '#52c41a' }}
+                  prefix={<ArrowUpOutlined />}
+                />
+              </Card>
+            </Col>
+          </Row>
+        </div>
+
+        <div style={{ marginTop: 24 }}>
+          <Card
+            title={
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span>Activity Trends</span>
+                <div>
+                  <Button 
+                    type={activeChartType === 'area' ? 'primary' : 'default'}
+                    onClick={() => setActiveChartType('area')}
+                    size="small"
+                    style={{ marginRight: 8, borderRadius: 4 }}
+                  >
+                    Area
+                  </Button>
+                  <Button 
+                    type={activeChartType === 'line' ? 'primary' : 'default'}
+                    onClick={() => setActiveChartType('line')}
+                    size="small"
+                    style={{ marginRight: 8, borderRadius: 4 }}
+                  >
+                    Line
+                  </Button>
+                  <Button 
+                    type={activeChartType === 'bar' ? 'primary' : 'default'}
+                    onClick={() => setActiveChartType('bar')}
+                    size="small"
+                    style={{ borderRadius: 4 }}
+                  >
+                    Bar
+                  </Button>
+                </div>
               </div>
-            </>
-          ) : (
-            <p style={{ textAlign: "center" }}>
-              No steps data to display. Please fetch steps.
-            </p>
-          )}
+            }
+            style={{ 
+              borderRadius: 12, 
+              overflow: 'hidden',
+              boxShadow: "0 4px 12px rgba(0,0,0,0.08)"
+            }}
+            bodyStyle={{ padding: 0 }}
+          >
+            {loading ? (
+              <div style={{ textAlign: "center", padding: 80 }}>
+                <Spin size="large" />
+                <p style={{ marginTop: 16 }}>Loading your fitness data...</p>
+              </div>
+            ) : steps && steps.length > 0 ? (
+              <div style={{ padding: 16 }}>
+                <ResponsiveContainer width="100%" height={400}>
+                  {activeChartType === 'area' ? (
+                    <AreaChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                      <defs>
+                        <linearGradient id="colorSteps" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#52c41a" stopOpacity={0.8}/>
+                          <stop offset="95%" stopColor="#52c41a" stopOpacity={0.1}/>
+                        </linearGradient>
+                        <linearGradient id="colorCal" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#ff7a45" stopOpacity={0.8}/>
+                          <stop offset="95%" stopColor="#ff7a45" stopOpacity={0.1}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                      <XAxis dataKey="date" stroke="#666" />
+                      <YAxis stroke="#666" />
+                      <Tooltip content={<CustomTooltip />} />
+                      <Legend />
+                      <Area type="monotone" dataKey="steps" stroke="#52c41a" fillOpacity={1} fill="url(#colorSteps)" />
+                      <Area type="monotone" dataKey="calories" stroke="#ff7a45" fillOpacity={1} fill="url(#colorCal)" />
+                    </AreaChart>
+                  ) : activeChartType === 'line' ? (
+                    <LineChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                      <XAxis dataKey="date" stroke="#666" />
+                      <YAxis stroke="#666" />
+                      <Tooltip content={<CustomTooltip />} />
+                      <Legend />
+                      <Line type="monotone" dataKey="steps" stroke="#52c41a" strokeWidth={3} dot={{ r: 4 }} />
+                      <Line type="monotone" dataKey="calories" stroke="#ff7a45" strokeWidth={2} dot={{ r: 3 }} />
+                    </LineChart>
+                  ) : (
+                    <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                      <XAxis dataKey="date" stroke="#666" />
+                      <YAxis stroke="#666" />
+                      <Tooltip content={<CustomTooltip />} />
+                      <Legend />
+                      <Bar dataKey="steps" fill="#52c41a" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="calories" fill="#ff7a45" radius={[4, 4, 0, 0]} />
+                    </BarChart>
+                  )}
+                </ResponsiveContainer>
+              </div>
+            ) : (
+              <div style={{ textAlign: "center", padding: 40 }}>
+                <Text type="secondary" style={{ fontSize: 16 }}>
+                  No steps data to display. Please fetch steps.
+                </Text>
+              </div>
+            )}
+          </Card>
+        </div>
+
+        <div style={{ marginTop: 24 }}>
+          <Card
+            title="Weekly Goal Progress"
+            style={{ borderRadius: 12 }}
+          >
+            <Progress 
+              percent={stats.weeklyProgress} 
+              status={stats.weeklyProgress >= 100 ? "success" : "active"}
+              strokeColor={{
+                '0%': '#108ee9',
+                '100%': '#87d068',
+              }}
+              strokeWidth={20}
+              format={percent => `${percent}% of 10,000 daily steps`}
+            />
+            <Text type="secondary" style={{ display: 'block', marginTop: 8 }}>
+              {stats.weeklyProgress >= 100 
+                ? "Congratulations! You've reached your goal!" 
+                : `Keep going! You need ${10000 - stats.weeklyAverage} more steps per day to reach your goal.`}
+            </Text>
+          </Card>
         </div>
       </Card>
 
@@ -225,14 +524,27 @@ const StepsGraphPage: React.FC = () => {
         onOk={handleAddOrUpdateToday}
         onCancel={() => setAdding(false)}
         okText="Save"
+        centered
+        bodyStyle={{ padding: '24px' }}
       >
-        <InputNumber
-          min={0}
-          value={newSteps}
-          onChange={(value) => setNewSteps(value || 0)}
-          placeholder="Enter step count"
-          style={{ width: "100%" }}
-        />
+        <div style={{ textAlign: 'center' }}>
+          <Title level={4} style={{ marginBottom: 24 }}>How many steps did you take today?</Title>
+          <InputNumber
+  min={0}
+  max={100000}
+  value={newSteps}
+  onChange={(value) => setNewSteps(value || 0)}
+  placeholder="Enter step count"
+  style={{ width: "100%", height: 50, fontSize: 20 }}
+  size="large"
+  formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+  parser={(value) => Number(value!.replace(/\$\s?|(,*)/g, ''))}
+/>
+
+          <Text type="secondary" style={{ display: 'block', marginTop: 16 }}>
+            This will calculate to approximately {Math.round(newSteps * 0.04)} calories burned
+          </Text>
+        </div>
       </Modal>
     </div>
   );
