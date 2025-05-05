@@ -27,7 +27,6 @@ const AppLayout = ({ children }) => {
     <Layout style={{ minHeight: '100vh' }}>
       <Sidebar
         collapsed={collapsed}
-        setCollapsed={setCollapsed}
         drawerOpen={drawerOpen}
         setDrawerOpen={setDrawerOpen}
       />

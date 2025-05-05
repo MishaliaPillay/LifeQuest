@@ -20,7 +20,6 @@ const { Sider } = Layout;
 
 interface SidebarProps {
   collapsed: boolean;
-  setCollapsed: (collapsed: boolean) => void;
   drawerOpen: boolean;
   setDrawerOpen: (open: boolean) => void;
 }
@@ -68,7 +67,6 @@ const menuItems: MenuProps['items'] = [
 
 const Sidebar: React.FC<SidebarProps> = ({
   collapsed,
-
   drawerOpen,
   setDrawerOpen,
 }) => {
@@ -106,7 +104,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         />
         <Drawer
           placement="left"
-          closable={true}
+          closable
           onClose={() => setDrawerOpen(false)}
           open={drawerOpen}
           width={200}

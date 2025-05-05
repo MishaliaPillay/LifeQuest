@@ -32,11 +32,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       const response = await axios.post<IAuth>(endpoint, Auth);
       dispatch(signUpSuccess(response.data));
-    } catch (error: any) {
-      console.error("Signup error:", error.response?.data?.message || error);
-      throw error; // Throw so component can handle
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        console.error("Signup error:", error.response?.data?.message || error.message);
+      } else if (error instanceof Error) {
+        console.error("Signup error:", error.message);
+      } else {
+        console.error("Signup error:", error);
+      }
+      throw error;
     }
-  };
+  };    
 
   const signIn = async (
     SignInRequest: ISignInRequest
