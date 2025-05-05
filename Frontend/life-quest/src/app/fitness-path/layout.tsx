@@ -1,13 +1,17 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ReactNode } from 'react';
 import { Layout } from 'antd';
 import Sidebar from '../../components/fitness-path/sidebar'; 
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 
 const { Header, Content } = Layout;
 
-const AppLayout = ({ children }) => {
+interface AppLayoutProps {
+  children: ReactNode;
+}
+
+const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const [collapsed, setCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
