@@ -41,9 +41,9 @@ const menuItems: MenuProps['items'] = [
     label: <Link href="/achievements">Achievements</Link>,
   },
   {
-    key: '/challenges',
+    key: '/fitness-path/steps',
     icon: <FireOutlined />,
-    label: <Link href="/challenges">Challenges</Link>,
+    label: <Link href="/fitness-path/steps">Steps</Link>,
   },
   {
     key: '/profile',
