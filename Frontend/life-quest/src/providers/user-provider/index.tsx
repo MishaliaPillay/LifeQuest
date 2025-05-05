@@ -33,12 +33,13 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   // Get current user
   const getCurrentUser = async (token: string): Promise<IUser | null> => {
     dispatch(getCurrentUserPending());
-    const endpoint = `https://localhost:44311/api/TokenAuth/Authenticate`;
+    const endpoint = `https://lifequest-backend.onrender.com/api/services/app/Session/GetCurrentLoginInformations`;
     return axios
       .get(endpoint, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((response) => {
+        console.log(response);
         if (response?.data?.result?.user) {
           dispatch(getCurrentUserSuccess(response.data.result.user));
           return response.data.result.user;

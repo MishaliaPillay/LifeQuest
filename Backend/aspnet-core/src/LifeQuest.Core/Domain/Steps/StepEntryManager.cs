@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Abp.Domain.Repositories;
 using Abp.Domain.Services;
 using Abp.UI;
-using LifeQuest.Domain.Weight;
+using Microsoft.EntityFrameworkCore;
 
 namespace LifeQuest.Domain.Steps
 {
@@ -21,6 +19,20 @@ namespace LifeQuest.Domain.Steps
 
         public async Task<StepEntry> CreateAsync(Guid personId, int steps, DateTime date, string note, int caloriesBurned)
         {
+            // Calculate the start and end of the day (to ensure one entry per day)
+            var startOfDay = date.Date;
+            var endOfDay = startOfDay.AddDays(1);
+
+            // Check if an entry already exists for the same person on the same day
+            var existingEntry = await _stepEntryRepository
+                .GetAll()
+                .Where(e => e.PersonId == personId && e.Date >= startOfDay && e.Date < endOfDay)
+                .FirstOrDefaultAsync();
+
+            if (existingEntry != null)
+                throw new UserFriendlyException("A step entry for this day already exists.");
+
+            // Create a new step entry
             var entry = new StepEntry
             {
                 PersonId = personId,
@@ -29,6 +41,8 @@ namespace LifeQuest.Domain.Steps
                 Note = note,
                 CaloriesBurned = caloriesBurned
             };
+
+            // Insert the new step entry
             await _stepEntryRepository.InsertAsync(entry);
             return entry;
         }
@@ -37,7 +51,7 @@ namespace LifeQuest.Domain.Steps
         {
             var entry = await _stepEntryRepository.FirstOrDefaultAsync(id);
             if (entry == null)
-                throw new UserFriendlyException("Weight entry not found");
+                throw new UserFriendlyException("Step entry not found");
 
             entry.Steps = steps;
             entry.Date = date;
@@ -52,7 +66,7 @@ namespace LifeQuest.Domain.Steps
         {
             var entry = await _stepEntryRepository.FirstOrDefaultAsync(id);
             if (entry == null)
-                throw new UserFriendlyException("Weight entry not found");
+                throw new UserFriendlyException("Step entry not found");
 
             await _stepEntryRepository.DeleteAsync(entry);
         }
