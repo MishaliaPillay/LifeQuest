@@ -39,16 +39,16 @@ const SignupComponent: React.FC<SignupFormProps> = ({
     try {
       onBeforeSubmit?.();
       setLoading(true);
-  
+
       const auth: IAuth = {
         user: values,
         xp: 0,
         level: 0,
         avatar: "url", // placeholder
       };
-  
+
       await signUp(auth);
-  
+
       showSuccessToast();
       setTimeout(() => {
         form.resetFields();
@@ -56,7 +56,7 @@ const SignupComponent: React.FC<SignupFormProps> = ({
       }, 5000);
     } catch (error: unknown) {
       let backendMsg = "Signup failed.";
-  
+
       if (axios.isAxiosError(error)) {
         backendMsg =
           error.response?.data?.error?.message ||
@@ -66,13 +66,15 @@ const SignupComponent: React.FC<SignupFormProps> = ({
       } else if (error instanceof Error) {
         backendMsg = error.message;
       }
-  
+
       showErrorToast(backendMsg);
     } finally {
       setLoading(false);
     }
+
+    window.location.reload();
   };
-  
+
   return (
     <SignupContainer>
       {contextHolder}
