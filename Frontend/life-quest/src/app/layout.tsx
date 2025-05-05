@@ -4,6 +4,7 @@ import "./globals.css";
 import { ConfigProvider } from "antd";
 import { AuthProvider } from "@/providers/auth-provider";
 import { UserProvider } from "@/providers/user-provider";
+import { StepsProvider } from "@/providers/fitnesspath/step-provider";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -37,10 +38,10 @@ export default function RootLayout({
     >
       <html lang="en">
         <AuthProvider>
-          <UserProvider>
+          <UserProvider><StepsProvider>
             <body className={`${geistSans.variable} ${geistMono.variable}`}>
               {children}
-            </body>
+            </body></StepsProvider>
           </UserProvider>
         </AuthProvider>
       </html>

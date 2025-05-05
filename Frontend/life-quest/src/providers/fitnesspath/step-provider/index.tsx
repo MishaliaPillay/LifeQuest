@@ -39,6 +39,7 @@ export const StepsProvider = ({ children }: { children: React.ReactNode }) => {
     return instance
       .get(endpoint)
       .then((response) => {
+        console.log(response.data.result)
         dispatch(getStepsSuccess(response.data?.result ?? []));
       })
       .catch((error) => {
