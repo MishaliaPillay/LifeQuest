@@ -22,7 +22,7 @@ const AuthPage: React.FC = () => {
     if (isPending) setLoading(true);
 
     if (isError) {
-      console.log("Your authentication was unsuccessful!");
+   
       setLoading(false);
     }
 

@@ -1,6 +1,6 @@
 "use client";
-//import { getAxiosInstace } from "../../utils/axiosInstance";
 
+// Importing necessary dependencies
 import {
   INITIAL_STATE,
   AuthActionContext,
@@ -17,12 +17,16 @@ import {
   signInSuccess,
   signUpPending,
   signUpSuccess,
+  getCurrentPersonPending,
+  getCurrentPersonSuccess,
+  getCurrentPersonError,
 } from "./actions";
 import axios from "axios";
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [state, dispatch] = useReducer(AuthReducer, INITIAL_STATE);
 
+  // SignUp Function
   const signUp = async (Auth: IAuth): Promise<void> => {
     dispatch(signUpPending());
 
@@ -30,8 +34,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       "https://lifequest-backend.onrender.com/api/services/app/Person/Create";
 
     try {
-      const response = await axios.post<IAuth>(endpoint, Auth);
+      const response = await axios.post(endpoint, Auth);
       dispatch(signUpSuccess(response.data));
+      return response.data;
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         console.error("Signup error:", error.response?.data?.message || error.message);
@@ -42,8 +47,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
       throw error;
     }
-  };    
+  };
 
+  // SignIn Function
   const signIn = async (
     SignInRequest: ISignInRequest
   ): Promise<ISignInResponse> => {
@@ -73,9 +79,33 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       });
   };
 
+  // Get Current Person Function
+  const getCurrentPerson = async (userId: number): Promise<IAuth> => {
+    dispatch(getCurrentPersonPending());
+
+    const endpoint = `https://lifequest-backend.onrender.com/api/services/app/Person/GetCurrentPerson?userId=${userId}`;
+
+    try {
+      const response = await axios.get(endpoint);
+      // Extract the IAuth object from the response data
+      const personData: IAuth = response.data.result;
+      dispatch(getCurrentPersonSuccess(personData));
+      return personData; // Return IAuth object
+    } catch (error) {
+      console.error(
+        "Error during getCurrentPerson:",
+        error.response?.data?.message || error
+      );
+      dispatch(getCurrentPersonError());
+      throw error;
+    }
+  };
+
   return (
     <AuthStateContext.Provider value={state}>
-      <AuthActionContext.Provider value={{ signIn, signUp }}>
+      <AuthActionContext.Provider 
+        value={{ signUp, signIn, getCurrentPerson }}
+      >
         {children}
       </AuthActionContext.Provider>
     </AuthStateContext.Provider>
@@ -85,7 +115,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 export const useAuthState = () => {
   const context = useContext(AuthStateContext);
   if (!context) {
-    throw new Error("useAuthState must be used within a AuthProvider");
+    throw new Error("useAuthState must be used within an AuthProvider");
   }
   return context;
 };
@@ -93,7 +123,7 @@ export const useAuthState = () => {
 export const useAuthActions = () => {
   const context = useContext(AuthActionContext);
   if (!context) {
-    throw new Error("useAuthActions must be used within a AuthProvider");
+    throw new Error("useAuthActions must be used within an AuthProvider");
   }
   return context;
 };

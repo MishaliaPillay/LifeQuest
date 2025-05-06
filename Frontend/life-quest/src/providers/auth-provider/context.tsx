@@ -4,6 +4,7 @@ import { createContext } from "react";
 // Context shape interface
 
 export interface UserRequestDto {
+  id?: number;
   name: string;
   surname: string;
   emailAddress: string;
@@ -13,21 +14,24 @@ export interface UserRequestDto {
 
 export interface IAuth {
   user: UserRequestDto;
-  xp: 0;
-  level: 0;
+  xp: number;
+  level: number;
   avatar: "url";
+  id?:string;
 }
 
 export interface ISignInRequest {
-  userNameOrEmailAddress: "string";
-  password: "string";
-  rememberClient: true;
+  userNameOrEmailAddress: string;
+  password: string;
+  rememberClient: boolean;
 }
+
 export interface ISignInResponse {
   result: {
     accessToken: string;
   };
 }
+
 export interface IAuthStateContext {
   isPending: boolean;
   isSuccess: boolean;
@@ -40,6 +44,7 @@ export interface IAuthStateContext {
 export interface IAuthActionContext {
   signIn: (SignInRequest: ISignInRequest) => Promise<ISignInResponse>;
   signUp: (Auth: IAuth) => Promise<void>;
+  getCurrentPerson: (userId: number) => Promise<IAuth | null>; // Get the current user by ID
 }
 
 // Initial state with default values
