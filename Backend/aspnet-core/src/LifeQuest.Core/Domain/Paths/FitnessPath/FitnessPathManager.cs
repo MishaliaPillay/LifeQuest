@@ -56,5 +56,6 @@ namespace LifeQuest.Domain.Paths.FitnessPath
 
             await _fitnessPathRepository.DeleteAsync(path);
         }
+
     }
 }

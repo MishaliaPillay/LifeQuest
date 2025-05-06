@@ -103,6 +103,32 @@ namespace LifeQuest.Domain.Person
             await _personRepository.UpdateAsync(person);
             return person;
         }
+        public async Task<bool> DoesPersonHavePathAsync(long personId)
+        {
+            var person = await _personRepository
+                .GetAllIncluding(p => p.User)
+                .FirstOrDefaultAsync(p => p.UserId == personId);  // Use UserId (long)
+
+            if (person == null)
+                throw new UserFriendlyException("Person not found");
+
+            return person.PathId.HasValue;  // Check if PathId is assigned
+        }
+
+        public async Task<Person> SelectPathAsync(long personId, Guid pathId)
+        {
+            var person = await _personRepository.GetAllIncluding(p => p.User)  // Adjusted to use long for personId
+                .FirstOrDefaultAsync(p => p.UserId == personId);  // Use UserId as long here
+
+            if (person == null)
+                throw new UserFriendlyException("Person not found");
+
+            person.PathId = pathId;  // Assign PathId (Guid)
+            await _personRepository.UpdateAsync(person);  // Update the person entity
+
+            return person;
+        }
+
     }
 
 }

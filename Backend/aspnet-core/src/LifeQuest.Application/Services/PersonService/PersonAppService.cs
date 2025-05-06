@@ -9,6 +9,8 @@ using Abp.UI;
 using AutoMapper;
 using LifeQuest.Domain.Person;
 using LifeQuest.Services.PersonService.Dtos;
+using LifeQuest.Services.PersonService.Dtos.LifeQuest.Services.PersonService.Dtos;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace LifeQuest.Services.PersonService
@@ -35,15 +37,13 @@ namespace LifeQuest.Services.PersonService
         public override async Task<PersonResponseDto> CreateAsync(PersonRequestDto input)
         {
             var person = await _personManager.CreatePersonAsync(
-    input.User.UserName,
-    input.User.EmailAddress,
-    input.User.Name,
-    input.User.Surname,
-    input.User.Password,
-    input.Avatar
-);
-
-
+                input.User.UserName,
+                input.User.EmailAddress,
+                input.User.Name,
+                input.User.Surname,
+                input.User.Password,
+                input.Avatar
+            );
 
             return _mapper.Map<PersonResponseDto>(person);
         }
@@ -86,14 +86,33 @@ namespace LifeQuest.Services.PersonService
                 throw new UserFriendlyException("Person not found");
 
             var updated = await _personManager.UpdatePersonAsync(
-        input.Id,
-        input.Avatar,
-        input.Xp,
-        input.Level
-    );
-
+                input.Id,
+                input.Avatar,
+                input.Xp,
+                input.Level
+            );
 
             return _mapper.Map<PersonResponseDto>(updated);
         }
+
+        // New method to check if a person has a path and select it if not
+        public async Task<PersonResponseDto> SelectPath([FromBody] SelectPathDto input)
+        {
+            // Check if the person already has a path
+            var hasPath = await _personManager.DoesPersonHavePathAsync(input.PersonId);
+
+            if (hasPath)
+            {
+                throw new UserFriendlyException("Person already has a path assigned.");
+            }
+
+            // Call the method from PersonManager to update the person's path
+            var updatedPerson = await _personManager.SelectPathAsync(input.PersonId, input.PathId);
+
+            // Return the updated person as a DTO
+            return _mapper.Map<PersonResponseDto>(updatedPerson);
+        }
+
+
     }
 }
