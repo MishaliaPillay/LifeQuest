@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Abp.Application.Services;
 using Abp.Application.Services.Dto;
+using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.UI;
 using AutoMapper;
@@ -50,16 +51,17 @@ namespace LifeQuest.Services.PersonService
 
         public override async Task<PersonResponseDto> GetAsync(EntityDto<Guid> input)
         {
-            var person = await _personManager.GetPersonWithUserAsync(input.Id);
+            var person = await _repository.GetAsync(input.Id);
             if (person == null)
                 throw new UserFriendlyException("Person not found");
 
+            // Use AutoMapper to map Person to PersonResponseDto with PathId
             return _mapper.Map<PersonResponseDto>(person);
         }
 
         public override async Task<PagedResultDto<PersonResponseDto>> GetAllAsync(PagedAndSortedResultRequestDto input)
         {
-            var query = _personManager.GetAllWithUser(); // IQueryable<Person>
+            var query = _personManager.GetAllWithUser();
             var totalCount = await query.CountAsync();
 
             var persons = await query
@@ -67,6 +69,7 @@ namespace LifeQuest.Services.PersonService
                 .Take(input.MaxResultCount)
                 .ToListAsync();
 
+            // Use AutoMapper to map each Person to PersonResponseDto with PathId
             return new PagedResultDto<PersonResponseDto>(
                 totalCount,
                 _mapper.Map<List<PersonResponseDto>>(persons)
@@ -76,6 +79,7 @@ namespace LifeQuest.Services.PersonService
         public async Task<PersonResponseDto> GetCurrentPersonAsync(long userId)
         {
             var person = await _personManager.GetPersonByUserIdAsync(userId);
+            // Use AutoMapper to map Person to PersonResponseDto with PathId
             return _mapper.Map<PersonResponseDto>(person);
         }
 
@@ -92,13 +96,12 @@ namespace LifeQuest.Services.PersonService
                 input.Level
             );
 
+            // Use AutoMapper to map Person to PersonResponseDto with PathId
             return _mapper.Map<PersonResponseDto>(updated);
         }
 
-        // New method to check if a person has a path and select it if not
         public async Task<PersonResponseDto> SelectPath([FromBody] SelectPathDto input)
         {
-            // Check if the person already has a path
             var hasPath = await _personManager.DoesPersonHavePathAsync(input.PersonId);
 
             if (hasPath)
@@ -106,13 +109,10 @@ namespace LifeQuest.Services.PersonService
                 throw new UserFriendlyException("Person already has a path assigned.");
             }
 
-            // Call the method from PersonManager to update the person's path
             var updatedPerson = await _personManager.SelectPathAsync(input.PersonId, input.PathId);
 
-            // Return the updated person as a DTO
+            // Use AutoMapper to map Person to PersonResponseDto with PathId
             return _mapper.Map<PersonResponseDto>(updatedPerson);
         }
-
-
     }
 }

@@ -46,7 +46,6 @@ namespace LifeQuest.Domain.Person
                 throw new UserFriendlyException($"User creation failed: {errorMessages}");
             }
 
-
             await _userManager.AddToRoleAsync(user, "Default");
 
             var person = new Person
@@ -64,21 +63,21 @@ namespace LifeQuest.Domain.Person
         public async Task<Person?> GetPersonByUserIdAsync(long userId)
         {
             return await _personRepository
-                .GetAllIncluding(p => p.User)
+                .GetAllIncluding(p => p.User) // Remove SelectedPath, we only need User and PathId
                 .FirstOrDefaultAsync(p => p.UserId == userId);
         }
 
         public async Task<Person?> GetPersonWithUserAsync(Guid personId)
         {
             return await _personRepository
-                .GetAllIncluding(p => p.User)
+                .GetAllIncluding(p => p.User) // Remove SelectedPath, we only need User and PathId
                 .FirstOrDefaultAsync(p => p.Id == personId);
         }
 
         public IQueryable<Person> GetAllWithUser()
         {
             return _personRepository
-                .GetAllIncluding(p => p.User);
+                .GetAllIncluding(p => p.User); // We only need User and PathId
         }
 
         public async Task<Person> UpdatePersonAsync(
@@ -103,11 +102,12 @@ namespace LifeQuest.Domain.Person
             await _personRepository.UpdateAsync(person);
             return person;
         }
+
         public async Task<bool> DoesPersonHavePathAsync(long personId)
         {
             var person = await _personRepository
                 .GetAllIncluding(p => p.User)
-                .FirstOrDefaultAsync(p => p.UserId == personId);  // Use UserId (long)
+                .FirstOrDefaultAsync(p => p.UserId == personId);
 
             if (person == null)
                 throw new UserFriendlyException("Person not found");
@@ -117,18 +117,16 @@ namespace LifeQuest.Domain.Person
 
         public async Task<Person> SelectPathAsync(long personId, Guid pathId)
         {
-            var person = await _personRepository.GetAllIncluding(p => p.User)  // Adjusted to use long for personId
-                .FirstOrDefaultAsync(p => p.UserId == personId);  // Use UserId as long here
+            var person = await _personRepository.GetAllIncluding(p => p.User)
+                .FirstOrDefaultAsync(p => p.UserId == personId);
 
             if (person == null)
                 throw new UserFriendlyException("Person not found");
 
-            person.PathId = pathId;  // Assign PathId (Guid)
-            await _personRepository.UpdateAsync(person);  // Update the person entity
+            person.PathId = pathId;  // Assign only PathId
+            await _personRepository.UpdateAsync(person);
 
             return person;
         }
-
     }
-
 }
