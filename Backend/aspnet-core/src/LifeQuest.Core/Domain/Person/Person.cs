@@ -18,17 +18,17 @@ namespace LifeQuest.Domain.Person
         public virtual User User { get; set; }
 
         public int Xp { get; set; }
-
         public int Level { get; set; }
-
         public string? Avatar { get; set; }
 
-        public virtual ICollection<Path> Paths { get; set; } = new List<Path>();
+        // Selected Path
+        public Guid? PathId { get; set; }
 
-        // Add specific relationship for FitnessPath
-        public Guid? FitnessPathId { get; set; } // Nullable, in case they haven't chosen a path yet
-        [ForeignKey(nameof(FitnessPathId))]
-        public virtual FitnessPath FitnessPath { get; set; }
+        [ForeignKey(nameof(PathId))]
+        public virtual Path? SelectedPath { get; set; }
+
+        // Optional: list of paths followed in the past or available to choose from
+        public virtual ICollection<Path> Paths { get; set; } = new List<Path>();
     }
 
 }

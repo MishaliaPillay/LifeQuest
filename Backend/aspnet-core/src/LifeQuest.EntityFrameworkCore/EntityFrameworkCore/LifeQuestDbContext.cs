@@ -49,7 +49,7 @@ public class LifeQuestDbContext : AbpZeroDbContext<Tenant, Role, User, LifeQuest
             }
         }
 
-        // Configure many-to-many via join entity
+        // Configure many-to-many via join entity for ActivityActivityType
         modelBuilder.Entity<ActivityActivityType>()
             .HasKey(x => new { x.ActivityId, x.ActivityTypeId });
 
@@ -62,6 +62,21 @@ public class LifeQuestDbContext : AbpZeroDbContext<Tenant, Role, User, LifeQuest
             .HasOne(at => at.ActivityType)
             .WithMany()
             .HasForeignKey(at => at.ActivityTypeId);
+
+        // Configure Person's relationship to Path
+        modelBuilder.Entity<Person>()
+            .HasOne(p => p.SelectedPath)  // Person has one selected path
+            .WithMany()  // Path does not need a back reference
+            .HasForeignKey(p => p.PathId) // Foreign key in Person to Path
+            .OnDelete(DeleteBehavior.SetNull); // Prevent cascading deletes
+
+        // Configure the Path subclasses if needed
+        modelBuilder.Entity<FitnessPath>()
+            .HasBaseType<Path>(); // Optional if using inheritance for specific path types
+
+        //modelBuilder.Entity<HealthPath>()
+        //    .HasBaseType<Path>(); // Optional if using inheritance for specific path types
     }
+
 }
 
