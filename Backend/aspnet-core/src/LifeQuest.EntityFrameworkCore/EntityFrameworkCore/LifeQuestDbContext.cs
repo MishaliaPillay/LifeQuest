@@ -12,6 +12,7 @@ using LifeQuest.Domain.Fitness.Activity;
 using LifeQuest.Domain.Weight;
 using LifeQuest.Domain.Steps;
 using LifeQuest.Domain.Paths.FitnessPath;
+using LifeQuest.Domain.Paths;
 
 namespace LifeQuest.EntityFrameworkCore;
 
@@ -23,7 +24,7 @@ public class LifeQuestDbContext : AbpZeroDbContext<Tenant, Role, User, LifeQuest
     public DbSet<ActivityActivityType> ActivityActivityTypes { get; set; } // Add join table
     public DbSet<WeightEntry> WeightEntries { get; set; }
     public DbSet<StepEntry> StepEntries { get; set; }
-
+    public DbSet<Path> Paths { get; set; }
     public DbSet<FitnessPath> FitnessPaths { get; set; }
 
 
@@ -48,7 +49,7 @@ public class LifeQuestDbContext : AbpZeroDbContext<Tenant, Role, User, LifeQuest
             }
         }
 
-        // Configure many-to-many via join entity
+        // Configure many-to-many via join entity for ActivityActivityType
         modelBuilder.Entity<ActivityActivityType>()
             .HasKey(x => new { x.ActivityId, x.ActivityTypeId });
 
@@ -61,6 +62,21 @@ public class LifeQuestDbContext : AbpZeroDbContext<Tenant, Role, User, LifeQuest
             .HasOne(at => at.ActivityType)
             .WithMany()
             .HasForeignKey(at => at.ActivityTypeId);
+
+        // Configure Person's relationship to Path
+        modelBuilder.Entity<Person>()
+            .HasOne(p => p.SelectedPath)  // Person has one selected path
+            .WithMany()  // Path does not need a back reference
+            .HasForeignKey(p => p.PathId) // Foreign key in Person to Path
+            .OnDelete(DeleteBehavior.SetNull); // Prevent cascading deletes
+
+        // Configure the Path subclasses if needed
+        modelBuilder.Entity<FitnessPath>()
+            .HasBaseType<Path>(); // Optional if using inheritance for specific path types
+
+        //modelBuilder.Entity<HealthPath>()
+        //    .HasBaseType<Path>(); // Optional if using inheritance for specific path types
     }
+
 }
 

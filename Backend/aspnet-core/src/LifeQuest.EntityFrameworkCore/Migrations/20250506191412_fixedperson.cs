@@ -5,7 +5,7 @@
 namespace LifeQuest.Migrations
 {
     /// <inheritdoc />
-    public partial class weightEntryWorking : Migration
+    public partial class fixedperson : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

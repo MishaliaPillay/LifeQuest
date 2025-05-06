@@ -9,6 +9,7 @@ using LifeQuest.Domain.Steps;
 using LifeQuest.Domain.Weight;
 using Microsoft.Extensions.Logging;
 using Abp.Domain.Repositories;
+using LifeQuest.Domain.Person;
 
 namespace LifeQuest.Services.FitnessService.FitnessPath
 {
@@ -19,19 +20,22 @@ namespace LifeQuest.Services.FitnessService.FitnessPath
         private readonly IRepository<StepEntry, Guid> _stepEntryRepo;
         private readonly IRepository<WeightEntry, Guid> _weightEntryRepo;
         private readonly IRepository<Domain.Fitness.Activity.Activity, Guid> _activityRepo;
-
+        private readonly IRepository<Person, Guid> _personRepo;
         public FitnessPathAppService(
             FitnessPathManager fitnessPathManager,
             ILogger<FitnessPathAppService> logger,
             IRepository<StepEntry, Guid> stepEntryRepo,
             IRepository<WeightEntry, Guid> weightEntryRepo,
-            IRepository<Domain.Fitness.Activity.Activity, Guid> activityRepo)
+            IRepository<Domain.Fitness.Activity.Activity, Guid> activityRepo,
+
+          IRepository<Person, Guid> personRepo)
         {
             _fitnessPathManager = fitnessPathManager;
             _logger = logger;
             _stepEntryRepo = stepEntryRepo;
             _weightEntryRepo = weightEntryRepo;
             _activityRepo = activityRepo;
+            _personRepo = personRepo;
         }
 
 
@@ -42,7 +46,13 @@ namespace LifeQuest.Services.FitnessService.FitnessPath
                 _logger.LogInformation("Creating a new FitnessPath with title: {Title}", input.Title);
                 var path = ObjectMapper.Map<Domain.Paths.FitnessPath.FitnessPath>(input);
                 await _fitnessPathManager.CreateAsync(path);
-                _logger.LogInformation("Successfully created FitnessPath with ID: {Id}", path.Id);
+
+                // Link this path to the person (using PathId, not SelectedPathId)
+                var person = await _personRepo.GetAsync(input.PersonId);
+                person.PathId = path.Id;  // Correct property to link the selected path
+                await _personRepo.UpdateAsync(person);
+
+                _logger.LogInformation("Successfully created FitnessPath and linked it to Person ID: {PersonId}", input.PersonId);
                 return ObjectMapper.Map<FitnessPathDto>(path);
             }
             catch (Exception ex)
@@ -51,6 +61,7 @@ namespace LifeQuest.Services.FitnessService.FitnessPath
                 throw new UserFriendlyException("Could not create FitnessPath");
             }
         }
+
 
         public async Task<FitnessPathDto> GetAsync(Guid id)
         {
