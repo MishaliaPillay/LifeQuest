@@ -5,6 +5,7 @@ import { ConfigProvider, App as AntdApp } from "antd";  // ✅ ADD App here
 import { AuthProvider } from "@/providers/auth-provider";
 import { UserProvider } from "@/providers/user-provider";
 import { StepsProvider } from "@/providers/fitnesspath/step-provider";
+import { WeightProvider } from "@/providers/fitnesspath/weight-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -41,10 +42,10 @@ export default function RootLayout({
         <html lang="en">
           <AuthProvider>
             <UserProvider>
-              <StepsProvider>
+              <StepsProvider><WeightProvider>
                 <body className={`${geistSans.variable} ${geistMono.variable}`}>
                   {children}
-                </body>
+                </body></WeightProvider>
               </StepsProvider>
             </UserProvider>
           </AuthProvider>
