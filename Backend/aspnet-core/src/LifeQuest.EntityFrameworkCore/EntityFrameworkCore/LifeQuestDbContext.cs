@@ -12,6 +12,7 @@ using LifeQuest.Domain.Fitness.Activity;
 using LifeQuest.Domain.Weight;
 using LifeQuest.Domain.Steps;
 using LifeQuest.Domain.Paths.FitnessPath;
+using LifeQuest.Domain.Paths;
 
 namespace LifeQuest.EntityFrameworkCore;
 
@@ -23,7 +24,7 @@ public class LifeQuestDbContext : AbpZeroDbContext<Tenant, Role, User, LifeQuest
     public DbSet<ActivityActivityType> ActivityActivityTypes { get; set; } // Add join table
     public DbSet<WeightEntry> WeightEntries { get; set; }
     public DbSet<StepEntry> StepEntries { get; set; }
-
+    public DbSet<Path> Paths { get; set; }
     public DbSet<FitnessPath> FitnessPaths { get; set; }
 
 

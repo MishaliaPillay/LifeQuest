@@ -1660,7 +1660,7 @@ namespace LifeQuest.Migrations
                     b.ToTable("ActivityTypes");
                 });
 
-            modelBuilder.Entity("LifeQuest.Domain.Paths.FitnessPath.FitnessPath", b =>
+            modelBuilder.Entity("LifeQuest.Domain.Paths.Path", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1680,6 +1680,11 @@ namespace LifeQuest.Migrations
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasMaxLength(13)
+                        .HasColumnType("character varying(13)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
@@ -1701,7 +1706,11 @@ namespace LifeQuest.Migrations
 
                     b.HasIndex("PersonId");
 
-                    b.ToTable("FitnessPaths");
+                    b.ToTable("Paths");
+
+                    b.HasDiscriminator().HasValue("Path");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("LifeQuest.Domain.Person.Person", b =>
@@ -1725,6 +1734,9 @@ namespace LifeQuest.Migrations
                     b.Property<DateTime?>("DeletionTime")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid?>("FitnessPathId")
+                        .HasColumnType("uuid");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
@@ -1744,6 +1756,8 @@ namespace LifeQuest.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("FitnessPathId");
 
                     b.HasIndex("UserId");
 
@@ -1928,6 +1942,13 @@ namespace LifeQuest.Migrations
                     b.ToTable("AbpPermissions");
 
                     b.HasDiscriminator().HasValue("UserPermissionSetting");
+                });
+
+            modelBuilder.Entity("LifeQuest.Domain.Paths.FitnessPath.FitnessPath", b =>
+                {
+                    b.HasBaseType("LifeQuest.Domain.Paths.Path");
+
+                    b.HasDiscriminator().HasValue("FitnessPath");
                 });
 
             modelBuilder.Entity("Abp.Authorization.Roles.RoleClaim", b =>
@@ -2125,10 +2146,10 @@ namespace LifeQuest.Migrations
                     b.Navigation("ActivityType");
                 });
 
-            modelBuilder.Entity("LifeQuest.Domain.Paths.FitnessPath.FitnessPath", b =>
+            modelBuilder.Entity("LifeQuest.Domain.Paths.Path", b =>
                 {
                     b.HasOne("LifeQuest.Domain.Person.Person", "Person")
-                        .WithMany()
+                        .WithMany("Paths")
                         .HasForeignKey("PersonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -2138,11 +2159,17 @@ namespace LifeQuest.Migrations
 
             modelBuilder.Entity("LifeQuest.Domain.Person.Person", b =>
                 {
+                    b.HasOne("LifeQuest.Domain.Paths.FitnessPath.FitnessPath", "FitnessPath")
+                        .WithMany()
+                        .HasForeignKey("FitnessPathId");
+
                     b.HasOne("LifeQuest.Authorization.Users.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("FitnessPath");
 
                     b.Navigation("User");
                 });
@@ -2283,6 +2310,11 @@ namespace LifeQuest.Migrations
             modelBuilder.Entity("LifeQuest.Domain.Fitness.Activity.ActivityType", b =>
                 {
                     b.Navigation("Activities");
+                });
+
+            modelBuilder.Entity("LifeQuest.Domain.Person.Person", b =>
+                {
+                    b.Navigation("Paths");
                 });
 
             modelBuilder.Entity("LifeQuest.Domain.Paths.FitnessPath.FitnessPath", b =>
