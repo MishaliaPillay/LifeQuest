@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Abp.Application.Services.Dto;
 using LifeQuest.Domain.Fitness.Activity;
 
@@ -18,5 +15,34 @@ namespace LifeQuest.Services.FitnessService.Activity.Dtos
         public bool IsComplete { get; set; }
         public ActivityRating Rating { get; set; }
         public string Description { get; set; }
+        public Guid PersonId { get; set; }  // Ensure PersonId is included
+
+        // Constructor to match the required parameters
+        public ActivityResponseDto(
+            Guid id,
+            int calories,
+            int duration,
+            int xp,
+            int level,
+            List<ActivityTypeDto> activities,
+            bool isComplete,
+            ActivityRating rating,
+            string description,
+            Guid personId) : base(id)
+        {
+            Calories = calories;
+            Duration = duration;
+            Xp = xp;
+            Level = level;
+            Activities = activities;
+            IsComplete = isComplete;
+            Rating = rating;
+            Description = description;
+            PersonId = personId;
+        }
+
+        // Default constructor (in case you don't want to use the all-args constructor)
+        public ActivityResponseDto() { }
     }
+
 }

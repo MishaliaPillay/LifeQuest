@@ -34,7 +34,8 @@ namespace LifeQuest.Services.FitnessService.Activity
                 selectedActivityTypes,
                 input.IsComplete,
                 input.Rating,
-                input.Description
+                input.Description,
+                input.PersonId
             );
 
             return new ActivityResponseDto
@@ -47,6 +48,7 @@ namespace LifeQuest.Services.FitnessService.Activity
                 IsComplete = activity.IsComplete,
                 Rating = activity.Rating,
                 Description = activity.Description,
+                PersonId = activity.PersonId,
                 Activities = activity.ActivityActivityTypes.Select(aat => new ActivityTypeDto
                 {
                     Id = aat.ActivityType.Id,
@@ -68,7 +70,7 @@ namespace LifeQuest.Services.FitnessService.Activity
 
             return activities.Select(a => new ActivityResponseDto
             {
-                Id = a.Id, // ✅ Added
+                Id = a.Id,
                 Calories = a.Calories,
                 Duration = a.Duration,
                 Xp = a.Xp,
@@ -76,6 +78,7 @@ namespace LifeQuest.Services.FitnessService.Activity
                 IsComplete = a.IsComplete,
                 Rating = a.Rating,
                 Description = a.Description,
+                PersonId = a.PersonId, // ✅ Include PersonId here
                 Activities = a.ActivityActivityTypes.Select(aat => new ActivityTypeDto
                 {
                     Id = aat.ActivityType.Id,
@@ -85,6 +88,33 @@ namespace LifeQuest.Services.FitnessService.Activity
                 }).ToList()
             }).ToList();
         }
+
+        public async Task<List<ActivityResponseDto>> GetByPersonIdAsync(Guid personId)
+        {
+            // Get the activities for the specified personId
+            var activities = await _activityManager.GetByPersonIdAsync(personId);
+
+            return activities.Select(a => new ActivityResponseDto
+            {
+                Id = a.Id,
+                Calories = a.Calories,
+                Duration = a.Duration,
+                Xp = a.Xp,
+                Level = a.Level,
+                IsComplete = a.IsComplete,
+                Rating = a.Rating,
+                Description = a.Description,
+                PersonId = a.PersonId, // Include PersonId here
+                Activities = a.ActivityActivityTypes.Select(aat => new ActivityTypeDto
+                {
+                    Id = aat.ActivityType.Id,
+                    Category = aat.ActivityType.Category,
+                    IntensityLevel = aat.ActivityType.IntensityLevel,
+                    Description = aat.ActivityType.Description
+                }).ToList()
+            }).ToList();
+        }
+
 
         public async Task<ActivityResponseDto> UpdateActivityAsync(UpdateActivityDto input)
         {
@@ -115,6 +145,7 @@ namespace LifeQuest.Services.FitnessService.Activity
                 IsComplete = updated.IsComplete,
                 Rating = updated.Rating,
                 Description = updated.Description,
+                PersonId = updated.PersonId,
                 Activities = updated.ActivityActivityTypes.Select(aat => new ActivityTypeDto
                 {
                     Id = aat.ActivityType.Id,

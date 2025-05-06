@@ -119,6 +119,37 @@ namespace LifeQuest.Services.FitnessService.FitnessPath
                 throw new UserFriendlyException("Could not update FitnessPath");
             }
         }
+        public async Task<FitnessPathDto> GetByPersonIdAsync(Guid personId)
+        {
+            _logger.LogInformation("Fetching FitnessPath for Person ID: {PersonId}", personId);
+
+            try
+            {
+                var person = await _personRepo.GetAsync(personId);
+                if (person.PathId == null)
+                {
+                    throw new UserFriendlyException("This person does not have a FitnessPath assigned.");
+                }
+
+                var path = await _fitnessPathManager.GetWithDetailsAsync(person.PathId.Value);
+                if (path == null)
+                {
+                    throw new UserFriendlyException("No FitnessPath found for the provided PathId.");
+                }
+
+                var dto = ObjectMapper.Map<FitnessPathDto>(path);
+                dto.PersonId = person.Id; // ensure PersonId is filled in the DTO
+
+                return dto;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching FitnessPath for Person ID: {PersonId}", personId);
+                throw new UserFriendlyException("Could not retrieve FitnessPath for the specified person.");
+            }
+        }
+
+
 
 
         public async Task DeleteAsync(Guid id)
