@@ -471,7 +471,7 @@ const WeightGraphPage: React.FC = () => {
                     }}
                   >
                     <Statistic
-                      title={<Text strong style={{ fontSize: 16 }}>Today's Weight</Text>}
+                      title={<Text strong style={{ fontSize: 16 }}>Today&apos;s Weight</Text>}
                       value={stats.todayWeight}
                       suffix="kg"
                       precision={1}
@@ -533,7 +533,7 @@ const WeightGraphPage: React.FC = () => {
                   marginBottom: 24
                 }}
               >
-                <Title level={4} style={{ marginBottom: 16 }}>Record Today's Weight</Title>
+                <Title level={4} style={{ marginBottom: 16 }}>Record Today&apos;s Weight</Title>
                 <div style={{ 
                   backgroundColor: '#f0f7ff', 
                   padding: 16, 
