@@ -66,7 +66,7 @@ const LoginComponent: React.FC = ({
   const onFinishLogin = async (values: ISignInRequest) => {
     onBeforeSubmit?.();
     setLoading(true);
-    console.log(values);
+  
     try {
       const loginResult = await signIn(values);
 

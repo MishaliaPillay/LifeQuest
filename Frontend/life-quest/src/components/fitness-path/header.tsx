@@ -31,9 +31,7 @@ const Header: React.FC<HeaderProps> = ({
   const router = useRouter();
 
   const signOutUser = () => {
-    // Handle sign out logic here
-    console.log('User signed out');
-    // Redirect to home page or login page
+  
     router.push('/');
   };
 

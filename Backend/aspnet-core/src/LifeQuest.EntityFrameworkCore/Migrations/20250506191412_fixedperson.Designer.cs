@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LifeQuest.Migrations
 {
     [DbContext(typeof(LifeQuestDbContext))]
-    [Migration("20250501195538_activityFixed")]
-    partial class activityFixed
+    [Migration("20250506191412_fixedperson")]
+    partial class fixedperson
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1598,6 +1598,9 @@ namespace LifeQuest.Migrations
                     b.Property<int>("Duration")
                         .HasColumnType("integer");
 
+                    b.Property<Guid?>("FitnessPathId")
+                        .HasColumnType("uuid");
+
                     b.Property<bool>("IsComplete")
                         .HasColumnType("boolean");
 
@@ -1611,6 +1614,8 @@ namespace LifeQuest.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("FitnessPathId");
 
                     b.ToTable("Activities");
                 });
@@ -1658,6 +1663,59 @@ namespace LifeQuest.Migrations
                     b.ToTable("ActivityTypes");
                 });
 
+            modelBuilder.Entity("LifeQuest.Domain.Paths.Path", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("CreatorUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("DeleterUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasMaxLength(13)
+                        .HasColumnType("character varying(13)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("LastModifierUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<Guid>("PersonId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PersonId");
+
+                    b.ToTable("Paths");
+
+                    b.HasDiscriminator().HasValue("Path");
+
+                    b.UseTphMappingStrategy();
+                });
+
             modelBuilder.Entity("LifeQuest.Domain.Person.Person", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1691,6 +1749,9 @@ namespace LifeQuest.Migrations
                     b.Property<int>("Level")
                         .HasColumnType("integer");
 
+                    b.Property<Guid?>("PathId")
+                        .HasColumnType("uuid");
+
                     b.Property<long>("UserId")
                         .HasColumnType("bigint");
 
@@ -1699,9 +1760,74 @@ namespace LifeQuest.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("PathId");
+
                     b.HasIndex("UserId");
 
                     b.ToTable("Persons");
+                });
+
+            modelBuilder.Entity("LifeQuest.Domain.Steps.StepEntry", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("CaloriesBurned")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("FitnessPathId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("PersonId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Steps")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FitnessPathId");
+
+                    b.HasIndex("PersonId");
+
+                    b.ToTable("StepEntries");
+                });
+
+            modelBuilder.Entity("LifeQuest.Domain.Weight.WeightEntry", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("FitnessPathId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("PersonId")
+                        .HasColumnType("uuid");
+
+                    b.Property<float>("Weight")
+                        .HasColumnType("real");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FitnessPathId");
+
+                    b.HasIndex("PersonId");
+
+                    b.ToTable("WeightEntries");
                 });
 
             modelBuilder.Entity("LifeQuest.MultiTenancy.Tenant", b =>
@@ -1819,6 +1945,13 @@ namespace LifeQuest.Migrations
                     b.ToTable("AbpPermissions");
 
                     b.HasDiscriminator().HasValue("UserPermissionSetting");
+                });
+
+            modelBuilder.Entity("LifeQuest.Domain.Paths.FitnessPath.FitnessPath", b =>
+                {
+                    b.HasBaseType("LifeQuest.Domain.Paths.Path");
+
+                    b.HasDiscriminator().HasValue("FitnessPath");
                 });
 
             modelBuilder.Entity("Abp.Authorization.Roles.RoleClaim", b =>
@@ -1986,6 +2119,13 @@ namespace LifeQuest.Migrations
                     b.Navigation("LastModifierUser");
                 });
 
+            modelBuilder.Entity("LifeQuest.Domain.Fitness.Activity.Activity", b =>
+                {
+                    b.HasOne("LifeQuest.Domain.Paths.FitnessPath.FitnessPath", null)
+                        .WithMany("Activities")
+                        .HasForeignKey("FitnessPathId");
+                });
+
             modelBuilder.Entity("LifeQuest.Domain.Fitness.Activity.ActivityActivityType", b =>
                 {
                     b.HasOne("LifeQuest.Domain.Fitness.Activity.Activity", "Activity")
@@ -2009,15 +2149,63 @@ namespace LifeQuest.Migrations
                     b.Navigation("ActivityType");
                 });
 
+            modelBuilder.Entity("LifeQuest.Domain.Paths.Path", b =>
+                {
+                    b.HasOne("LifeQuest.Domain.Person.Person", "Person")
+                        .WithMany("Paths")
+                        .HasForeignKey("PersonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Person");
+                });
+
             modelBuilder.Entity("LifeQuest.Domain.Person.Person", b =>
                 {
+                    b.HasOne("LifeQuest.Domain.Paths.Path", "SelectedPath")
+                        .WithMany()
+                        .HasForeignKey("PathId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("LifeQuest.Authorization.Users.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("SelectedPath");
+
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("LifeQuest.Domain.Steps.StepEntry", b =>
+                {
+                    b.HasOne("LifeQuest.Domain.Paths.FitnessPath.FitnessPath", null)
+                        .WithMany("StepEntries")
+                        .HasForeignKey("FitnessPathId");
+
+                    b.HasOne("LifeQuest.Domain.Person.Person", "Person")
+                        .WithMany()
+                        .HasForeignKey("PersonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Person");
+                });
+
+            modelBuilder.Entity("LifeQuest.Domain.Weight.WeightEntry", b =>
+                {
+                    b.HasOne("LifeQuest.Domain.Paths.FitnessPath.FitnessPath", null)
+                        .WithMany("WeightEntries")
+                        .HasForeignKey("FitnessPathId");
+
+                    b.HasOne("LifeQuest.Domain.Person.Person", "Person")
+                        .WithMany()
+                        .HasForeignKey("PersonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Person");
                 });
 
             modelBuilder.Entity("LifeQuest.MultiTenancy.Tenant", b =>
@@ -2126,6 +2314,20 @@ namespace LifeQuest.Migrations
             modelBuilder.Entity("LifeQuest.Domain.Fitness.Activity.ActivityType", b =>
                 {
                     b.Navigation("Activities");
+                });
+
+            modelBuilder.Entity("LifeQuest.Domain.Person.Person", b =>
+                {
+                    b.Navigation("Paths");
+                });
+
+            modelBuilder.Entity("LifeQuest.Domain.Paths.FitnessPath.FitnessPath", b =>
+                {
+                    b.Navigation("Activities");
+
+                    b.Navigation("StepEntries");
+
+                    b.Navigation("WeightEntries");
                 });
 #pragma warning restore 612, 618
         }

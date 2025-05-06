@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Abp.Authorization.Users;
 using Abp.Domain.Entities.Auditing;
 using LifeQuest.Authorization.Users;
+using LifeQuest.Domain.Paths;
+using LifeQuest.Domain.Paths.FitnessPath;
 
 namespace LifeQuest.Domain.Person
 {
@@ -25,9 +23,12 @@ namespace LifeQuest.Domain.Person
 
         public string? Avatar { get; set; }
 
-        // Adjust the type `Path` to your actual Path entity
-        // public virtual ICollection<Paths> Paths { get; set; } = new List<Paths>();
+        public virtual ICollection<Path> Paths { get; set; } = new List<Path>();
 
-
+        // Reference to a specific path (either Fitness or Health)
+        public Guid? PathId { get; set; }
+        [ForeignKey(nameof(PathId))]
+        public virtual Path SelectedPath { get; set; }
     }
+
 }

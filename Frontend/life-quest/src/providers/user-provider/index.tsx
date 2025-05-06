@@ -39,7 +39,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((response) => {
-        console.log(response);
+       
         if (response?.data?.result?.user) {
           dispatch(getCurrentUserSuccess(response.data.result.user));
           return response.data.result.user;

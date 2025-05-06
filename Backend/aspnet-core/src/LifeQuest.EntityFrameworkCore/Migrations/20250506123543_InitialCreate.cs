@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LifeQuest.Migrations
 {
     /// <inheritdoc />
-    public partial class initial : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -450,6 +450,20 @@ namespace LifeQuest.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ActivityTypes",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Category = table.Column<string>(type: "text", nullable: true),
+                    IntensityLevel = table.Column<int>(type: "integer", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ActivityTypes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AbpDynamicEntityProperties",
                 columns: table => new
                 {
@@ -745,6 +759,34 @@ namespace LifeQuest.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Persons",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<long>(type: "bigint", nullable: false),
+                    Xp = table.Column<int>(type: "integer", nullable: false),
+                    Level = table.Column<int>(type: "integer", nullable: false),
+                    Avatar = table.Column<string>(type: "text", nullable: true),
+                    CreationTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    CreatorUserId = table.Column<long>(type: "bigint", nullable: true),
+                    LastModificationTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    LastModifierUserId = table.Column<long>(type: "bigint", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    DeleterUserId = table.Column<long>(type: "bigint", nullable: true),
+                    DeletionTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Persons", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Persons_AbpUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AbpUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AbpWebhookSendAttempts",
                 columns: table => new
                 {
@@ -870,6 +912,144 @@ namespace LifeQuest.Migrations
                         principalTable: "AbpRoles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Paths",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Title = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    PersonId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Discriminator = table.Column<string>(type: "character varying(13)", maxLength: 13, nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    CreatorUserId = table.Column<long>(type: "bigint", nullable: true),
+                    LastModificationTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    LastModifierUserId = table.Column<long>(type: "bigint", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    DeleterUserId = table.Column<long>(type: "bigint", nullable: true),
+                    DeletionTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Paths", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Paths_Persons_PersonId",
+                        column: x => x.PersonId,
+                        principalTable: "Persons",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Activities",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Calories = table.Column<int>(type: "integer", nullable: false),
+                    Duration = table.Column<int>(type: "integer", nullable: false),
+                    Xp = table.Column<int>(type: "integer", nullable: false),
+                    Level = table.Column<int>(type: "integer", nullable: false),
+                    IsComplete = table.Column<bool>(type: "boolean", nullable: false),
+                    Rating = table.Column<int>(type: "integer", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    FitnessPathId = table.Column<Guid>(type: "uuid", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Activities", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Activities_Paths_FitnessPathId",
+                        column: x => x.FitnessPathId,
+                        principalTable: "Paths",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "StepEntries",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    PersonId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Steps = table.Column<int>(type: "integer", nullable: false),
+                    Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Note = table.Column<string>(type: "text", nullable: true),
+                    CaloriesBurned = table.Column<int>(type: "integer", nullable: false),
+                    FitnessPathId = table.Column<Guid>(type: "uuid", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StepEntries", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_StepEntries_Paths_FitnessPathId",
+                        column: x => x.FitnessPathId,
+                        principalTable: "Paths",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_StepEntries_Persons_PersonId",
+                        column: x => x.PersonId,
+                        principalTable: "Persons",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "WeightEntries",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    PersonId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Weight = table.Column<float>(type: "real", nullable: false),
+                    Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Note = table.Column<string>(type: "text", nullable: true),
+                    FitnessPathId = table.Column<Guid>(type: "uuid", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WeightEntries", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_WeightEntries_Paths_FitnessPathId",
+                        column: x => x.FitnessPathId,
+                        principalTable: "Paths",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_WeightEntries_Persons_PersonId",
+                        column: x => x.PersonId,
+                        principalTable: "Persons",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ActivityActivityTypes",
+                columns: table => new
+                {
+                    ActivityId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ActivityTypeId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ActivityTypeId1 = table.Column<Guid>(type: "uuid", nullable: true),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ActivityActivityTypes", x => new { x.ActivityId, x.ActivityTypeId });
+                    table.ForeignKey(
+                        name: "FK_ActivityActivityTypes_Activities_ActivityId",
+                        column: x => x.ActivityId,
+                        principalTable: "Activities",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ActivityActivityTypes_ActivityTypes_ActivityTypeId",
+                        column: x => x.ActivityTypeId,
+                        principalTable: "ActivityTypes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ActivityActivityTypes_ActivityTypes_ActivityTypeId1",
+                        column: x => x.ActivityTypeId1,
+                        principalTable: "ActivityTypes",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -1220,6 +1400,51 @@ namespace LifeQuest.Migrations
                 name: "IX_AbpWebhookSendAttempts_WebhookEventId",
                 table: "AbpWebhookSendAttempts",
                 column: "WebhookEventId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Activities_FitnessPathId",
+                table: "Activities",
+                column: "FitnessPathId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ActivityActivityTypes_ActivityTypeId",
+                table: "ActivityActivityTypes",
+                column: "ActivityTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ActivityActivityTypes_ActivityTypeId1",
+                table: "ActivityActivityTypes",
+                column: "ActivityTypeId1");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Paths_PersonId",
+                table: "Paths",
+                column: "PersonId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Persons_UserId",
+                table: "Persons",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StepEntries_FitnessPathId",
+                table: "StepEntries",
+                column: "FitnessPathId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StepEntries_PersonId",
+                table: "StepEntries",
+                column: "PersonId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WeightEntries_FitnessPathId",
+                table: "WeightEntries",
+                column: "FitnessPathId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WeightEntries_PersonId",
+                table: "WeightEntries",
+                column: "PersonId");
         }
 
         /// <inheritdoc />
@@ -1307,6 +1532,15 @@ namespace LifeQuest.Migrations
                 name: "AbpWebhookSubscriptions");
 
             migrationBuilder.DropTable(
+                name: "ActivityActivityTypes");
+
+            migrationBuilder.DropTable(
+                name: "StepEntries");
+
+            migrationBuilder.DropTable(
+                name: "WeightEntries");
+
+            migrationBuilder.DropTable(
                 name: "AbpDynamicEntityProperties");
 
             migrationBuilder.DropTable(
@@ -1322,10 +1556,22 @@ namespace LifeQuest.Migrations
                 name: "AbpWebhookEvents");
 
             migrationBuilder.DropTable(
+                name: "Activities");
+
+            migrationBuilder.DropTable(
+                name: "ActivityTypes");
+
+            migrationBuilder.DropTable(
                 name: "AbpDynamicProperties");
 
             migrationBuilder.DropTable(
                 name: "AbpEntityChangeSets");
+
+            migrationBuilder.DropTable(
+                name: "Paths");
+
+            migrationBuilder.DropTable(
+                name: "Persons");
 
             migrationBuilder.DropTable(
                 name: "AbpUsers");
