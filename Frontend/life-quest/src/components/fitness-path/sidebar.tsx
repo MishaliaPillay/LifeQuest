@@ -60,7 +60,7 @@ const menuItems: MenuProps['items'] = [
     icon: <LogoutOutlined />,
     label: 'Logout',
     onClick: () => {
-      console.log('Logout clicked');
+  
     },
   },
 ];
@@ -102,14 +102,16 @@ const Sidebar: React.FC<SidebarProps> = ({
             zIndex: 101,
           }}
         />
-        <Drawer
-          placement="left"
-          closable
-          onClose={() => setDrawerOpen(false)}
-          open={drawerOpen}
-          width={200}
-          bodyStyle={{ padding: 0 }}
-        >
+      <Drawer
+  placement="left"
+  closable
+  onClose={() => setDrawerOpen(false)}
+  open={drawerOpen}
+  width={200}
+  styles={{
+    body: { padding: 0 },
+  }}
+>
           <div
             style={{
               display: 'flex',

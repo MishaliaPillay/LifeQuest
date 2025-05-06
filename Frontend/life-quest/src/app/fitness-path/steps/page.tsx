@@ -4,11 +4,12 @@ import React, { useState, useEffect, useMemo } from "react";
 import { Input, Button, Card, Spin, message, Modal, InputNumber, Statistic, Row, Col, Progress, Typography } from "antd";
 import { 
   LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, 
-  ResponsiveContainer, AreaChart, Area, BarChart, Bar, Legend
+  ResponsiveContainer, AreaChart, Area, BarChart, Bar, Legend,
+  TooltipProps
 } from "recharts";
 import { 
   PlusOutlined, ReloadOutlined, TrophyOutlined,
-  FireOutlined, CalendarOutlined, ArrowUpOutlined, ArrowDownOutlined
+  FireOutlined, CalendarOutlined, ArrowUpOutlined
 } from '@ant-design/icons';
 import { useStepsActions, useStepsState } from "../../../providers/fitnesspath/step-provider/index";
 import { useAuthState, useAuthActions } from "../../../providers/auth-provider";
@@ -54,7 +55,7 @@ const StepsGraphPage: React.FC = () => {
                 // Handle data from response
                 if (response && response) {
                   const personData = response;
-                  console.log("Person data:", personData);
+                
                   
                   if (personData.id) {
                     // Use the person ID from the returned data
@@ -102,6 +103,7 @@ const StepsGraphPage: React.FC = () => {
       await getSteps(id);
       message.success("Steps loaded!");
     } catch (error) {
+        console.error(error)
       message.error("Failed to load steps");
     }
     setLoading(false);
@@ -137,7 +139,8 @@ const StepsGraphPage: React.FC = () => {
         message.success("Today's step entry created!");
       }
       await getSteps(personId); // refresh graph
-    } catch (error) {
+    } catch (error) {  
+        console.error(error)
       message.error("Failed to add/update today's steps");
     }
 
@@ -207,19 +210,24 @@ const StepsGraphPage: React.FC = () => {
   }, [steps]);
 
   // Custom tooltip style
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  const CustomTooltip: React.FC<TooltipProps<number, string>> = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       return (
-        <div className="custom-tooltip" style={{ 
-          backgroundColor: '#fff', 
-          padding: '10px', 
-          border: '1px solid #ccc',
-          borderRadius: '8px',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
-        }}>
+        <div
+          className="custom-tooltip"
+          style={{
+            backgroundColor: '#fff',
+            padding: '10px',
+            border: '1px solid #ccc',
+            borderRadius: '8px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+          }}
+        >
           <p className="label" style={{ margin: 0, fontWeight: 'bold' }}>{`Date: ${label}`}</p>
-          <p style={{ margin: '5px 0', color: '#52c41a' }}>{`Steps: ${payload[0].value.toLocaleString()}`}</p>
-          {payload[1] && <p style={{ margin: '5px 0', color: '#ff7a45' }}>{`Calories: ${payload[1].value.toLocaleString()}`}</p>}
+          <p style={{ margin: '5px 0', color: '#52c41a' }}>{`Steps: ${payload[0].value?.toLocaleString()}`}</p>
+          {payload[1] && (
+            <p style={{ margin: '5px 0', color: '#ff7a45' }}>{`Calories: ${payload[1].value?.toLocaleString()}`}</p>
+          )}
         </div>
       );
     }
@@ -233,27 +241,31 @@ const StepsGraphPage: React.FC = () => {
       margin: "0 auto",
       background: 'linear-gradient(to bottom, #f0f8ff, #ffffff)'
     }}>
-      <Card
-        title={
-          <Title level={2} style={{ margin: 0 }}>
-            <span style={{ marginRight: 10 }}>🚶‍♂️</span>
-            Step Tracker Dashboard
-          </Title>
-        }
-        bordered={false}
-        style={{ 
-          borderRadius: 16, 
-          boxShadow: "0 8px 30px rgba(0,0,0,0.12)",
-          overflow: "hidden"
-        }}
-        loading={loadingAuth}
-        headStyle={{ 
-          backgroundColor: "#1890ff", 
-          color: "#fff",
-          padding: "16px 24px"
-         }}
-        bodyStyle={{ padding: "24px" }}
-      >
+<Card
+  title={
+    <Title level={2} style={{ margin: 0 }}>
+      <span style={{ marginRight: 10 }}>🚶‍♂️</span>
+      Step Tracker Dashboard
+    </Title>
+  }
+  variant="borderless"
+  style={{
+    borderRadius: 16,
+    boxShadow: "0 8px 30px rgba(0,0,0,0.12)",
+    overflow: "hidden",
+  }}
+  loading={loadingAuth}
+  styles={{
+    header: {
+      backgroundColor: "#1890ff",
+      color: "#fff",
+      padding: "16px 24px",
+    },
+    body: {
+      padding: "24px",
+    },
+  }}
+>
         <Row gutter={[24, 24]}>
           <Col xs={24} md={18}>
             <div style={{ display: "flex", alignItems: "center", marginBottom: 16 }}>
@@ -309,7 +321,7 @@ const StepsGraphPage: React.FC = () => {
               }}
             >
               <Statistic
-                title={<Text strong>Today's Steps</Text>}
+                title={<Text strong>Today&apos;s Steps</Text>}
                 value={stats.todaySteps}
                 suffix="steps"
                 valueStyle={{ color: '#52c41a' }}
@@ -431,7 +443,9 @@ const StepsGraphPage: React.FC = () => {
               overflow: 'hidden',
               boxShadow: "0 4px 12px rgba(0,0,0,0.08)"
             }}
-            bodyStyle={{ padding: 0 }}
+            styles={{
+                body: { padding: 0 },
+              }}
           >
             {loading ? (
               <div style={{ textAlign: "center", padding: 80 }}>
@@ -506,7 +520,7 @@ const StepsGraphPage: React.FC = () => {
                 '0%': '#108ee9',
                 '100%': '#87d068',
               }}
-              strokeWidth={20}
+              size={20}
               format={percent => `${percent}% of 10,000 daily steps`}
             />
             <Text type="secondary" style={{ display: 'block', marginTop: 8 }}>
@@ -519,14 +533,14 @@ const StepsGraphPage: React.FC = () => {
       </Card>
 
       <Modal
-        title="Add or Update Today's Steps"
-        open={adding}
-        onOk={handleAddOrUpdateToday}
-        onCancel={() => setAdding(false)}
-        okText="Save"
-        centered
-        bodyStyle={{ padding: '24px' }}
-      >
+  title="Add or Update Today's Steps"
+  open={adding}
+  onOk={handleAddOrUpdateToday}
+  onCancel={() => setAdding(false)}
+  okText="Save"
+  centered
+  styles={{ body: { padding: '24px' } }}
+>
         <div style={{ textAlign: 'center' }}>
           <Title level={4} style={{ marginBottom: 24 }}>How many steps did you take today?</Title>
           <InputNumber

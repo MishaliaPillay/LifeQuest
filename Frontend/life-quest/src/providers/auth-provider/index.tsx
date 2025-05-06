@@ -27,7 +27,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [state, dispatch] = useReducer(AuthReducer, INITIAL_STATE);
 
   // SignUp Function
-  const signUp = async (Auth: IAuth): Promise<any> => {
+  const signUp = async (Auth: IAuth): Promise<void> => {
     dispatch(signUpPending());
 
     const endpoint =
