@@ -8,8 +8,13 @@ using LifeQuest.Services.FitnessService.ExercisePlan.Dtos;
 using LifeQuest.Domain.Managers;
 using Microsoft.Extensions.Logging;
 using Abp.Domain.Repositories;
+using LifeQuest.Services.FitnessService.ExercisePlan;
+using LifeQuest.Domain.Paths.FitnessPath;
+using LifeQuest.Domain.Fitness.Activity;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
-namespace LifeQuest.Services.FitnessService.ExercisePlan
+namespace LifeQuest.Services.ExercisePlanService
 {
     public class ExercisePlanAppService : ApplicationService, IExercisePlanAppService
     {
@@ -44,7 +49,11 @@ namespace LifeQuest.Services.FitnessService.ExercisePlan
                 }
 
                 // Create ExercisePlan
-                var plan = await _exercisePlanManager.CreatePlanAsync(input.FitnessPathId, input.Name, input.Activities);
+                var mappedActivities = ObjectMapper.Map<List<Activity>>(input.Activities);
+
+                var plan = await _exercisePlanManager.CreatePlanAsync(input.FitnessPathId, input.Name, mappedActivities);
+
+
 
                 _logger.LogInformation("Successfully created ExercisePlan with ID: {PlanId}", plan.Id);
 
@@ -57,38 +66,38 @@ namespace LifeQuest.Services.FitnessService.ExercisePlan
             }
         }
 
-        public async Task<ExercisePlanDto> GetAsync(Guid id)
+        public async Task<ExercisePlanResponseDto> GetAsync(Guid id)
         {
-            try
-            {
-                _logger.LogInformation("Fetching ExercisePlan with ID: {Id}", id);
+            var plan = await _exercisePlanRepo
+                .GetAll()
+                .Include(p => p.Activities)
+                    .ThenInclude(a => a.ActivityActivityTypes)
+                        .ThenInclude(aat => aat.ActivityType)
+                .FirstOrDefaultAsync(p => p.Id == id);
 
-                // Fetch the ExercisePlan
-                var plan = await _exercisePlanRepo.GetAsync(id);
-                if (plan == null)
-                {
-                    throw new UserFriendlyException("ExercisePlan not found.");
-                }
+            if (plan == null)
+                throw new UserFriendlyException("ExercisePlan not found");
 
-                return ObjectMapper.Map<ExercisePlanDto>(plan);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error fetching ExercisePlan with ID: {Id}", id);
-                throw new UserFriendlyException("Could not fetch ExercisePlan");
-            }
+            return ObjectMapper.Map<ExercisePlanResponseDto>(plan);
         }
 
-        public async Task<List<ExercisePlanDto>> GetHistoryAsync(Guid fitnessPathId)
+        public async Task<List<ExercisePlanResponseDto>> GetHistoryAsync(Guid fitnessPathId)
         {
             try
             {
                 _logger.LogInformation("Fetching exercise plan history for FitnessPath ID: {FitnessPathId}", fitnessPathId);
 
-                // Fetch the exercise plan history
-                var plans = await _exercisePlanRepo.GetAllListAsync(p => p.FitnessPathId == fitnessPathId && p.Status == PlanStatus.Completed);
+                var plans = await _exercisePlanRepo
+                    .GetAll() // This gives you IQueryable<ExercisePlan>
+                    .Where(p => p.FitnessPathId == fitnessPathId && p.Status == PlanStatus.Completed) // Now you can use Where
+                    .Include(p => p.Activities)
+                        .ThenInclude(a => a.ActivityActivityTypes)
+                            .ThenInclude(aat => aat.ActivityType)
+                    .Include(p => p.Activities)
+                        .ThenInclude(a => a.Person) // Minimal needed info
+                    .ToListAsync(); // Executes the query
 
-                return ObjectMapper.Map<List<ExercisePlanDto>>(plans);
+                return ObjectMapper.Map<List<ExercisePlanResponseDto>>(plans);
             }
             catch (Exception ex)
             {
@@ -96,6 +105,9 @@ namespace LifeQuest.Services.FitnessService.ExercisePlan
                 throw new UserFriendlyException("Could not fetch ExercisePlan history");
             }
         }
+
+
+
 
         public async Task<ExercisePlanDto> UpdateAsync(UpdateExercisePlanDto input)
         {

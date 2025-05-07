@@ -14,7 +14,4 @@
   <ItemGroup>
     <ProjectReference Include="..\LifeQuest.Core\LifeQuest.Core.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Services\ExercisePlanService\Dttos\" />
-  </ItemGroup>
 </Project>
