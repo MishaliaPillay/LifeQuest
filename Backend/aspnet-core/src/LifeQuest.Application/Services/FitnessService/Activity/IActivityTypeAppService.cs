@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using static LifeQuest.Services.FitnessService.Activity.Dtos.ActivityResponseDto;
 
 namespace LifeQuest.Services.FitnessService.Activity
 {
@@ -12,6 +13,8 @@ namespace LifeQuest.Services.FitnessService.Activity
         Task<ActivityTypeResponseDto> UpdateActivityTypeAsync(UpdateActivityTypeDto input);
         Task DeleteActivityTypeAsync(Guid id);
         Task<ActivityTypeResponseDto> GenerateExerciseActivityTypeAsync(ExerciseGenerationRequestDto input);
+        Task<GeneratedActivityTypeResultDto> GenerateExerciseActivityTypesAsync(ExerciseGenerationBatchRequestDto input);
+
 
     }
 }

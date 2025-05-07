@@ -7,6 +7,7 @@ using Abp.Application.Services;
 using LifeQuest.Domain.Fitness.Activity;
 using LifeQuest.Services.FitnessService.Activity.Dtos;
 using Microsoft.EntityFrameworkCore;
+using static LifeQuest.Services.FitnessService.Activity.Dtos.ActivityResponseDto;
 
 namespace LifeQuest.Services.FitnessService.Activity
 {
@@ -115,6 +116,30 @@ namespace LifeQuest.Services.FitnessService.Activity
             }).ToList();
         }
 
+        public async Task<List<ActivityResponseDto>> CreateActivityPlanAsync(CreateActivityPlanDto input)
+        {
+            var createdActivities = new List<ActivityResponseDto>();
+
+            foreach (var day in input.Days)
+            {
+                var activity = await CreateActivityAsync(new CreateActivityDto
+                {
+                    ActivityTypeIds = day.ActivityTypeIds,
+                    Calories = 0, // You may compute or default
+                    Duration = 0,
+                    Xp = 0,
+                    Level = 1,
+                    IsComplete = false,
+                    Rating = 0,
+                    Description = day.Description,
+                    PersonId = input.PersonId
+                });
+
+                createdActivities.Add(activity);
+            }
+
+            return createdActivities;
+        }
 
         public async Task<ActivityResponseDto> UpdateActivityAsync(UpdateActivityDto input)
         {

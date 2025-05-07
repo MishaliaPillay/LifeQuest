@@ -5,7 +5,7 @@ using LifeQuest.Domain.Fitness.Activity;
 
 namespace LifeQuest.Services.FitnessService.Activity.Dtos
 {
-    public class ActivityResponseDto : EntityDto<Guid>
+    public partial class ActivityResponseDto : EntityDto<Guid>
     {
         public int Calories { get; set; }
         public int Duration { get; set; }

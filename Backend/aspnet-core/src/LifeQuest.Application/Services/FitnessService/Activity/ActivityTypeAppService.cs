@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using static LifeQuest.Services.FitnessService.Activity.Dtos.ActivityResponseDto;
 
 namespace LifeQuest.Services.FitnessService.Activity
 {
@@ -78,7 +79,7 @@ namespace LifeQuest.Services.FitnessService.Activity
             try
             {
                 var httpClient = new HttpClient();
-                var apiKey = "Enter Api Key here";
+                var apiKey = "";
                 var prompt = BuildPromptFromDto(input);
 
                 var requestBody = new
@@ -158,7 +159,7 @@ namespace LifeQuest.Services.FitnessService.Activity
 
         private string BuildPromptFromDto(ExerciseGenerationRequestDto input)
         {
-            var sb = new StringBuilder("Suggest one exercise");
+            var sb = new StringBuilder("Suggest one exercise.Generate a unique exercise suggestion that is different from previous ones. Avoid repeating any previously mentioned exercise.\r\n");
 
             if (input.Age > 0)
                 sb.Append($" for a {input.Age}-year-old");
@@ -212,5 +213,31 @@ namespace LifeQuest.Services.FitnessService.Activity
             // Return the original if no markdown formatting detected
             return content;
         }
+
+
+        public async Task<GeneratedActivityTypeResultDto> GenerateExerciseActivityTypesAsync(ExerciseGenerationBatchRequestDto input)
+        {
+            var results = new List<ActivityTypeResponseDto>();
+
+            for (int i = 0; i < input.Count; i++)
+            {
+                try
+                {
+                    var response = await GenerateExerciseActivityTypeAsync(input.BaseRequest);
+                    results.Add(response);
+                }
+                catch (UserFriendlyException ex)
+                {
+                    Logger.Warn($"Skipped generation #{i + 1}: {ex.Message}");
+                }
+            }
+
+            return new GeneratedActivityTypeResultDto
+            {
+                Items = results
+            };
+        }
+
     }
+
 }
