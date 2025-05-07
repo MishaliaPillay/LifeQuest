@@ -13,6 +13,7 @@ using LifeQuest.Domain.Weight;
 using LifeQuest.Domain.Steps;
 using LifeQuest.Domain.Paths.FitnessPath;
 using LifeQuest.Domain.Paths;
+using LifeQuest.Domain.Fitness.ExercisePlan;
 
 namespace LifeQuest.EntityFrameworkCore;
 
@@ -25,6 +26,8 @@ public class LifeQuestDbContext : AbpZeroDbContext<Tenant, Role, User, LifeQuest
     public DbSet<WeightEntry> WeightEntries { get; set; }
     public DbSet<StepEntry> StepEntries { get; set; }
     public DbSet<Path> Paths { get; set; }
+    public DbSet<ExercisePlan> ExercisePlans { get; set; }
+
     public DbSet<FitnessPath> FitnessPaths { get; set; }
 
 
@@ -76,7 +79,20 @@ public class LifeQuestDbContext : AbpZeroDbContext<Tenant, Role, User, LifeQuest
 
         //modelBuilder.Entity<HealthPath>()
         //    .HasBaseType<Path>(); // Optional if using inheritance for specific path types
+        modelBuilder.Entity<ExercisePlan>()
+    .HasOne(ep => ep.FitnessPath)
+    .WithMany(fp => fp.ExercisePlans)
+    .HasForeignKey(ep => ep.FitnessPathId)
+    .OnDelete(DeleteBehavior.Cascade);
+
+
+        modelBuilder.Entity<ExercisePlan>()
+        .HasMany(ep => ep.Activities)
+        .WithOne(a => a.ExercisePlan)
+        .HasForeignKey(a => a.ExercisePlanId)
+        .OnDelete(DeleteBehavior.Cascade);
     }
+
 
 }
 

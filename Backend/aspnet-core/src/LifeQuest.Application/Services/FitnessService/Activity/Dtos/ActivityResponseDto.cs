@@ -15,7 +15,7 @@ namespace LifeQuest.Services.FitnessService.Activity.Dtos
         public bool IsComplete { get; set; }
         public ActivityRating Rating { get; set; }
         public string Description { get; set; }
-        public Guid PersonId { get; set; }  // Ensure PersonId is included
+        // public Guid PersonId { get; set; }  // Ensure PersonId is included
 
         // Constructor to match the required parameters
         public ActivityResponseDto(
@@ -38,7 +38,7 @@ namespace LifeQuest.Services.FitnessService.Activity.Dtos
             IsComplete = isComplete;
             Rating = rating;
             Description = description;
-            PersonId = personId;
+            // PersonId = personId;
         }
 
         // Default constructor (in case you don't want to use the all-args constructor)

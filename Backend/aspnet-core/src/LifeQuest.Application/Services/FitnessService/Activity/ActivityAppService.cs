@@ -137,7 +137,7 @@ namespace LifeQuest.Services.FitnessService.Activity
                             IsComplete = false,
                             Rating = 0,
                             Description = day.Description,
-                            PersonId = input.PersonId
+                            // PersonId = input.PersonId
                         });
 
                         createdActivities.Add(activity);

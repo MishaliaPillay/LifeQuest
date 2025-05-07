@@ -11,6 +11,7 @@ using LifeQuest.Services.Steps.Dtos;
 using LifeQuest.Services.Weight.Dtos;
 using LifeQuest.Domain.Steps;
 using LifeQuest.Domain.Weight;
+using LifeQuest.Services.FitnessService.ExercisePlan.Dtos;
 
 namespace LifeQuest.Services.FitnessService.FitnessPath.Mappings
 {
@@ -26,6 +27,11 @@ namespace LifeQuest.Services.FitnessService.FitnessPath.Mappings
             CreateMap<StepEntry, StepEntryResponseDto>();
             CreateMap<WeightEntry, WeightEntryResponseDto>();
             CreateMap<Domain.Fitness.Activity.Activity, ActivityResponseDto>();
+            CreateMap<Domain.Fitness.ExercisePlan.ExercisePlan, ExercisePlanResponseDto>()
+     // and any nested properties on the plan, e.g. Activities:
+     .ForMember(dest => dest.Activities,
+                opt => opt.MapFrom(src => src.Activities));
+
         }
     }
 }

@@ -85,8 +85,8 @@ namespace LifeQuest.Services.ExercisePlanService
                             activityActivityTypes: activityActivityTypes,  // Adding ActivityActivityType relation
                             isComplete: false,  // Defaulting to false for new activities
                             rating: ActivityRating.Neutral,  // Set initial rating
-                            description: day.Description,
-                           // personId: fitnessPath.PersonId  // Associate the activity with the Person from the FitnessPath
+                            description: day.Description
+                        // personId: fitnessPath.PersonId  // Associate the activity with the Person from the FitnessPath
                         );
 
                         // Add the activity to the list

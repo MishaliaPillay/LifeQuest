@@ -17,6 +17,6 @@ namespace LifeQuest.Services.FitnessService.Activity.Dtos
         public bool IsComplete { get; set; }
         public ActivityRating Rating { get; set; }
         public string Description { get; set; }
-        public Guid PersonId { get; set; }
+        //    public Guid PersonId { get; set; }
     }
 }

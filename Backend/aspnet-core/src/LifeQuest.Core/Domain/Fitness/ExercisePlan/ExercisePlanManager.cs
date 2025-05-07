@@ -26,12 +26,14 @@ namespace LifeQuest.Domain.Managers
         }
 
         public async Task<ExercisePlan> CreatePlanAsync(Guid fitnessPathId, string name, List<Activity> activities)
-
         {
+            if (activities == null || activities.Count == 0)
+                throw new UserFriendlyException("The exercise plan must have at least one activity.");
+
             var path = await _fitnessPathRepository
-      .GetAll()
-      .Include(p => p.ExercisePlans)
-      .FirstOrDefaultAsync(p => p.Id == fitnessPathId);
+                .GetAll()
+                .Include(p => p.ExercisePlans)
+                .FirstOrDefaultAsync(p => p.Id == fitnessPathId);
 
             if (path == null)
                 throw new UserFriendlyException("Fitness path not found.");
@@ -46,7 +48,6 @@ namespace LifeQuest.Domain.Managers
                 Name = name,
                 Status = PlanStatus.Active,
                 Activities = activities,
-
             };
 
             await _planRepository.InsertAsync(plan);
