@@ -45,7 +45,6 @@ namespace LifeQuest.Services.ExercisePlanService
             {
                 _logger.LogInformation("Creating a new ExercisePlan for FitnessPath ID: {FitnessPathId}", input.FitnessPathId);
 
-                // Fetch the fitness path to ensure it exists
                 var fitnessPath = await _fitnessPathRepo.FirstOrDefaultAsync(input.FitnessPathId);
                 if (fitnessPath == null)
                 {
@@ -54,59 +53,64 @@ namespace LifeQuest.Services.ExercisePlanService
 
                 var mappedActivities = new List<Activity>();
 
-                // For each day, create activities based on ActivityTypes
                 foreach (var day in input.Days)
                 {
                     foreach (var activityTypeId in day.ActivityTypeIds)
                     {
-                        // Fetch the ActivityType entities based on the provided IDs
                         var activityType = await _activityTypeRepo.FirstOrDefaultAsync(activityTypeId);
                         if (activityType == null)
                         {
                             throw new UserFriendlyException($"ActivityType with ID {activityTypeId} not found.");
                         }
 
-                        // Create a list of ActivityActivityType entities for the current ActivityType
                         var activityActivityTypes = new List<ActivityActivityType>
                 {
-                    new ActivityActivityType
-                    {
-                        ActivityTypeId = activityType.Id,  // ActivityTypeId
-                        // Optionally add other properties specific to ActivityActivityType, if needed
-                    }
+                    new ActivityActivityType { ActivityTypeId = activityType.Id }
                 };
 
-                        // Create the activity using the collected ActivityActivityTypes
                         var activity = new Activity(
                             calories: day.Calories,
                             duration: day.Duration,
-                            xp: 0,  // Set appropriate XP value
-                            level: 1,  // Set appropriate level value
-                            activityActivityTypes: activityActivityTypes,  // Adding ActivityActivityType relation
-                            isComplete: false,  // Defaulting to false for new activities
-                            rating: ActivityRating.Neutral,  // Set initial rating
+                            xp: 0,
+                            level: 1,
+                            activityActivityTypes: activityActivityTypes,
+                            isComplete: false,
+                            rating: ActivityRating.Neutral,
                             description: day.Description
-                        // personId: fitnessPath.PersonId  // Associate the activity with the Person from the FitnessPath
                         );
 
-                        // Add the activity to the list
                         mappedActivities.Add(activity);
                     }
                 }
 
-                // Create the ExercisePlan with the mapped activities
-                var plan = await _exercisePlanManager.CreatePlanAsync(input.FitnessPathId, input.Name, mappedActivities);
+                ExercisePlan plan;
+                try
+                {
+                    _logger.LogDebug("Mapped {Count} activities for plan creation", mappedActivities.Count);
+                    foreach (var act in mappedActivities)
+                    {
+                        _logger.LogDebug("Activity: {Description}, Duration: {Duration}, Calories: {Calories}, Types: {TypeCount}",
+                            act.Description, act.Duration, act.Calories, act.ActivityActivityTypes.Count);
+                    }
+
+                    plan = await _exercisePlanManager.CreatePlanAsync(input.FitnessPathId, input.Name, mappedActivities);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed during CreatePlanAsync");
+                    throw;
+                }
 
                 _logger.LogInformation("Successfully created ExercisePlan with ID: {PlanId}", plan.Id);
-
                 return ObjectMapper.Map<ExercisePlanDto>(plan);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while creating ExercisePlan");
-                throw new UserFriendlyException("Could not create ExercisePlan");
+                throw new UserFriendlyException("Could not create ExercisePlan", ex);
             }
         }
+
 
         public async Task<ExercisePlanResponseDto> GetAsync(Guid id)
         {

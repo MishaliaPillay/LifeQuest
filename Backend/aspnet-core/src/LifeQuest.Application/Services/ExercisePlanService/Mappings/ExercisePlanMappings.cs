@@ -2,6 +2,8 @@
 using LifeQuest.Services.FitnessService.Activity.Dtos;
 using LifeQuest.Domain.Fitness.Activity;
 using System.Linq;
+using LifeQuest.Domain.Fitness.ExercisePlan;
+using LifeQuest.Services.FitnessService.ExercisePlan.Dtos;
 
 namespace LifeQuest.Services.ExercisePlanService.Mappings
 {
@@ -18,6 +20,11 @@ namespace LifeQuest.Services.ExercisePlanService.Mappings
                         }).ToList()))
                 .ForMember(dest => dest.IsComplete, opt => opt.MapFrom(_ => false))
                 .ForMember(dest => dest.Rating, opt => opt.MapFrom(_ => 0));
+
+            CreateMap<ExercisePlan, ExercisePlanDto>()
+    .ForMember(dest => dest.Activities, opt => opt.MapFrom(src => src.Activities)) // if needed
+    .ReverseMap(); // optional, if you need two-way mapping
+
         }
     }
 }

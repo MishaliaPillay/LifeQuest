@@ -26,7 +26,7 @@ namespace LifeQuest.Domain.Paths.FitnessPath
                 .Include(p => p.StepEntries)
                 .Include(p => p.WeightEntries)
                 .Include(p => p.ExercisePlans)
-                //    .ThenInclude(plan => plan.Activities)
+              .ThenInclude(plan => plan.Activities)
                 .FirstOrDefaultAsync(p => p.Id == id);
 
             if (path == null)
