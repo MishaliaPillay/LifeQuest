@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Abp.Domain.Entities;
+using LifeQuest.Domain.Fitness.ExercisePlan;
 
 namespace LifeQuest.Domain.Fitness.Activity
 {
@@ -17,8 +18,11 @@ namespace LifeQuest.Domain.Fitness.Activity
         public bool IsComplete { get; set; }
         public ActivityRating Rating { get; set; }
         public string Description { get; set; }
+        public Guid? ExercisePlanId { get; set; } // Optional FK
+        public virtual LifeQuest.Domain.Fitness.ExercisePlan.ExercisePlan ExercisePlan { get; set; }
 
-        public Guid PersonId { get; set; }
+
+        // public Guid PersonId { get; set; }
 
         public virtual Person.Person Person { get; set; }
 
@@ -32,8 +36,9 @@ namespace LifeQuest.Domain.Fitness.Activity
             List<ActivityActivityType> activityActivityTypes,
             bool isComplete,
             ActivityRating rating,
-            string description,
-            Guid personId)
+            string description
+            //Guid personId
+            )
         {
             Id = Guid.NewGuid();
             Calories = calories;
@@ -44,7 +49,7 @@ namespace LifeQuest.Domain.Fitness.Activity
             IsComplete = isComplete;
             Rating = rating;
             Description = description;
-            PersonId = personId;
+            // PersonId = personId;
         }
     }
 }

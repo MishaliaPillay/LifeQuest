@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Abp.Application.Services.Dto;
 using LifeQuest.Services.FitnessService.Activity.Dtos;
+using LifeQuest.Services.FitnessService.ExercisePlan.Dtos;
 using LifeQuest.Services.Steps.Dtos;
 using LifeQuest.Services.Weight.Dtos;
 
@@ -18,6 +19,6 @@ namespace LifeQuest.Services.FitnessService.FitnessPath.Dtos
 
         public List<StepEntryResponseDto> StepEntries { get; set; }
         public List<WeightEntryResponseDto> WeightEntries { get; set; }
-        public List<ActivityResponseDto> Activities { get; set; }
+       public List <ExercisePlanResponseDto> ExercisePlans { get; set; }
     }
 }
