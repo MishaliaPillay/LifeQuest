@@ -98,6 +98,7 @@ namespace LifeQuest.Services.FitnessService.Activity
                 request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
 
                 var response = await httpClient.SendAsync(request);
+
                 response.EnsureSuccessStatusCode();
 
                 var jsonResponse = await response.Content.ReadAsStringAsync();
