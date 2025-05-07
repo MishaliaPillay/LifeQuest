@@ -1,0 +1,146 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Abp.Application.Services;
+using Abp.UI;
+using LifeQuest.Domain.Fitness.ExercisePlan;
+using LifeQuest.Services.FitnessService.ExercisePlan.Dtos;
+using LifeQuest.Domain.Managers;
+using Microsoft.Extensions.Logging;
+using Abp.Domain.Repositories;
+
+namespace LifeQuest.Services.FitnessService.ExercisePlan
+{
+    public class ExercisePlanAppService : ApplicationService, IExercisePlanAppService
+    {
+        private readonly ExercisePlanManager _exercisePlanManager;
+        private readonly ILogger<ExercisePlanAppService> _logger;
+        private readonly IRepository<ExercisePlan, Guid> _exercisePlanRepo;
+        private readonly IRepository<FitnessPath, Guid> _fitnessPathRepo;
+
+        public ExercisePlanAppService(
+            ExercisePlanManager exercisePlanManager,
+            ILogger<ExercisePlanAppService> logger,
+            IRepository<ExercisePlan, Guid> exercisePlanRepo,
+            IRepository<FitnessPath, Guid> fitnessPathRepo)
+        {
+            _exercisePlanManager = exercisePlanManager;
+            _logger = logger;
+            _exercisePlanRepo = exercisePlanRepo;
+            _fitnessPathRepo = fitnessPathRepo;
+        }
+
+        public async Task<ExercisePlanDto> CreateAsync(CreateExercisePlanDto input)
+        {
+            try
+            {
+                _logger.LogInformation("Creating a new ExercisePlan for FitnessPath ID: {FitnessPathId}", input.FitnessPathId);
+
+                // Fetch the fitness path to ensure it exists
+                var fitnessPath = await _fitnessPathRepo.FirstOrDefaultAsync(input.FitnessPathId);
+                if (fitnessPath == null)
+                {
+                    throw new UserFriendlyException("Fitness Path not found.");
+                }
+
+                // Create ExercisePlan
+                var plan = await _exercisePlanManager.CreatePlanAsync(input.FitnessPathId, input.Name, input.Activities);
+
+                _logger.LogInformation("Successfully created ExercisePlan with ID: {PlanId}", plan.Id);
+
+                return ObjectMapper.Map<ExercisePlanDto>(plan);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while creating ExercisePlan");
+                throw new UserFriendlyException("Could not create ExercisePlan");
+            }
+        }
+
+        public async Task<ExercisePlanDto> GetAsync(Guid id)
+        {
+            try
+            {
+                _logger.LogInformation("Fetching ExercisePlan with ID: {Id}", id);
+
+                // Fetch the ExercisePlan
+                var plan = await _exercisePlanRepo.GetAsync(id);
+                if (plan == null)
+                {
+                    throw new UserFriendlyException("ExercisePlan not found.");
+                }
+
+                return ObjectMapper.Map<ExercisePlanDto>(plan);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching ExercisePlan with ID: {Id}", id);
+                throw new UserFriendlyException("Could not fetch ExercisePlan");
+            }
+        }
+
+        public async Task<List<ExercisePlanDto>> GetHistoryAsync(Guid fitnessPathId)
+        {
+            try
+            {
+                _logger.LogInformation("Fetching exercise plan history for FitnessPath ID: {FitnessPathId}", fitnessPathId);
+
+                // Fetch the exercise plan history
+                var plans = await _exercisePlanRepo.GetAllListAsync(p => p.FitnessPathId == fitnessPathId && p.Status == PlanStatus.Completed);
+
+                return ObjectMapper.Map<List<ExercisePlanDto>>(plans);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching ExercisePlan history for FitnessPath ID: {FitnessPathId}", fitnessPathId);
+                throw new UserFriendlyException("Could not fetch ExercisePlan history");
+            }
+        }
+
+        public async Task<ExercisePlanDto> UpdateAsync(UpdateExercisePlanDto input)
+        {
+            try
+            {
+                _logger.LogInformation("Updating ExercisePlan with ID: {Id}", input.Id);
+
+                // Fetch the existing plan
+                var plan = await _exercisePlanRepo.GetAsync(input.Id);
+                if (plan == null)
+                {
+                    throw new UserFriendlyException("ExercisePlan not found.");
+                }
+
+                // Update plan details
+                plan.Name = input.Name;
+                plan.Activities = input.Activities; // Assuming Activities are provided in the DTO
+                plan.Status = input.Status; // You can add more fields to update as needed
+
+                // Save the updated plan
+                await _exercisePlanRepo.UpdateAsync(plan);
+
+                return ObjectMapper.Map<ExercisePlanDto>(plan);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating ExercisePlan with ID: {Id}", input.Id);
+                throw new UserFriendlyException("Could not update ExercisePlan");
+            }
+        }
+
+        public async Task CompletePlanAsync(Guid planId)
+        {
+            try
+            {
+                _logger.LogInformation("Completing ExercisePlan with ID: {Id}", planId);
+
+                // Mark the plan as completed
+                await _exercisePlanManager.CompletePlanAsync(planId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error completing ExercisePlan with ID: {Id}", planId);
+                throw new UserFriendlyException("Could not complete ExercisePlan");
+            }
+        }
+    }
+}

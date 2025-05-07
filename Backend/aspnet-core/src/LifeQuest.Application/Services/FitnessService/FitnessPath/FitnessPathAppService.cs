@@ -10,7 +10,9 @@ using LifeQuest.Domain.Weight;
 using Microsoft.Extensions.Logging;
 using Abp.Domain.Repositories;
 using LifeQuest.Domain.Person;
-using LifeQuest.Domain.Fitness.ExercisePlan; // Add this import
+using ExercisePlanEntity = LifeQuest.Domain.Fitness.ExercisePlan.ExercisePlan;
+
+
 
 namespace LifeQuest.Services.FitnessService.FitnessPath
 {
@@ -20,7 +22,8 @@ namespace LifeQuest.Services.FitnessService.FitnessPath
         private readonly ILogger<FitnessPathAppService> _logger;
         private readonly IRepository<StepEntry, Guid> _stepEntryRepo;
         private readonly IRepository<WeightEntry, Guid> _weightEntryRepo;
-        private readonly IRepository<ExercisePlan, Guid> _exercisePlanRepo; // Changed from Activity repo
+        private readonly IRepository<ExercisePlanEntity, Guid> _exercisePlanRepo;
+
         private readonly IRepository<Person, Guid> _personRepo;
 
         public FitnessPathAppService(
@@ -28,7 +31,7 @@ namespace LifeQuest.Services.FitnessService.FitnessPath
             ILogger<FitnessPathAppService> logger,
             IRepository<StepEntry, Guid> stepEntryRepo,
             IRepository<WeightEntry, Guid> weightEntryRepo,
-            IRepository<ExercisePlan, Guid> exercisePlanRepo, // Use ExercisePlan repo
+            IRepository<ExercisePlanEntity, Guid> exercisePlanRepo, // Use ExercisePlan repo
             IRepository<Person, Guid> personRepo)
         {
             _fitnessPathManager = fitnessPathManager;
