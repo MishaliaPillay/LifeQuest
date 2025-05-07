@@ -8,8 +8,9 @@ namespace LifeQuest.Services.FitnessService.ExercisePlan.Dtos
     public class CreateExercisePlanDto
     {
         public Guid FitnessPathId { get; set; }
-
         public string Name { get; set; }
-        public List<CreateActivityDto> Activities { get; set; } = new();
+        public List<DayActivityDto> Days { get; set; }
     }
 }
+
+

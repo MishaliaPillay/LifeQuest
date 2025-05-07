@@ -22,13 +22,17 @@ namespace LifeQuest.Services.ExercisePlanService
         private readonly ILogger<ExercisePlanAppService> _logger;
         private readonly IRepository<ExercisePlan, Guid> _exercisePlanRepo;
         private readonly IRepository<FitnessPath, Guid> _fitnessPathRepo;
+        private readonly IRepository<ActivityType, Guid> _activityTypeRepo;
 
-        public ExercisePlanAppService(
+
+
+        public ExercisePlanAppService(IRepository<ActivityType, Guid> activityTypeRepo,
             ExercisePlanManager exercisePlanManager,
             ILogger<ExercisePlanAppService> logger,
             IRepository<ExercisePlan, Guid> exercisePlanRepo,
             IRepository<FitnessPath, Guid> fitnessPathRepo)
         {
+            _activityTypeRepo = activityTypeRepo;
             _exercisePlanManager = exercisePlanManager;
             _logger = logger;
             _exercisePlanRepo = exercisePlanRepo;
@@ -48,12 +52,50 @@ namespace LifeQuest.Services.ExercisePlanService
                     throw new UserFriendlyException("Fitness Path not found.");
                 }
 
-                // Create ExercisePlan
-                var mappedActivities = ObjectMapper.Map<List<Activity>>(input.Activities);
+                var mappedActivities = new List<Activity>();
 
+                // For each day, create activities based on ActivityTypes
+                foreach (var day in input.Days)
+                {
+                    foreach (var activityTypeId in day.ActivityTypeIds)
+                    {
+                        // Fetch the ActivityType entities based on the provided IDs
+                        var activityType = await _activityTypeRepo.FirstOrDefaultAsync(activityTypeId);
+                        if (activityType == null)
+                        {
+                            throw new UserFriendlyException($"ActivityType with ID {activityTypeId} not found.");
+                        }
+
+                        // Create a list of ActivityActivityType entities for the current ActivityType
+                        var activityActivityTypes = new List<ActivityActivityType>
+                {
+                    new ActivityActivityType
+                    {
+                        ActivityTypeId = activityType.Id,  // ActivityTypeId
+                        // Optionally add other properties specific to ActivityActivityType, if needed
+                    }
+                };
+
+                        // Create the activity using the collected ActivityActivityTypes
+                        var activity = new Activity(
+                            calories: day.Calories,
+                            duration: day.Duration,
+                            xp: 0,  // Set appropriate XP value
+                            level: 1,  // Set appropriate level value
+                            activityActivityTypes: activityActivityTypes,  // Adding ActivityActivityType relation
+                            isComplete: false,  // Defaulting to false for new activities
+                            rating: ActivityRating.Neutral,  // Set initial rating
+                            description: day.Description,
+                           // personId: fitnessPath.PersonId  // Associate the activity with the Person from the FitnessPath
+                        );
+
+                        // Add the activity to the list
+                        mappedActivities.Add(activity);
+                    }
+                }
+
+                // Create the ExercisePlan with the mapped activities
                 var plan = await _exercisePlanManager.CreatePlanAsync(input.FitnessPathId, input.Name, mappedActivities);
-
-
 
                 _logger.LogInformation("Successfully created ExercisePlan with ID: {PlanId}", plan.Id);
 
