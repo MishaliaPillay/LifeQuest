@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Abp.Domain.Repositories;
 using Abp.Domain.Services;
 using Abp.UI;
 using Microsoft.EntityFrameworkCore;
+using LifeQuest.Domain.Fitness.ExercisePlan;
 
 namespace LifeQuest.Domain.Paths.FitnessPath
 {
@@ -22,7 +22,11 @@ namespace LifeQuest.Domain.Paths.FitnessPath
         public async Task<FitnessPath> GetWithDetailsAsync(Guid id)
         {
             var path = await _fitnessPathRepository
-                .GetAllIncluding(p => p.StepEntries, p => p.WeightEntries, p => p.Activities)
+                .GetAll()
+                .Include(p => p.StepEntries)
+                .Include(p => p.WeightEntries)
+                .Include(p => p.ExercisePlans)
+                    .ThenInclude(plan => plan.Activities)
                 .FirstOrDefaultAsync(p => p.Id == id);
 
             if (path == null)
@@ -34,7 +38,11 @@ namespace LifeQuest.Domain.Paths.FitnessPath
         public async Task<List<FitnessPath>> GetAllWithDetailsAsync()
         {
             return await _fitnessPathRepository
-                .GetAllIncluding(p => p.StepEntries, p => p.WeightEntries, p => p.Activities)
+                .GetAll()
+                .Include(p => p.StepEntries)
+                .Include(p => p.WeightEntries)
+                .Include(p => p.ExercisePlans)
+                    .ThenInclude(plan => plan.Activities)
                 .ToListAsync();
         }
 
@@ -56,6 +64,5 @@ namespace LifeQuest.Domain.Paths.FitnessPath
 
             await _fitnessPathRepository.DeleteAsync(path);
         }
-
     }
 }

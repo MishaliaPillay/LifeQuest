@@ -17,6 +17,7 @@ namespace LifeQuest.Services.FitnessService.FitnessPath.Dtos
         public string Description { get; set; }
         public List<Guid> StepEntryIds { get; set; }
         public List<Guid> WeightEntryIds { get; set; }
-        public List<Guid> ActivityIds { get; set; }
+        public List<Guid> ExercisePlanIds { get; set; } = new List<Guid>();
+        // public List<Guid> ActivityIds { get; set; }
     }
 }
