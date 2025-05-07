@@ -1,20 +1,20 @@
-"use client";
-import React, { useState } from "react";
+"use client"; 
+import React, { useState, useEffect } from "react";
 import { Tabs } from "antd";
-import { useEffect } from "react";
 import LoginComponent from "../../components/login/login";
 import SignupComponent from "../../components/signup/signup";
 import styles from "./auth.module.css";
-import { useAuthState } from "@/providers/auth-provider";
-
+import { useAuthState, useAuthActions } from "@/providers/auth-provider";
 import { useRouter } from "next/navigation";
-import { getRole } from "@/utils/decoder";
+import { getRole, getId } from "@/utils/decoder";
+
 const AuthPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState("login");
   const [loading, setLoading] = useState(false);
   const { isSuccess, isError, isPending } = useAuthState();
   const [authMode, setAuthMode] = useState<"login" | "signup">("login");
   const router = useRouter();
+  const { getCurrentPerson } = useAuthActions();
 
   useEffect(() => {
     const token = sessionStorage.getItem("jwt");
@@ -22,20 +22,11 @@ const AuthPage: React.FC = () => {
     if (isPending) setLoading(true);
 
     if (isError) {
-   
       setLoading(false);
     }
 
     if (isSuccess && authMode === "login") {
-      const role = getRole(token);
-
-      setTimeout(() => {
-        if (role === "default") {
-          router.push("/user-page");
-        } else {
-          router.push("/");
-        }
-      }, 2500);
+      handleSuccessfulLogin(token);
     } else if (isSuccess && authMode === "signup") {
       setTimeout(() => {
         setActiveTab("login");
@@ -44,6 +35,59 @@ const AuthPage: React.FC = () => {
 
     setLoading(false);
   }, [isPending, isError, isSuccess, router, authMode, setActiveTab]);
+
+  const handleSuccessfulLogin = async (token: string | null) => {
+    if (!token) return;
+    
+    try {
+      // Get user ID from token
+      const userId = getId(token);
+      
+      if (userId && userId !== "1") {
+        const userIdNum = parseInt(userId, 10);
+        
+        if (!isNaN(userIdNum)) {
+          // Get person data using the user ID
+          const personData = await getCurrentPerson(userIdNum);
+          
+          if (personData && personData.id) {
+            // Check if pathId exists and is not empty
+            if (!personData.pathId || personData.pathId === "0" || personData.pathId === "") {
+              // User doesn't have a path, route to new-page
+              router.push("/new-page");
+            } else {
+              // User has a path, route to user-page
+              router.push("/user-page");
+            }
+          } else {
+            console.error("Person data not found");
+            // Default fallback route
+            router.push("/user-page");
+          }
+        } else {
+          console.error("Invalid user ID format");
+          router.push("/user-page"); // Default fallback
+        }
+      } else {
+        const role = getRole(token);
+        // Fallback to original routing logic
+        if (role === "default") {
+          router.push("/user-page");
+        } else {
+          router.push("/");
+        }
+      }
+    } catch (error) {
+      console.error("Error during login routing:", error);
+      // Fallback to original routing logic
+      const role = getRole(token);
+      if (role === "default") {
+        router.push("/user-page");
+      } else {
+        router.push("/");
+      }
+    }
+  };
 
   const handleTabChange = (key: string) => {
     setActiveTab(key);
@@ -61,8 +105,8 @@ const AuthPage: React.FC = () => {
           <h1>Welcome Page</h1>
           <p>Sign in to continue access to your account and all our features</p>
         </div>
-  {/* Loading indicator */}
-  {loading && <div className={styles.loading}>Loading...</div>}
+        {/* Loading indicator */}
+        {loading && <div className={styles.loading}>Loading...</div>}
         {/* Background circles */}
         <div
           className={styles.circle}

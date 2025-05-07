@@ -18,6 +18,7 @@ export interface IAuth {
   level: number;
   avatar: "url";
   id?:string;
+  pathId?:string;
 }
 
 export interface ISignInRequest {
