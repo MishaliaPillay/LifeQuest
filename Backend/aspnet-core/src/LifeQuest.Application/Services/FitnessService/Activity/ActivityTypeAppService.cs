@@ -79,8 +79,14 @@ namespace LifeQuest.Services.FitnessService.Activity
             try
             {
                 var httpClient = new HttpClient();
-                var apiKey = "";
                 var prompt = BuildPromptFromDto(input);
+                var apiKey = Environment.GetEnvironmentVariable("OPENROUTER_API_KEY");
+
+                if (string.IsNullOrWhiteSpace(apiKey))
+                {
+                    throw new Exception("OpenRouter API key is not configured. Please set OPENROUTER_API_KEY in environment variables.");
+                }
+
 
                 var requestBody = new
                 {
@@ -98,6 +104,7 @@ namespace LifeQuest.Services.FitnessService.Activity
                 request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
 
                 var response = await httpClient.SendAsync(request);
+
                 response.EnsureSuccessStatusCode();
 
                 var jsonResponse = await response.Content.ReadAsStringAsync();
