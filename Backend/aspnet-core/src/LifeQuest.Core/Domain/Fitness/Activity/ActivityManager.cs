@@ -27,8 +27,9 @@ namespace LifeQuest.Domain.Fitness.Activity
     List<ActivityType> activityTypes,
     bool isComplete,
     ActivityRating rating,
-    string description,
-    Guid personId)
+    string description
+            //Guid personId
+            )
         {
             var activity = new Activity(
                 calories,
@@ -38,8 +39,9 @@ namespace LifeQuest.Domain.Fitness.Activity
                 new List<ActivityActivityType>(),
                 isComplete,
                 rating,
-                description,
-                personId); // Set personId
+                description
+                //personId
+                ); // Set personId
 
             foreach (var activityType in activityTypes)
             {
@@ -109,15 +111,15 @@ namespace LifeQuest.Domain.Fitness.Activity
             await _activityRepository.UpdateAsync(activity);
             return activity;
         }
-        public async Task<List<Activity>> GetByPersonIdAsync(Guid personId)
-        {
-            // Get activities where PersonId matches the provided personId
-            return await _activityRepository.GetAll()
-                .Where(a => a.PersonId == personId) // Filter by PersonId
-                .Include(a => a.ActivityActivityTypes)
-                .ThenInclude(aat => aat.ActivityType)
-                .ToListAsync();
-        }
+        //public async Task<List<Activity>> GetByPersonIdAsync(Guid personId)
+        //{
+        //    // Get activities where PersonId matches the provided personId
+        //    return await _activityRepository.GetAll()
+        //        .Where(a => a.PersonId == personId) // Filter by PersonId
+        //        .Include(a => a.ActivityActivityTypes)
+        //        .ThenInclude(aat => aat.ActivityType)
+        //        .ToListAsync();
+        //}
 
 
         public async Task DeleteActivityAsync(Guid id)

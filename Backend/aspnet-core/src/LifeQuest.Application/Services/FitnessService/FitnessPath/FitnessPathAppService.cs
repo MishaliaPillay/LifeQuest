@@ -10,6 +10,9 @@ using LifeQuest.Domain.Weight;
 using Microsoft.Extensions.Logging;
 using Abp.Domain.Repositories;
 using LifeQuest.Domain.Person;
+using ExercisePlanEntity = LifeQuest.Domain.Fitness.ExercisePlan.ExercisePlan;
+
+
 
 namespace LifeQuest.Services.FitnessService.FitnessPath
 {
@@ -19,25 +22,25 @@ namespace LifeQuest.Services.FitnessService.FitnessPath
         private readonly ILogger<FitnessPathAppService> _logger;
         private readonly IRepository<StepEntry, Guid> _stepEntryRepo;
         private readonly IRepository<WeightEntry, Guid> _weightEntryRepo;
-        private readonly IRepository<Domain.Fitness.Activity.Activity, Guid> _activityRepo;
+        private readonly IRepository<ExercisePlanEntity, Guid> _exercisePlanRepo;
+
         private readonly IRepository<Person, Guid> _personRepo;
+
         public FitnessPathAppService(
             FitnessPathManager fitnessPathManager,
             ILogger<FitnessPathAppService> logger,
             IRepository<StepEntry, Guid> stepEntryRepo,
             IRepository<WeightEntry, Guid> weightEntryRepo,
-            IRepository<Domain.Fitness.Activity.Activity, Guid> activityRepo,
-
-          IRepository<Person, Guid> personRepo)
+            IRepository<ExercisePlanEntity, Guid> exercisePlanRepo, // Use ExercisePlan repo
+            IRepository<Person, Guid> personRepo)
         {
             _fitnessPathManager = fitnessPathManager;
             _logger = logger;
             _stepEntryRepo = stepEntryRepo;
             _weightEntryRepo = weightEntryRepo;
-            _activityRepo = activityRepo;
+            _exercisePlanRepo = exercisePlanRepo; // Initialize ExercisePlan repo
             _personRepo = personRepo;
         }
-
 
         public async Task<FitnessPathDto> CreateAsync(CreateFitnessPathDto input)
         {
@@ -61,7 +64,6 @@ namespace LifeQuest.Services.FitnessService.FitnessPath
                 throw new UserFriendlyException("Could not create FitnessPath");
             }
         }
-
 
         public async Task<FitnessPathDto> GetAsync(Guid id)
         {
@@ -91,12 +93,12 @@ namespace LifeQuest.Services.FitnessService.FitnessPath
                 // Clear and reassign collections
                 path.StepEntries.Clear();
                 path.WeightEntries.Clear();
-                path.Activities.Clear();
+                path.ExercisePlans.Clear(); // Clear previous exercise plans instead of activities
 
                 // Re-fetch and assign based on new IDs
                 var newStepEntries = await _stepEntryRepo.GetAllListAsync(se => input.StepEntryIds.Contains(se.Id));
                 var newWeightEntries = await _weightEntryRepo.GetAllListAsync(we => input.WeightEntryIds.Contains(we.Id));
-                var newActivities = await _activityRepo.GetAllListAsync(act => input.ActivityIds.Contains(act.Id));
+                var newExercisePlans = await _exercisePlanRepo.GetAllListAsync(ep => input.ExercisePlanIds.Contains(ep.Id));
 
                 foreach (var entry in newStepEntries)
                     path.StepEntries.Add(entry);
@@ -104,14 +106,12 @@ namespace LifeQuest.Services.FitnessService.FitnessPath
                 foreach (var entry in newWeightEntries)
                     path.WeightEntries.Add(entry);
 
-                foreach (var activity in newActivities)
-                    path.Activities.Add(activity);
+                foreach (var plan in newExercisePlans) // Add exercise plans instead of activities
+                    path.ExercisePlans.Add(plan);
 
                 // Now update
                 await _fitnessPathManager.UpdateAsync(path);
                 return ObjectMapper.Map<FitnessPathDto>(path);
-
-
             }
             catch (Exception ex)
             {
@@ -119,6 +119,7 @@ namespace LifeQuest.Services.FitnessService.FitnessPath
                 throw new UserFriendlyException("Could not update FitnessPath");
             }
         }
+
         public async Task<FitnessPathDto> GetByPersonIdAsync(Guid personId)
         {
             _logger.LogInformation("Fetching FitnessPath for Person ID: {PersonId}", personId);
@@ -148,9 +149,6 @@ namespace LifeQuest.Services.FitnessService.FitnessPath
                 throw new UserFriendlyException("Could not retrieve FitnessPath for the specified person.");
             }
         }
-
-
-
 
         public async Task DeleteAsync(Guid id)
         {

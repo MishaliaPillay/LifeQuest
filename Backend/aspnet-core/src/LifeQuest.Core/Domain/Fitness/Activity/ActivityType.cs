@@ -26,4 +26,5 @@ namespace LifeQuest.Domain.Fitness.Activity
         public ActivityType() { }
 
     }
+
 }
