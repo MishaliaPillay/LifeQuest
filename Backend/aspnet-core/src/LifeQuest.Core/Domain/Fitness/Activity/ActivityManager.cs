@@ -20,27 +20,27 @@ namespace LifeQuest.Domain.Fitness.Activity
         }
 
         public async Task<Activity> CreateActivityAsync(
-            int calories,
-            int duration,
-            int xp,
-            int level,
-            List<ActivityType> activityTypes,
-            bool isComplete,
-            ActivityRating rating,
-            string description)
+    int calories,
+    int duration,
+    int xp,
+    int level,
+    List<ActivityType> activityTypes,
+    bool isComplete,
+    ActivityRating rating,
+    string description,
+    Guid personId)
         {
-            // Create new activity
             var activity = new Activity(
                 calories,
                 duration,
                 xp,
                 level,
-                new List<ActivityActivityType>(), // Initialize with empty list
+                new List<ActivityActivityType>(),
                 isComplete,
                 rating,
-                description);
+                description,
+                personId); // Set personId
 
-            // Create ActivityActivityType join entities
             foreach (var activityType in activityTypes)
             {
                 activity.ActivityActivityTypes.Add(new ActivityActivityType
@@ -54,6 +54,7 @@ namespace LifeQuest.Domain.Fitness.Activity
             await _activityRepository.InsertAsync(activity);
             return activity;
         }
+
 
         public async Task<List<Activity>> GetAllAsync()
         {
@@ -108,6 +109,16 @@ namespace LifeQuest.Domain.Fitness.Activity
             await _activityRepository.UpdateAsync(activity);
             return activity;
         }
+        public async Task<List<Activity>> GetByPersonIdAsync(Guid personId)
+        {
+            // Get activities where PersonId matches the provided personId
+            return await _activityRepository.GetAll()
+                .Where(a => a.PersonId == personId) // Filter by PersonId
+                .Include(a => a.ActivityActivityTypes)
+                .ThenInclude(aat => aat.ActivityType)
+                .ToListAsync();
+        }
+
 
         public async Task DeleteActivityAsync(Guid id)
         {

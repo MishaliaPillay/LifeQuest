@@ -15,5 +15,7 @@ namespace LifeQuest.Services.FitnessService.FitnessPath
         Task<List<FitnessPathDto>> GetAllAsync();
         Task<FitnessPathDto> UpdateAsync(UpdateFitnessPathDto input);
         Task DeleteAsync(Guid id);
+        Task<FitnessPathDto> GetByPersonIdAsync(Guid personId);
+
     }
 }

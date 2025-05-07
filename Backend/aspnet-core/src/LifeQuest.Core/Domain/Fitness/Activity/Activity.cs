@@ -14,15 +14,16 @@ namespace LifeQuest.Domain.Fitness.Activity
         public int Xp { get; set; }
         public int Level { get; set; }
         public virtual ICollection<ActivityActivityType> ActivityActivityTypes { get; set; } = new List<ActivityActivityType>();
-
         public bool IsComplete { get; set; }
         public ActivityRating Rating { get; set; }
-
         public string Description { get; set; }
+
+        public Guid PersonId { get; set; }
+
+        public virtual Person.Person Person { get; set; }
 
         public Activity() { }
 
-        // Activity.cs constructor
         public Activity(
             int calories,
             int duration,
@@ -31,7 +32,8 @@ namespace LifeQuest.Domain.Fitness.Activity
             List<ActivityActivityType> activityActivityTypes,
             bool isComplete,
             ActivityRating rating,
-            string description)
+            string description,
+            Guid personId)
         {
             Id = Guid.NewGuid();
             Calories = calories;
@@ -42,6 +44,7 @@ namespace LifeQuest.Domain.Fitness.Activity
             IsComplete = isComplete;
             Rating = rating;
             Description = description;
+            PersonId = personId;
         }
     }
 }
