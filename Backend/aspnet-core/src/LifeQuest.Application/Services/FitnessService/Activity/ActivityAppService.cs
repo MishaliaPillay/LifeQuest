@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Abp.Application.Services;
+using Abp.UI;
 using LifeQuest.Domain.Fitness.Activity;
 using LifeQuest.Services.FitnessService.Activity.Dtos;
 using Microsoft.EntityFrameworkCore;
@@ -41,7 +42,7 @@ namespace LifeQuest.Services.FitnessService.Activity
 
             return new ActivityResponseDto
             {
-                Id = activity.Id, // ✅ Added
+                Id = activity.Id,
                 Calories = activity.Calories,
                 Duration = activity.Duration,
                 Xp = activity.Xp,
@@ -79,7 +80,7 @@ namespace LifeQuest.Services.FitnessService.Activity
                 IsComplete = a.IsComplete,
                 Rating = a.Rating,
                 Description = a.Description,
-                PersonId = a.PersonId, // ✅ Include PersonId here
+                PersonId = a.PersonId,
                 Activities = a.ActivityActivityTypes.Select(aat => new ActivityTypeDto
                 {
                     Id = aat.ActivityType.Id,
@@ -120,25 +121,41 @@ namespace LifeQuest.Services.FitnessService.Activity
         {
             var createdActivities = new List<ActivityResponseDto>();
 
-            foreach (var day in input.Days)
+            try
             {
-                var activity = await CreateActivityAsync(new CreateActivityDto
+                foreach (var day in input.Days)
                 {
-                    ActivityTypeIds = day.ActivityTypeIds,
-                    Calories = 0, // You may compute or default
-                    Duration = 0,
-                    Xp = 0,
-                    Level = 1,
-                    IsComplete = false,
-                    Rating = 0,
-                    Description = day.Description,
-                    PersonId = input.PersonId
-                });
+                    try
+                    {
+                        var activity = await CreateActivityAsync(new CreateActivityDto
+                        {
+                            ActivityTypeIds = day.ActivityTypeIds,
+                            Calories = 0,
+                            Duration = 0,
+                            Xp = 0,
+                            Level = 1,
+                            IsComplete = false,
+                            Rating = 0,
+                            Description = day.Description,
+                            PersonId = input.PersonId
+                        });
 
-                createdActivities.Add(activity);
+                        createdActivities.Add(activity);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error($"Failed to create activity for day: {day.Description}", ex);
+                        throw new UserFriendlyException($"Could not create activity for day '{day.Description}'. Please try again.");
+                    }
+                }
+
+                return createdActivities;
             }
-
-            return createdActivities;
+            catch (Exception ex)
+            {
+                Logger.Error("Error occurred while creating activity plan", ex);
+                throw new UserFriendlyException("An error occurred while creating the activity plan.");
+            }
         }
 
         public async Task<ActivityResponseDto> UpdateActivityAsync(UpdateActivityDto input)
@@ -162,7 +179,7 @@ namespace LifeQuest.Services.FitnessService.Activity
 
             return new ActivityResponseDto
             {
-                Id = updated.Id, // ✅ Added
+                Id = updated.Id,
                 Calories = updated.Calories,
                 Duration = updated.Duration,
                 Xp = updated.Xp,
