@@ -13,19 +13,18 @@ export interface IPathsStateContext {
   isPending: boolean;
   isSuccess: boolean;
   isError: boolean;
-  currentPath?: IPath;       // Currently focused path record
-  paths?: IPath[];           // All path records
+  currentPath?: IPath; // Currently focused path record
+  paths?: IPath[]; // All path records
 }
 
 // Action context interface
 export interface IPathsActionContext {
-  getPaths: () => void;                      // Fetch all path records
-  getPath: (id: string) => void;             // Fetch a single path record
-         
+  getPaths: () => void; // Fetch all path records
+  getPath: (id: string) => void; // Fetch a single path record
 }
 
 // Initial state
-export const INITIAL_PATHS_STATE: IPathsStateContext = {
+export const INITIAL_STATE: IPathsStateContext = {
   isPending: false,
   isSuccess: false,
   isError: false,
@@ -33,5 +32,8 @@ export const INITIAL_PATHS_STATE: IPathsStateContext = {
 };
 
 // Create the state context and the action context
-export const PathsStateContext = createContext<IPathsStateContext>(INITIAL_PATHS_STATE);
-export const PathsActionContext = createContext<IPathsActionContext | undefined>(undefined);
+export const PathsStateContext =
+  createContext<IPathsStateContext>(INITIAL_STATE);
+export const PathsActionContext = createContext<
+  IPathsActionContext | undefined
+>(undefined);
