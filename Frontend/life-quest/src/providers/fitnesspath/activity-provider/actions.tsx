@@ -25,14 +25,14 @@ export enum ActivityTypeActionEnums {
   generateActivityTypeError = "GENERATE_ACTIVITY_TYPE_ERROR",
 }
 
-// Get All Activity Types
-// Get All Activity Types
+// Create Activity Type
 export const createActivityTypePending = createAction<ActivityTypeState>(
   ActivityTypeActionEnums.createActivityTypePending,
   () => ({
     isPending: true,
     isSuccess: false,
     isError: false,
+    activityTypes: [], // Initialize with an empty array
   })
 );
 
@@ -53,14 +53,18 @@ export const createActivityTypeError = createAction<ActivityTypeState, string>(
     isSuccess: false,
     isError: true,
     errorMessage: error,
+    activityTypes: [], // Added missing property
   })
 );
+
+// Update Activity Type
 export const updateActivityTypePending = createAction<ActivityTypeState>(
   ActivityTypeActionEnums.updateActivityTypePending,
   () => ({
     isPending: true,
     isSuccess: false,
     isError: false,
+    activityTypes: [], // Added missing property
   })
 );
 
@@ -81,14 +85,18 @@ export const updateActivityTypeError = createAction<ActivityTypeState, string>(
     isSuccess: false,
     isError: true,
     errorMessage: error,
+    activityTypes: [], // Added missing property
   })
 );
+
+// Delete Activity Type
 export const deleteActivityTypePending = createAction<ActivityTypeState>(
   ActivityTypeActionEnums.deleteActivityTypePending,
   () => ({
     isPending: true,
     isSuccess: false,
     isError: false,
+    activityTypes: [], // Added missing property
   })
 );
 
@@ -109,9 +117,11 @@ export const deleteActivityTypeError = createAction<ActivityTypeState, string>(
     isSuccess: false,
     isError: true,
     errorMessage: error,
+    activityTypes: [], // Added missing property
   })
 );
 
+// Get All Activity Types
 export const getActivityTypesPending = createAction<ActivityTypeState>(
   ActivityTypeActionEnums.getActivityTypesPending,
   () => ({
