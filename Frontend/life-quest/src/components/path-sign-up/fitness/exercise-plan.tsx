@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Typography, Card, Row, Col, List, message } from "antd";
+import { Typography, Card, Row, Col,  message } from "antd";
 import {
   DndContext,
   closestCenter,
@@ -28,7 +28,7 @@ const ActivityItem = ({ id, content, isInDay = false, onRemove }) => {
     transition,
     cursor: "grab",
     marginBottom: 8,
-    borderLeft: "4px solid #1890ff",
+    borderLeft: "4px solidrgb(255, 24, 120)",
   };
 
   return (
@@ -227,12 +227,12 @@ const CreateExercisePlan = ({ availableActivities }) => {
                   const day = dayActivities[dayIndex];
                   return (
                     <Col
-                      xs={24}
-                      sm={12}
-                      md={8}
-                      lg={6}
-                      xl={4}
-                      xxl={4}
+                      xs={24} // full width on extra small screens
+                      sm={12} // half width on small screens
+                      md={8} // 1/3 width on medium screens (3 per row)
+                      lg={8} // 1/3 width on large screens (3 per row)
+                      xl={8} // 1/3 width on extra large screens (3 per row)
+                      xxl={12} // 1/3 width on double extra large screens (3 per row)
                       key={`day-${day.day}`}
                     >
                       <DayContainer
