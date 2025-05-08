@@ -45,12 +45,7 @@ const ActivityItem = ({
   };
 
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      {...listeners}
-    >
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
       <div
         style={{
           display: "flex",
@@ -61,7 +56,10 @@ const ActivityItem = ({
         <div>
           <Text strong>{content}</Text>
           {description && (
-            <Text type="secondary" style={{ display: "block", fontSize: "12px" }}>
+            <Text
+              type="secondary"
+              style={{ display: "block", fontSize: "12px" }}
+            >
               {description}
             </Text>
           )}
@@ -91,7 +89,6 @@ const ActivityItem = ({
 };
 
 // Day Container Component
-
 
 const DayContainer = ({ day, items, onRemoveActivity }) => {
   const droppableId = `day-${day}`;
@@ -135,7 +132,12 @@ const DayContainer = ({ day, items, onRemoveActivity }) => {
   );
 };
 
-const ExercisePlanBuilder = ({ availableActivities, personId, onPlanSubmit }) => {
+const ExercisePlanBuilder = ({
+  availableActivities,
+  personId,
+  fitnessPathId,
+  onPlanSubmit,
+}) => {
   // State for each day's activities
   const [dayActivities, setDayActivities] = useState(
     Array(10)
@@ -215,35 +217,42 @@ const ExercisePlanBuilder = ({ availableActivities, personId, onPlanSubmit }) =>
   // Handle plan submission
   const handleSubmitPlan = () => {
     // Check if at least some days have activities
-    const hasActivities = dayActivities.some(day => day.activities.length > 0);
-    
+    const hasActivities = dayActivities.some(
+      (day) => day.activities.length > 0
+    );
+
     if (!hasActivities) {
-      message.warning("Please add at least one activity to your plan before submitting.");
+      message.warning(
+        "Please add at least one activity to your plan before submitting."
+      );
       return;
     }
 
     // Structure the data for submission
     const planData = {
       personId,
-      dayActivities: dayActivities.map(day => ({
+      fitnessPathId,
+      dayActivities: dayActivities.map((day) => ({
         day: day.day,
-        activities: day.activities.map(activity => ({
+        activities: day.activities.map((activity) => ({
           activityId: activity.activityId,
           category: activity.category,
-          intensityLevel: activity.intensityLevel
-        }))
-      }))
+          intensityLevel: activity.intensityLevel,
+        })),
+      })),
     };
 
     // Call the onPlanSubmit callback with the plan data
     onPlanSubmit(planData);
+    console.log(planData);
   };
 
   return (
     <div>
       <Title level={3}>Build Your 10-Day Exercise Plan</Title>
       <Text type="secondary" style={{ marginBottom: 16, display: "block" }}>
-        Drag and drop activities into each day to create your personalized workout plan
+        Drag and drop activities into each day to create your personalized
+        workout plan
       </Text>
 
       <DndContext
@@ -302,7 +311,9 @@ const ExercisePlanBuilder = ({ availableActivities, personId, onPlanSubmit }) =>
           <TabPane tab="Days 6-10" key="2">
             <Row gutter={[16, 16]}>
               <SortableContext
-                items={dayActivities.slice(5, 10).map((day) => `day-${day.day}`)}
+                items={dayActivities
+                  .slice(5, 10)
+                  .map((day) => `day-${day.day}`)}
                 strategy={verticalListSortingStrategy}
               >
                 {dayActivities.slice(5, 10).map((day) => (
@@ -322,11 +333,7 @@ const ExercisePlanBuilder = ({ availableActivities, personId, onPlanSubmit }) =>
         </Tabs>
 
         <div style={{ marginTop: 24, textAlign: "right" }}>
-          <Button
-            type="primary"
-            onClick={handleSubmitPlan}
-            size="large"
-          >
+          <Button type="primary" onClick={handleSubmitPlan} size="large">
             Submit Exercise Plan
           </Button>
         </div>

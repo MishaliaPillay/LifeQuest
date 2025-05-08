@@ -30,6 +30,7 @@ const StepBasedFitnessPlanner: React.FC<{
   const { currentUser } = useUserState();
   const { createFitnessPath } = useFitnessPathActions();
   const [form] = Form.useForm<FitnessPathFormValues>();
+  const [fitnessPathId, setFitnessPathId] = useState<string | null>(null);
 
   const [current, setCurrent] = useState(0);
   const [submitting, setSubmitting] = useState(false);
@@ -54,7 +55,6 @@ const StepBasedFitnessPlanner: React.FC<{
 
   // Handle basic info form submission
   const handleBasicInfoSubmit = async (values: FitnessPathFormValues) => {
-    console.log("clicked", personId);
     if (!personId) {
       message.error("Person ID is missing. Please log in again.");
       return;
@@ -72,10 +72,13 @@ const StepBasedFitnessPlanner: React.FC<{
         personId: personId,
       };
 
-      // Create the basic fitness path first
-      await createFitnessPath(fitnessPath);
-      setBasicInfoComplete(true);
+      // Await the result and store the ID
+      const createdPath = await createFitnessPath(fitnessPath);
 
+      console.log("toot", createdPath.id);
+      setFitnessPathId(createdPath.id); // 👈 store the ID here
+
+      setBasicInfoComplete(true);
       message.success("Basic information saved!");
       setCurrent(1);
     } catch (error) {
@@ -175,6 +178,7 @@ const StepBasedFitnessPlanner: React.FC<{
             availableActivities={activityTypes}
             personId={personId}
             onPlanSubmit={handleExercisePlanSubmit}
+            fitnessPathId={fitnessPathId}
           />
           <div style={{ marginTop: 16, textAlign: "right" }}>
             <Button onClick={() => setCurrent(1)} style={{ marginRight: 8 }}>
