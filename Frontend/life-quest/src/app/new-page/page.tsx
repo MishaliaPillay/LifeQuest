@@ -7,7 +7,6 @@ import {
   Form,
   Input,
   Button,
-  Select,
   message,
   Divider,
 } from "antd";
@@ -20,7 +19,6 @@ import styles from "./userDashboard.module.css";
 import ActivityTypes from "@/components/path-sign-up/fitness/activity-ai";
 
 const { Title, Paragraph } = Typography;
-const { Option } = Select;
 
 interface FitnessPathFormValues {
   name: string;

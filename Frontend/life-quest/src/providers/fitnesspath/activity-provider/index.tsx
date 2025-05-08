@@ -6,7 +6,9 @@ import {
   INITIAL_STATE,
   ActivityTypeStateContext,
   ActivityTypeActionContext,
+  IGenerateActivityTypeRequest,
 } from "./context";
+
 import { ActivityTypeReducer } from "./reducer";
 import { useReducer, useContext } from "react";
 import {
@@ -27,7 +29,11 @@ import {
   generateActivityTypeError,
 } from "./actions";
 
-export const ActivityTypeProvider = ({ children }: { children: React.ReactNode }) => {
+export const ActivityTypeProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const [state, dispatch] = useReducer(ActivityTypeReducer, INITIAL_STATE);
   const instance = getAxiosInstance();
 
@@ -91,21 +97,24 @@ export const ActivityTypeProvider = ({ children }: { children: React.ReactNode }
       });
   };
 
-  const generateActivityTypes = async () => {
+  const generateActivityTypes = async (
+    requestData: IGenerateActivityTypeRequest
+  ) => {
     dispatch(generateActivityTypePending());
     const endpoint = `/api/services/app/ActivityType/GenerateExerciseActivityTypes`;
 
     return instance
-      .post(endpoint)
+      .post(endpoint, requestData)
       .then((res) => {
-        dispatch(generateActivityTypeSuccess(res.data?.result));
+        // The response contains a result.items array of activity types
+        const activityTypes = res.data?.result?.items || [];
+        dispatch(generateActivityTypeSuccess(activityTypes));
       })
       .catch((err) => {
         console.error("Error generating activity types:", err);
         dispatch(generateActivityTypeError(err));
       });
   };
-
   return (
     <ActivityTypeStateContext.Provider value={state}>
       <ActivityTypeActionContext.Provider
@@ -127,7 +136,9 @@ export const ActivityTypeProvider = ({ children }: { children: React.ReactNode }
 export const useActivityTypeState = () => {
   const context = useContext(ActivityTypeStateContext);
   if (!context) {
-    throw new Error("useActivityTypeState must be used within an ActivityTypeProvider");
+    throw new Error(
+      "useActivityTypeState must be used within an ActivityTypeProvider"
+    );
   }
   return context;
 };
@@ -136,7 +147,9 @@ export const useActivityTypeState = () => {
 export const useActivityTypeActions = () => {
   const context = useContext(ActivityTypeActionContext);
   if (!context) {
-    throw new Error("useActivityTypeActions must be used within an ActivityTypeProvider");
+    throw new Error(
+      "useActivityTypeActions must be used within an ActivityTypeProvider"
+    );
   }
   return context;
 };

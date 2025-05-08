@@ -23,7 +23,7 @@ export interface IGenerateActivityTypeRequest {
 
 // Response model from the backend when generating activity types
 export interface IGenerateActivityTypeResponse {
-  count: number;
+  count: 2;
   baseRequest: IGenerateActivityTypeRequest;
   activityTypes: IActivityType[];
 }
@@ -54,5 +54,8 @@ export const INITIAL_STATE: ActivityTypeState = {
 };
 
 // Create contexts
-export const ActivityTypeStateContext = createContext<ActivityTypeState>(INITIAL_STATE);
-export const ActivityTypeActionContext = createContext<ActivityTypeActions | undefined>(undefined);
+export const ActivityTypeStateContext =
+  createContext<ActivityTypeState>(INITIAL_STATE);
+export const ActivityTypeActionContext = createContext<
+  ActivityTypeActions | undefined
+>(undefined);

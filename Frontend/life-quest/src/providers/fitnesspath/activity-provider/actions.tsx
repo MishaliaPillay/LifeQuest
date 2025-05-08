@@ -26,37 +26,151 @@ export enum ActivityTypeActionEnums {
 }
 
 // Get All Activity Types
-export const getActivityTypesPending = createAction<ActivityTypeState>(
-  ActivityTypeActionEnums.getActivityTypesPending,
-  () => ({ loading: true, error: null, activityTypes: [] })
+// Get All Activity Types
+export const createActivityTypePending = createAction<ActivityTypeState>(
+  ActivityTypeActionEnums.createActivityTypePending,
+  () => ({
+    isPending: true,
+    isSuccess: false,
+    isError: false,
+  })
 );
 
-export const getActivityTypesSuccess = createAction<ActivityTypeState, IActivityType[]>(
-  ActivityTypeActionEnums.getActivityTypesSuccess,
-  (activityTypes) => ({ loading: false, error: null, activityTypes })
+export const createActivityTypeSuccess = createAction<
+  ActivityTypeState,
+  IActivityType
+>(ActivityTypeActionEnums.createActivityTypeSuccess, (newActivityType) => ({
+  isPending: false,
+  isSuccess: true,
+  isError: false,
+  activityTypes: [newActivityType], // Optionally merge with previous list in reducer
+}));
+
+export const createActivityTypeError = createAction<ActivityTypeState, string>(
+  ActivityTypeActionEnums.createActivityTypeError,
+  (error) => ({
+    isPending: false,
+    isSuccess: false,
+    isError: true,
+    errorMessage: error,
+  })
 );
+export const updateActivityTypePending = createAction<ActivityTypeState>(
+  ActivityTypeActionEnums.updateActivityTypePending,
+  () => ({
+    isPending: true,
+    isSuccess: false,
+    isError: false,
+  })
+);
+
+export const updateActivityTypeSuccess = createAction<
+  ActivityTypeState,
+  IActivityType
+>(ActivityTypeActionEnums.updateActivityTypeSuccess, (updatedActivityType) => ({
+  isPending: false,
+  isSuccess: true,
+  isError: false,
+  activityTypes: [updatedActivityType], // Will be replaced correctly in reducer
+}));
+
+export const updateActivityTypeError = createAction<ActivityTypeState, string>(
+  ActivityTypeActionEnums.updateActivityTypeError,
+  (error) => ({
+    isPending: false,
+    isSuccess: false,
+    isError: true,
+    errorMessage: error,
+  })
+);
+export const deleteActivityTypePending = createAction<ActivityTypeState>(
+  ActivityTypeActionEnums.deleteActivityTypePending,
+  () => ({
+    isPending: true,
+    isSuccess: false,
+    isError: false,
+  })
+);
+
+export const deleteActivityTypeSuccess = createAction<
+  ActivityTypeState,
+  string
+>(ActivityTypeActionEnums.deleteActivityTypeSuccess, () => ({
+  isPending: false,
+  isSuccess: true,
+  isError: false,
+  activityTypes: [], // Actual deletion will happen in reducer
+}));
+
+export const deleteActivityTypeError = createAction<ActivityTypeState, string>(
+  ActivityTypeActionEnums.deleteActivityTypeError,
+  (error) => ({
+    isPending: false,
+    isSuccess: false,
+    isError: true,
+    errorMessage: error,
+  })
+);
+
+export const getActivityTypesPending = createAction<ActivityTypeState>(
+  ActivityTypeActionEnums.getActivityTypesPending,
+  () => ({
+    isPending: true,
+    isSuccess: false,
+    isError: false,
+    activityTypes: [],
+  })
+);
+
+export const getActivityTypesSuccess = createAction<
+  ActivityTypeState,
+  IActivityType[]
+>(ActivityTypeActionEnums.getActivityTypesSuccess, (activityTypes) => ({
+  isPending: false,
+  isSuccess: true,
+  isError: false,
+  activityTypes,
+}));
 
 export const getActivityTypesError = createAction<ActivityTypeState, string>(
   ActivityTypeActionEnums.getActivityTypesError,
-  (error) => ({ loading: false, error, activityTypes: [] })
+  (error) => ({
+    isPending: false,
+    isSuccess: false,
+    isError: true,
+    errorMessage: error,
+    activityTypes: [],
+  })
 );
 
-// Create Activity Type
-export const createActivityTypePending = createAction(ActivityTypeActionEnums.createActivityTypePending);
-export const createActivityTypeSuccess = createAction<IActivityType>(ActivityTypeActionEnums.createActivityTypeSuccess);
-export const createActivityTypeError = createAction<string>(ActivityTypeActionEnums.createActivityTypeError);
+// Generate Activity Types
+export const generateActivityTypePending = createAction<ActivityTypeState>(
+  ActivityTypeActionEnums.generateActivityTypePending,
+  () => ({
+    isPending: true,
+    isSuccess: false,
+    isError: false,
+    activityTypes: [],
+  })
+);
 
-// Update Activity Type
-export const updateActivityTypePending = createAction(ActivityTypeActionEnums.updateActivityTypePending);
-export const updateActivityTypeSuccess = createAction<IActivityType>(ActivityTypeActionEnums.updateActivityTypeSuccess);
-export const updateActivityTypeError = createAction<string>(ActivityTypeActionEnums.updateActivityTypeError);
+export const generateActivityTypeSuccess = createAction<
+  ActivityTypeState,
+  IActivityType[]
+>(ActivityTypeActionEnums.generateActivityTypeSuccess, (activityTypes) => ({
+  isPending: false,
+  isSuccess: true,
+  isError: false,
+  activityTypes,
+}));
 
-// Delete Activity Type
-export const deleteActivityTypePending = createAction(ActivityTypeActionEnums.deleteActivityTypePending);
-export const deleteActivityTypeSuccess = createAction<string>(ActivityTypeActionEnums.deleteActivityTypeSuccess); // ID
-export const deleteActivityTypeError = createAction<string>(ActivityTypeActionEnums.deleteActivityTypeError);
-
-// Generate Activity Type(s)
-export const generateActivityTypePending = createAction(ActivityTypeActionEnums.generateActivityTypePending);
-export const generateActivityTypeSuccess = createAction<IActivityType[]>(ActivityTypeActionEnums.generateActivityTypeSuccess);
-export const generateActivityTypeError = createAction<string>(ActivityTypeActionEnums.generateActivityTypeError);
+export const generateActivityTypeError = createAction<
+  ActivityTypeState,
+  string
+>(ActivityTypeActionEnums.generateActivityTypeError, (error) => ({
+  isPending: false,
+  isSuccess: false,
+  isError: true,
+  errorMessage: error,
+  activityTypes: [],
+}));
