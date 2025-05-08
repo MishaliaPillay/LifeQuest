@@ -14,6 +14,7 @@ import {
 import { useUserState, useUserActions } from "@/providers/user-provider";
 import { useFitnessPathActions } from "@/providers/fitnesspath/fitness-provider";
 import { useAuthActions } from "@/providers/auth-provider";
+import { useActivityTypeActions } from "../../providers/fitnesspath/activity-type-provider"
 import { getId } from "@/utils/decoder";
 import withAuth from "../../hoc/withAuth";
 import styles from "./userDashboard.module.css";
@@ -34,6 +35,7 @@ const UserDashboard: React.FC = () => {
   const { getCurrentUser } = useUserActions();
   const { createFitnessPath } = useFitnessPathActions();
   const { getCurrentPerson } = useAuthActions();
+  const { generateActivityTypes } = useActivityTypeActions(); // ✅ NEW
 
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -103,24 +105,37 @@ const UserDashboard: React.FC = () => {
     setSubmitting(true);
 
     try {
-      // Construct fitness path with required fields
+      // Create Fitness Path
       const fitnessPath = {
-        title: values.name,           // Ensure 'name' is mapped to 'title'
+        title: values.name,
         description: values.description,
-        stepEntryIds: [],             // Initialize with empty arrays
-        weightEntryIds: [],           // Initialize with empty arrays
-        activityIds: [],              // Initialize with empty arrays
-        personId: personId,           // Ensure personId is passed separately
+        stepEntryIds: [],
+        weightEntryIds: [],
+        activityIds: [],
+        personId: personId,
       };
 
-      // Call createFitnessPath with the fitness path and personId
       await createFitnessPath(fitnessPath);
-
       message.success("Fitness path created successfully!");
+
+      // ✅ Generate Activity Types (you can later pull these from real user input)
+      const request = {
+        age: 22,
+        gender: "female",
+        bodyType: "mesomorph",
+        fitnessLevel: "intermediate",
+        limitations: "none",
+        preferredExerciseTypes: values.type,
+        availableEquipment: ["dumbbells", "resistance bands"],
+      };
+
+      await generateActivityTypes(request);
+      message.success("Suggested activities generated!");
+
       form.resetFields();
     } catch (error) {
-      console.error("Error creating fitness path:", error);
-      message.error("Failed to create fitness path.");
+      console.error("Error:", error);
+      message.error("Something went wrong.");
     } finally {
       setSubmitting(false);
     }
