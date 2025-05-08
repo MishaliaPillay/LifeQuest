@@ -74,7 +74,7 @@ export const ExercisePlanProvider = ({
 
     return instance
       .post(endpoint, plan)
-      .then((res) => {
+      .then((res) => { console.log("exercise result",res)
         dispatch(createPlanSuccess(res.data?.result));
       })
       .catch((err) => {

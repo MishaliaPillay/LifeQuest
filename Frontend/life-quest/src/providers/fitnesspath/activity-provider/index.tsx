@@ -164,14 +164,14 @@ export const ActivityTypeProvider = ({
       // MOCK DATA: Replace this with your desired static mock objects
       const mockActivityTypes = [
         {
-          id: "mock-1",
+          id: "0196b016-1645-7d52-9ab1-5e58916bf9b8",
           category: "Cardio - HIIT",
           intensityLevel: 3,
           description:
             "High-intensity interval training to improve endurance and burn fat quickly.",
         },
         {
-          id: "mock-2",
+          id: "0196b105-9e61-7570-a8d9-d9ff88415662",
           category: "Strength - Bodyweight",
           intensityLevel: 2,
           description:

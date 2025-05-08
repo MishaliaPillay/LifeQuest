@@ -9,6 +9,7 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
+
 import { restrictToWindowEdges } from "@dnd-kit/modifiers";
 import { CSS } from "@dnd-kit/utilities";
 import {
@@ -16,7 +17,7 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-
+import { useExercisePlanActions } from "@/providers/fitnesspath/exercise-plan";
 const { Title, Text } = Typography;
 const { TabPane } = Tabs;
 
@@ -89,7 +90,6 @@ const ActivityItem = ({
 };
 
 // Day Container Component
-
 const DayContainer = ({ day, items, onRemoveActivity }) => {
   const droppableId = `day-${day}`;
   const { setNodeRef } = useDroppable({ id: droppableId });
@@ -144,7 +144,8 @@ const ExercisePlanBuilder = ({
       .fill(null)
       .map((_, i) => ({ day: i + 1, activities: [] }))
   );
-
+  const { createPlan } = useExercisePlanActions();
+  
   // Setup sensors for drag detection
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -215,41 +216,44 @@ const ExercisePlanBuilder = ({
   };
 
   // Handle plan submission
-  const handleSubmitPlan = () => {
-    // Check if at least some days have activities
-    const hasActivities = dayActivities.some(
-      (day) => day.activities.length > 0
+  const handleSubmitPlan = async () => {
+    // Filter days with activities
+    const daysWithActivities = dayActivities.filter(
+      (d) => d.activities.length > 0
     );
-
-    if (!hasActivities) {
-      message.warning(
-        "Please add at least one activity to your plan before submitting."
-      );
+    
+    if (daysWithActivities.length === 0) {
+      message.error("Please add at least one activity to your plan");
       return;
     }
 
-    // Structure the data for submission
-    const planData = {
-      personId,
-      fitnessPathId,
-      dayActivities: dayActivities.map((day) => ({
-        day: day.day,
-        activities: day.activities.map((activity) => ({
-          activityId: activity.activityId,
-          category: activity.category,
-          intensityLevel: activity.intensityLevel,
-        })),
-      })),
+    // Format the plan according to EXACTLY your API specifications
+    const plan = {
+      fitnessPathId: fitnessPathId,
+      name: "string",
+      days: daysWithActivities.map((d) => ({
+        description: "string",
+        activityTypeIds: d.activities.map((a) => a.activityId),
+        duration: 0,
+        calories: 0
+      }))
     };
 
-    // Call the onPlanSubmit callback with the plan data
-    onPlanSubmit(planData);
-    console.log(planData);
+    console.log("Submitting plan with exact format:", plan);
+
+    try {
+      await createPlan(plan);
+      message.success("Exercise Plan created successfully!");
+      if (onPlanSubmit) onPlanSubmit();
+    } catch (error) {
+      console.error("Error creating plan:", error);
+      message.error("Failed to create Exercise Plan");
+    }
   };
 
   return (
     <div>
-      <Title level={3}>Build Your 10-Day Exercise Plan</Title>
+      <Title level={3}>Build Your Exercise Plan</Title>
       <Text type="secondary" style={{ marginBottom: 16, display: "block" }}>
         Drag and drop activities into each day to create your personalized
         workout plan
