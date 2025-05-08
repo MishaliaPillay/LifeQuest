@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Typography, Card, Row, Col, message, Button } from "antd";
+import { Typography, Card, Row, Col, message, Button, Tabs, Empty } from "antd";
 import {
   DndContext,
   closestCenter,
@@ -17,6 +17,7 @@ import {
 } from "@dnd-kit/sortable";
 
 const { Title, Text } = Typography;
+const { TabPane } = Tabs;
 
 // Draggable Activity Component
 const ActivityItem = ({
@@ -36,13 +37,16 @@ const ActivityItem = ({
     transition,
     cursor: "grab",
     marginBottom: 8,
+    background: "#fff",
+    borderRadius: 4,
+    border: "1px solid #f0f0f0",
+    padding: "8px 12px",
   };
 
   return (
-    <Card
+    <div
       ref={setNodeRef}
       style={style}
-      size="small"
       {...attributes}
       {...listeners}
     >
@@ -55,53 +59,47 @@ const ActivityItem = ({
       >
         <div>
           <Text strong>{content}</Text>
-          <br />
-          {description && <Text type="secondary">{description}</Text>}
+          {description && (
+            <Text type="secondary" style={{ display: "block", fontSize: "12px" }}>
+              {description}
+            </Text>
+          )}
           {intensityLevel !== undefined && (
-            <div style={{ fontSize: 12, color: "#999" }}>
+            <div style={{ fontSize: 12, color: "#999", marginTop: 4 }}>
               Intensity: {intensityLevel} {category && `• ${category}`}
             </div>
           )}
         </div>
 
         {isInDay && (
-          <span
+          <Button
+            type="text"
+            danger
+            size="small"
             onClick={(e) => {
               e.stopPropagation();
               onRemove(id);
             }}
-            style={{ cursor: "pointer", color: "red" }}
           >
             ✕
-          </span>
+          </Button>
         )}
       </div>
-    </Card>
+    </div>
   );
 };
 
 // Day Container Component
 const DayContainer = ({ day, items, onRemoveActivity }) => {
-  const { attributes, listeners, setNodeRef } = useSortable({
-    id: `day-${day}`,
-  });
-
   return (
-    <Card
-      title={`Day ${day}`}
-      ref={setNodeRef}
-      {...attributes}
-      {...listeners}
-      style={{ height: "100%", minHeight: 200 }}
-    >
-      <div style={{ minHeight: 120 }}>
+    <Card title={`Day ${day}`} size="small" style={{ height: "100%", minHeight: 150 }}>
+      <div style={{ minHeight: 100 }}>
         {items.length === 0 ? (
-          <Text
-            type="secondary"
-            style={{ display: "block", textAlign: "center", marginTop: 40 }}
-          >
-            Drop activities here
-          </Text>
+          <Empty
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+            description="Drop activities here"
+            style={{ margin: "20px 0" }}
+          />
         ) : (
           <SortableContext
             items={items.map((item) => item.id)}
@@ -109,11 +107,15 @@ const DayContainer = ({ day, items, onRemoveActivity }) => {
           >
             {items.map((item) => (
               <ActivityItem
-                    key={item.id}
-                    id={item.id}
-                    content={item.content}
-                    isInDay={true}
-                    onRemove={onRemoveActivity} description={undefined} category={undefined} intensityLevel={undefined}              />
+                key={item.id}
+                id={item.id}
+                content={item.content}
+                isInDay={true}
+                onRemove={onRemoveActivity}
+                description={item.description}
+                category={item.category}
+                intensityLevel={item.intensityLevel}
+              />
             ))}
           </SortableContext>
         )}
@@ -122,7 +124,7 @@ const DayContainer = ({ day, items, onRemoveActivity }) => {
   );
 };
 
-const CreateExercisePlan = ({ availableActivities ,personId}) => {
+const ExercisePlanBuilder = ({ availableActivities, personId, onPlanSubmit }) => {
   // State for each day's activities
   const [dayActivities, setDayActivities] = useState(
     Array(10)
@@ -149,8 +151,8 @@ const CreateExercisePlan = ({ availableActivities ,personId}) => {
     const overId = over.id;
 
     // Check if dropped on a day container
-    if (overId.toString().startsWith("day-")) {
-      const dayNumber = parseInt(overId.toString().split("-")[1]);
+    if (typeof overId === "string" && overId.startsWith("day-")) {
+      const dayNumber = parseInt(overId.split("-")[1]);
 
       // Find the activity from available list
       const activityToAdd = availableActivities.find(
@@ -184,7 +186,7 @@ const CreateExercisePlan = ({ availableActivities ,personId}) => {
           })
         );
 
-        message.success(`Added "${activityToAdd.content}" to Day ${dayNumber}`);
+        message.success(`Added activity to Day ${dayNumber}`);
       }
     }
   };
@@ -199,12 +201,38 @@ const CreateExercisePlan = ({ availableActivities ,personId}) => {
     );
   };
 
+  // Handle plan submission
+  const handleSubmitPlan = () => {
+    // Check if at least some days have activities
+    const hasActivities = dayActivities.some(day => day.activities.length > 0);
+    
+    if (!hasActivities) {
+      message.warning("Please add at least one activity to your plan before submitting.");
+      return;
+    }
+
+    // Structure the data for submission
+    const planData = {
+      personId,
+      dayActivities: dayActivities.map(day => ({
+        day: day.day,
+        activities: day.activities.map(activity => ({
+          activityId: activity.activityId,
+          category: activity.category,
+          intensityLevel: activity.intensityLevel
+        }))
+      }))
+    };
+
+    // Call the onPlanSubmit callback with the plan data
+    onPlanSubmit(planData);
+  };
+
   return (
-    <div style={{ padding: 24 }}>
-      <Title level={2}>10-Day Exercise Planner</Title>
-      <Text type="secondary" style={{ marginBottom: 24, display: "block" }}>
-        Drag and drop activities into the day containers to create your exercise
-        plan
+    <div>
+      <Title level={3}>Build Your 10-Day Exercise Plan</Title>
+      <Text type="secondary" style={{ marginBottom: 16, display: "block" }}>
+        Drag and drop activities into each day to create your personalized workout plan
       </Text>
 
       <DndContext
@@ -213,77 +241,87 @@ const CreateExercisePlan = ({ availableActivities ,personId}) => {
         onDragEnd={handleDragEnd}
         modifiers={[restrictToWindowEdges]}
       >
-        <Row gutter={[16, 16]}>
-          <Col span={24}>
-            <Card title="Available Activities">
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                <SortableContext
-                  items={availableActivities.map((item) => item.id)}
-                  strategy={verticalListSortingStrategy}
-                >
-                  {availableActivities.map((activity) => (
-                    <div key={activity.id} style={{ width: "calc(20% - 8px)" }}>
-                      <ActivityItem
-                        id={activity.id}
-                        content={activity.content}
-                        description={activity.description}
-                        category={activity.category}
-                        intensityLevel={activity.intensityLevel}
-                        onRemove={undefined}
-                      />
-                    </div>
-                  ))}
-                </SortableContext>
-              </div>
-            </Card>
-          </Col>
+        <Card title="Available Activities" style={{ marginBottom: 16 }}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+            <SortableContext
+              items={availableActivities.map((item) => item.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              {availableActivities.length === 0 ? (
+                <Empty description="No activities available yet" />
+              ) : (
+                availableActivities.map((activity) => (
+                  <div key={activity.id} style={{ width: "calc(20% - 8px)" }}>
+                    <ActivityItem
+                      id={activity.id}
+                      content={activity.content}
+                      description={activity.description}
+                      category={activity.category}
+                      intensityLevel={activity.intensityLevel}
+                      onRemove={undefined}
+                    />
+                  </div>
+                ))
+              )}
+            </SortableContext>
+          </div>
+        </Card>
 
-          {/* Day containers - 2 rows of 5 */}
-          <SortableContext
-            items={dayActivities.map((day) => `day-${day.day}`)}
-            strategy={verticalListSortingStrategy}
-          >
-            {[0, 1].map((row) => (
-              <React.Fragment key={`row-${row}`}>
-                {[1, 2, 3, 4, 5].map((col) => {
-                  const dayIndex = row * 5 + col - 1;
-                  const day = dayActivities[dayIndex];
-                  return (
-                    <Col
-                      xs={24} // full width on extra small screens
-                      sm={12} // half width on small screens
-                      md={8} // 1/3 width on medium screens (3 per row)
-                      lg={8} // 1/3 width on large screens (3 per row)
-                      xl={8} // 1/3 width on extra large screens (3 per row)
-                      xxl={12} // 1/3 width on double extra large screens (3 per row)
-                      key={`day-${day.day}`}
-                    >
+        <Tabs defaultActiveKey="1">
+          <TabPane tab="Days 1-5" key="1">
+            <Row gutter={[16, 16]}>
+              <SortableContext
+                items={dayActivities.slice(0, 5).map((day) => `day-${day.day}`)}
+                strategy={verticalListSortingStrategy}
+              >
+                {dayActivities.slice(0, 5).map((day) => (
+                  <Col xs={24} sm={12} md={12} lg={8} key={`day-${day.day}`}>
+                    <div id={`day-${day.day}`}>
                       <DayContainer
                         day={day.day}
                         items={day.activities}
                         onRemoveActivity={handleRemoveActivity}
                       />
-                    </Col>
-                  );
-                })}
-              </React.Fragment>
-            ))}
-          </SortableContext>
-        </Row>
-      </DndContext>
+                    </div>
+                  </Col>
+                ))}
+              </SortableContext>
+            </Row>
+          </TabPane>
+          <TabPane tab="Days 6-10" key="2">
+            <Row gutter={[16, 16]}>
+              <SortableContext
+                items={dayActivities.slice(5, 10).map((day) => `day-${day.day}`)}
+                strategy={verticalListSortingStrategy}
+              >
+                {dayActivities.slice(5, 10).map((day) => (
+                  <Col xs={24} sm={12} md={12} lg={8} key={`day-${day.day}`}>
+                    <div id={`day-${day.day}`}>
+                      <DayContainer
+                        day={day.day}
+                        items={day.activities}
+                        onRemoveActivity={handleRemoveActivity}
+                      />
+                    </div>
+                  </Col>
+                ))}
+              </SortableContext>
+            </Row>
+          </TabPane>
+        </Tabs>
 
-      <Button
-        type="primary"
-        onClick={() => {
-          console.log("Submitted Plan:", dayActivities);
-          message.success("Plan submitted! Check the console.");
-        }}
-        style={{ marginTop: 24 }}
-      >
-        Submit Plan
-      </Button>
+        <div style={{ marginTop: 24, textAlign: "right" }}>
+          <Button
+            type="primary"
+            onClick={handleSubmitPlan}
+            size="large"
+          >
+            Submit Exercise Plan
+          </Button>
+        </div>
+      </DndContext>
     </div>
   );
 };
 
-export default CreateExercisePlan;
+export default ExercisePlanBuilder;
