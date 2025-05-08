@@ -1,6 +1,6 @@
 "use client";
-import React, { useState } from "react";
-import { Typography, Form, Input, Button, Select } from "antd";
+import React from "react";
+import { Typography, Form, Input, Button, Select, message } from "antd";
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -8,19 +8,31 @@ const { Option } = Select;
 const ActivityTypes: React.FC = () => {
   const [form] = Form.useForm();
 
+  const handleFinish = (values: any) => {
+    if (values.preferredExerciseTypes.length > 3) {
+      return message.error("You can select up to 3 preferred exercise types.");
+    }
+    if (values.availableEquipment.length > 5) {
+      return message.error("You can select up to 5 equipment items.");
+    }
+    console.log("Submitted values:", values);
+    // Add your logic here
+  };
+
   return (
     <div>
       <Title level={2}>Personal Fitness Profile</Title>
       <Form
         layout="vertical"
         form={form}
+        onFinish={handleFinish}
         initialValues={{
-          age: 20,
-          gender: "",
+          age: 25,
+          gender: "male",
           bodyType: "",
           fitnessLevel: "",
           limitations: "",
-          preferredExerciseTypes: "",
+          preferredExerciseTypes: [],
           availableEquipment: [],
         }}
       >
@@ -34,12 +46,13 @@ const ActivityTypes: React.FC = () => {
 
         <Form.Item
           name="gender"
-          label="Sex"
+          label="Gender"
           rules={[{ required: true, message: "Please select your gender" }]}
         >
           <Select placeholder="Select gender">
             <Option value="male">Male</Option>
             <Option value="female">Female</Option>
+            <Option value="other">Other</Option>
           </Select>
         </Form.Item>
 
@@ -73,25 +86,54 @@ const ActivityTypes: React.FC = () => {
 
         <Form.Item
           name="preferredExerciseTypes"
-          label="Preferred Exercise Types"
-          rules={[{ required: true, message: "Please list your preferences" }]}
+          label="Preferred Exercise Types (max 3)"
+          rules={[
+            {
+              required: true,
+              message: "Please select at least one exercise type",
+            },
+          ]}
         >
-          <Input placeholder="e.g., Yoga, HIIT, Strength Training" />
+          <Select
+            mode="tags"
+            placeholder="e.g., Yoga, HIIT"
+            maxTagCount={3}
+            maxLength={3}
+            onChange={(val) => {
+              if (val.length > 3) {
+                message.warning("You can select up to 3 types.");
+                form.setFieldsValue({
+                  preferredExerciseTypes: val.slice(0, 3),
+                });
+              }
+            }}
+          />
         </Form.Item>
 
         <Form.Item
           name="availableEquipment"
-          label="Available Equipment"
-          rules={[{ required: true, message: "Please select at least one" }]}
+          label="Available Equipment (max 5)"
+          rules={[
+            {
+              required: true,
+              message: "Please select at least one type of equipment",
+            },
+          ]}
         >
-          <Select mode="tags" placeholder="Select or enter equipment">
-            <Option value="dumbbells">Dumbbells</Option>
-            <Option value="resistance bands">Resistance Bands</Option>
-            <Option value="kettlebell">Kettlebell</Option>
-            <Option value="yoga mat">Yoga Mat</Option>
-            <Option value="treadmill">Treadmill</Option>
-            <Option value="none">None</Option>
-          </Select>
+          <Select
+            mode="tags"
+            placeholder="e.g., Dumbbells, Resistance Bands, Treadmill "
+            maxTagCount={3}
+            maxLength={3}
+            onChange={(val) => {
+              if (val.length > 3) {
+                message.warning("You can select up to 3 types.");
+                form.setFieldsValue({
+                  availableEquipment: val.slice(0, 3),
+                });
+              }
+            }}
+          />
         </Form.Item>
 
         <Form.Item>
