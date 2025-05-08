@@ -124,8 +124,8 @@ const UserDashboard: React.FC = () => {
 
   const handleActivityTypesGenerated = (generatedActivityTypes) => {
     // Format activity types for the exercise planner
-    const formatted = generatedActivityTypes.map((activity, index) => ({
-      id: `activity-${index}`,
+    const formatted = generatedActivityTypes.map((activity) => ({
+      id: activity.id,
       content: `${activity.category} (Intensity: ${activity.intensityLevel})`,
       category: activity.category,
       intensityLevel: activity.intensityLevel,

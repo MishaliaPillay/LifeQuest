@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Typography, Card, Row, Col,  message } from "antd";
+import { Typography, Card, Row, Col, message, Button } from "antd";
 import {
   DndContext,
   closestCenter,
@@ -19,7 +19,15 @@ import {
 const { Title, Text } = Typography;
 
 // Draggable Activity Component
-const ActivityItem = ({ id, content, isInDay = false, onRemove }) => {
+const ActivityItem = ({
+  id,
+  content,
+  isInDay = false,
+  onRemove,
+  description,
+  category,
+  intensityLevel,
+}) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id });
 
@@ -28,7 +36,6 @@ const ActivityItem = ({ id, content, isInDay = false, onRemove }) => {
     transition,
     cursor: "grab",
     marginBottom: 8,
-    borderLeft: "4px solidrgb(255, 24, 120)",
   };
 
   return (
@@ -46,7 +53,17 @@ const ActivityItem = ({ id, content, isInDay = false, onRemove }) => {
           alignItems: "center",
         }}
       >
-        <Text>{content}</Text>
+        <div>
+          <Text strong>{content}</Text>
+          <br />
+          {description && <Text type="secondary">{description}</Text>}
+          {intensityLevel !== undefined && (
+            <div style={{ fontSize: 12, color: "#999" }}>
+              Intensity: {intensityLevel} {category && `• ${category}`}
+            </div>
+          )}
+        </div>
+
         {isInDay && (
           <span
             onClick={(e) => {
@@ -92,12 +109,11 @@ const DayContainer = ({ day, items, onRemoveActivity }) => {
           >
             {items.map((item) => (
               <ActivityItem
-                key={item.id}
-                id={item.id}
-                content={item.content}
-                isInDay={true}
-                onRemove={onRemoveActivity}
-              />
+                    key={item.id}
+                    id={item.id}
+                    content={item.content}
+                    isInDay={true}
+                    onRemove={onRemoveActivity} description={undefined} category={undefined} intensityLevel={undefined}              />
             ))}
           </SortableContext>
         )}
@@ -155,7 +171,11 @@ const CreateExercisePlan = ({ availableActivities }) => {
                   ...day,
                   activities: [
                     ...day.activities,
-                    { ...activityToAdd, id: uniqueId },
+                    {
+                      ...activityToAdd,
+                      id: uniqueId, // used for rendering/sorting
+                      activityId: activityToAdd.id, // preserve original ID
+                    },
                   ],
                 };
               }
@@ -206,6 +226,9 @@ const CreateExercisePlan = ({ availableActivities }) => {
                       <ActivityItem
                         id={activity.id}
                         content={activity.content}
+                        description={activity.description}
+                        category={activity.category}
+                        intensityLevel={activity.intensityLevel}
                         onRemove={undefined}
                       />
                     </div>
@@ -248,6 +271,17 @@ const CreateExercisePlan = ({ availableActivities }) => {
           </SortableContext>
         </Row>
       </DndContext>
+
+      <Button
+        type="primary"
+        onClick={() => {
+          console.log("Submitted Plan:", dayActivities);
+          message.success("Plan submitted! Check the console.");
+        }}
+        style={{ marginTop: 24 }}
+      >
+        Submit Plan
+      </Button>
     </div>
   );
 };

@@ -34,6 +34,7 @@ const ActivityTypes: React.FC<{
   useEffect(() => {
     if (activityTypes && activityTypes.length > 0) {
       onActivityTypesGenerated(activityTypes);
+      console.log("teddt", activityTypes);
     }
   }, [generateActivityTypes]);
 
