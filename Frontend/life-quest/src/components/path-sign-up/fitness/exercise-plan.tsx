@@ -106,25 +106,11 @@ const DayContainer = ({ day, items, onRemoveActivity }) => {
   );
 };
 
-const CreateExercisePlan = () => {
-  // Available activities
-  const availableActivities = [
-    { id: "activity-1", content: "Running (30 min)" },
-    { id: "activity-2", content: "Weight Training (45 min)" },
-    { id: "activity-3", content: "Yoga (60 min)" },
-    { id: "activity-4", content: "Swimming (40 min)" },
-    { id: "activity-5", content: "Cycling (45 min)" },
-    { id: "activity-6", content: "HIIT Workout (20 min)" },
-    { id: "activity-7", content: "Pilates (50 min)" },
-    { id: "activity-8", content: "Stretching (15 min)" },
-    { id: "activity-9", content: "Walking (30 min)" },
-    { id: "activity-10", content: "Rest Day" },
-  ];
-
+const CreateExercisePlan = ({ availableActivities }) => {
   // State for each day's activities
   const [dayActivities, setDayActivities] = useState(
     Array(10)
-      .fill()
+      .fill(null)
       .map((_, i) => ({ day: i + 1, activities: [] }))
   );
 
@@ -218,8 +204,10 @@ const CreateExercisePlan = () => {
                   {availableActivities.map((activity) => (
                     <div key={activity.id} style={{ width: "calc(20% - 8px)" }}>
                       <ActivityItem
-                              id={activity.id}
-                              content={activity.content} onRemove={undefined}                      />
+                        id={activity.id}
+                        content={activity.content}
+                        onRemove={undefined}
+                      />
                     </div>
                   ))}
                 </SortableContext>

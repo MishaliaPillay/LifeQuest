@@ -1,5 +1,5 @@
 "use client";
-import React, { useState} from "react";
+import React, { useState, useEffect } from "react";
 import {
   Typography,
   Form,
@@ -21,12 +21,21 @@ import { IBaseActivityTypeRequest } from "@/providers/fitnesspath/activity-provi
 const { Title, Text } = Typography;
 const { Option } = Select;
 
-const ActivityTypes: React.FC = () => {
+const ActivityTypes: React.FC<{
+  onActivityTypesGenerated: (types: any[]) => void;
+}> = ({ onActivityTypesGenerated }) => {
   const [form] = Form.useForm();
   const [submitting, setSubmitting] = useState(false);
   const { generateActivityTypes } = useActivityTypeActions();
   const { activityTypes, isPending, isError, errorMessage } =
     useActivityTypeState();
+
+  // This effect will pass the activity types to parent when they change
+  useEffect(() => {
+    if (activityTypes && activityTypes.length > 0) {
+      onActivityTypesGenerated(activityTypes);
+    }
+  }, [generateActivityTypes]);
 
   const handleFinish = async (values: IBaseActivityTypeRequest) => {
     setSubmitting(true);

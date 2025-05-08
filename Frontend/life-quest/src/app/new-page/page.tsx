@@ -35,6 +35,7 @@ const UserDashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [personId, setPersonId] = useState<string>("");
+  const [formattedActivities, setFormattedActivities] = useState([]);
   const hasFetched = useRef(false);
   const [form] = Form.useForm<FitnessPathFormValues>();
 
@@ -100,17 +101,15 @@ const UserDashboard: React.FC = () => {
     setSubmitting(true);
 
     try {
-      // Construct fitness path with required fields
       const fitnessPath = {
-        title: values.name, // Ensure 'name' is mapped to 'title'
+        title: values.name,
         description: values.description,
-        stepEntryIds: [], // Initialize with empty arrays
-        weightEntryIds: [], // Initialize with empty arrays
-        activityIds: [], // Initialize with empty arrays
-        personId: personId, // Ensure personId is passed separately
+        stepEntryIds: [],
+        weightEntryIds: [],
+        activityIds: [],
+        personId: personId,
       };
 
-      // Call createFitnessPath with the fitness path and personId
       await createFitnessPath(fitnessPath);
 
       message.success("Fitness path created successfully!");
@@ -121,6 +120,19 @@ const UserDashboard: React.FC = () => {
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handleActivityTypesGenerated = (generatedActivityTypes) => {
+    // Format activity types for the exercise planner
+    const formatted = generatedActivityTypes.map((activity, index) => ({
+      id: `activity-${index}`,
+      content: `${activity.category} (Intensity: ${activity.intensityLevel})`,
+      category: activity.category,
+      intensityLevel: activity.intensityLevel,
+      description: activity.description,
+    }));
+
+    setFormattedActivities(formatted);
   };
 
   if (loading || !currentUser?.name) {
@@ -189,8 +201,11 @@ const UserDashboard: React.FC = () => {
             </Button>
           </Form.Item>
         </Form>
-        <ActivityTypes />
-        <CreateExercisePlan />
+
+        <ActivityTypes
+          onActivityTypesGenerated={handleActivityTypesGenerated}
+        />
+        <CreateExercisePlan availableActivities={formattedActivities} />
       </Card>
     </div>
   );
