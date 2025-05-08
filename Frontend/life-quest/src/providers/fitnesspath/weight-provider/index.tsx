@@ -39,12 +39,12 @@ export const WeightProvider = ({ children }: { children: React.ReactNode }) => {
     return instance
       .get(endpoint)
       .then((response) => {
-        console.log("cheese",response)
+        console.log("cheese", response);
         dispatch(getWeightsSuccess(response.data?.result ?? []));
       })
       .catch((error) => {
         console.error("Error fetching weights:", error);
-        dispatch(getWeightsError(error));
+        dispatch(getWeightsError());
       });
   };
 
@@ -60,7 +60,7 @@ export const WeightProvider = ({ children }: { children: React.ReactNode }) => {
       })
       .catch((error) => {
         console.error("Error fetching weight:", error);
-        dispatch(getWeightError(error));
+        dispatch(getWeightError());
       });
   };
 
@@ -76,7 +76,7 @@ export const WeightProvider = ({ children }: { children: React.ReactNode }) => {
       })
       .catch((error) => {
         console.error("Error creating weight:", error);
-        dispatch(createWeightError(error));
+        dispatch(createWeightError());
       });
   };
 
@@ -92,7 +92,7 @@ export const WeightProvider = ({ children }: { children: React.ReactNode }) => {
       })
       .catch((error) => {
         console.error("Error updating weight:", error);
-        dispatch(updateWeightError(error));
+        dispatch(updateWeightError());
       });
   };
 
@@ -108,7 +108,7 @@ export const WeightProvider = ({ children }: { children: React.ReactNode }) => {
       })
       .catch((error) => {
         console.error("Error deleting weight:", error);
-        dispatch(deleteWeightError(error));
+        dispatch(deleteWeightError());
       });
   };
 

@@ -7,7 +7,6 @@ import {
   Form,
   Input,
   Button,
-  Select,
   message,
   Divider,
 } from "antd";
@@ -17,16 +16,13 @@ import { useAuthActions } from "@/providers/auth-provider";
 import { getId } from "@/utils/decoder";
 import withAuth from "../../hoc/withAuth";
 import styles from "./userDashboard.module.css";
+import ActivityTypes from "@/components/path-sign-up/fitness/activity-ai";
 
 const { Title, Paragraph } = Typography;
-const { Option } = Select;
 
 interface FitnessPathFormValues {
   name: string;
   description: string;
-  type: string;
-  goal: string;
-  duration: number;
 }
 
 const UserDashboard: React.FC = () => {
@@ -105,12 +101,12 @@ const UserDashboard: React.FC = () => {
     try {
       // Construct fitness path with required fields
       const fitnessPath = {
-        title: values.name,           // Ensure 'name' is mapped to 'title'
+        title: values.name, // Ensure 'name' is mapped to 'title'
         description: values.description,
-        stepEntryIds: [],             // Initialize with empty arrays
-        weightEntryIds: [],           // Initialize with empty arrays
-        activityIds: [],              // Initialize with empty arrays
-        personId: personId,           // Ensure personId is passed separately
+        stepEntryIds: [], // Initialize with empty arrays
+        weightEntryIds: [], // Initialize with empty arrays
+        activityIds: [], // Initialize with empty arrays
+        personId: personId, // Ensure personId is passed separately
       };
 
       // Call createFitnessPath with the fitness path and personId
@@ -139,7 +135,8 @@ const UserDashboard: React.FC = () => {
     <div className={styles.dashboardWrapper}>
       <Card className={styles.welcomeCard}>
         <Title level={2}>
-          🚀 Welcome, <span className={styles.userName}>{currentUser.name}</span>
+          🚀 Welcome,{" "}
+          <span className={styles.userName}>{currentUser.name}</span>
         </Title>
         <Paragraph>
           Ready to embark on your next LifeQuest? Explore goals, track progress,
@@ -162,7 +159,12 @@ const UserDashboard: React.FC = () => {
           <Form.Item
             name="name"
             label="Fitness Path Name"
-            rules={[{ required: true, message: "Please enter a name for your fitness path" }]}
+            rules={[
+              {
+                required: true,
+                message: "Please enter a name for your fitness path",
+              },
+            ]}
           >
             <Input placeholder="e.g., Summer Shred 2025" />
           </Form.Item>
@@ -170,40 +172,14 @@ const UserDashboard: React.FC = () => {
           <Form.Item
             name="description"
             label="Description"
-            rules={[{ required: true, message: "Please describe your fitness path" }]}
+            rules={[
+              { required: true, message: "Please describe your fitness path" },
+            ]}
           >
-            <Input.TextArea placeholder="Describe your fitness goals and what you want to achieve" rows={4} />
-          </Form.Item>
-
-          <Form.Item
-            name="type"
-            label="Fitness Type"
-            rules={[{ required: true, message: "Please select a fitness type" }]}
-          >
-            <Select placeholder="Select the type of fitness">
-              <Option value="cardio">Cardio</Option>
-              <Option value="strength">Strength Training</Option>
-              <Option value="flexibility">Flexibility & Yoga</Option>
-              <Option value="mixed">Mixed Training</Option>
-              <Option value="weightloss">Weight Loss</Option>
-              <Option value="endurance">Endurance</Option>
-            </Select>
-          </Form.Item>
-
-          <Form.Item
-            name="goal"
-            label="Specific Goal"
-            rules={[{ required: true, message: "Please enter your specific goal" }]}
-          >
-            <Input placeholder="e.g., Run 5km, Lose 5kg, Bench press 100kg" />
-          </Form.Item>
-
-          <Form.Item
-            name="duration"
-            label="Duration (days)"
-            rules={[{ required: true, message: "Please specify the duration" }]}
-          >
-            <Input type="number" min={1} max={365} />
+            <Input.TextArea
+              placeholder="Describe your fitness goals and what you want to achieve"
+              rows={4}
+            />
           </Form.Item>
 
           <Form.Item>
@@ -212,6 +188,7 @@ const UserDashboard: React.FC = () => {
             </Button>
           </Form.Item>
         </Form>
+        <ActivityTypes />
       </Card>
     </div>
   );
