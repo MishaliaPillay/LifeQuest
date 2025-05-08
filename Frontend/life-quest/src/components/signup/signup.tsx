@@ -50,10 +50,12 @@ const SignupComponent: React.FC<SignupFormProps> = ({
       await signUp(auth);
 
       showSuccessToast();
+
       setTimeout(() => {
         form.resetFields();
         onSignupSuccess?.();
       }, 5000);
+      window.location.reload();
     } catch (error: unknown) {
       let backendMsg = "Signup failed.";
 
@@ -71,8 +73,6 @@ const SignupComponent: React.FC<SignupFormProps> = ({
     } finally {
       setLoading(false);
     }
-
-    window.location.reload();
   };
 
   return (
