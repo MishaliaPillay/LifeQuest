@@ -16,7 +16,7 @@ import {
   useActivityTypeActions,
   useActivityTypeState,
 } from "@/providers/fitnesspath/activity-provider";
-import { IActivityTypeRequest } from "@/providers/fitnesspath/activity-provider/context";
+import { IBaseActivityTypeRequest } from "@/providers/fitnesspath/activity-provider/context";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -33,7 +33,7 @@ const ActivityTypes: React.FC = () => {
     getActivityTypes();
   }, []);
 
-  const handleFinish = async (values: IActivityTypeRequest) => {
+  const handleFinish = async (values: IBaseActivityTypeRequest) => {
     setSubmitting(true);
 
     try {

@@ -1,28 +1,16 @@
 "use client";
 import { createContext } from "react";
 
-// Activity Type interface
+// Activity Type model
 export interface IActivityType {
-  id: string;
+  id?: string;
   category: string;
   intensityLevel: number;
   description: string;
 }
 
 // Input model for generating activity types
-export interface IGenerateActivityTypeRequest {
-  count?: number; // Optional count of exercises to generate
-  baseRequest: {
-    age: number;
-    gender: string;
-    bodyType: string;
-    fitnessLevel: string;
-    limitations: string;
-    preferredExerciseTypes: string;
-    availableEquipment: string[];
-  };
-}
-export interface IActivityTypeRequest {
+export interface IBaseActivityTypeRequest {
   age: number;
   gender: string;
   bodyType: string;
@@ -32,36 +20,41 @@ export interface IActivityTypeRequest {
   availableEquipment: string[];
 }
 
+export interface IGenerateActivityTypeRequest {
+  count?: number;
+  baseRequest: IBaseActivityTypeRequest;
+}
+
 // State context interface
-export interface ActivityTypeState {
+export interface IActivityTypeStateContext {
+  activityTypes?: IActivityType[];
   isPending: boolean;
   isSuccess: boolean;
   isError: boolean;
   errorMessage?: string;
-  activityTypes: IActivityType[];
 }
 
 // Action context interface
-export interface ActivityTypeActions {
+export interface IActivityTypeActionContext {
   getActivityTypes: () => void;
+  getActivityType: (id: string) => void;
   createActivityType: (type: IActivityType) => void;
   updateActivityType: (type: IActivityType) => void;
-  deleteActivityType: (id: string) => void;
-  generateActivityTypes: (requestData: IActivityTypeRequest) => void;
+  deleteActivityType: (id: IActivityType) => void;
+  generateActivityTypes: (requestData: IBaseActivityTypeRequest) => void;
 }
 
 // Initial state
-export const INITIAL_STATE: ActivityTypeState = {
+export const INITIAL_STATE: IActivityTypeStateContext = {
+  activityTypes: [],
   isPending: false,
   isSuccess: false,
   isError: false,
-  errorMessage: undefined,
-  activityTypes: [],
 };
 
-// Create contexts
+// Contexts
 export const ActivityTypeStateContext =
-  createContext<ActivityTypeState>(INITIAL_STATE);
-export const ActivityTypeActionContext = createContext<
-  ActivityTypeActions | undefined
->(undefined);
+  createContext<IActivityTypeStateContext>(INITIAL_STATE);
+
+export const ActivityTypeActionContext =
+  createContext<IActivityTypeActionContext>(undefined);
