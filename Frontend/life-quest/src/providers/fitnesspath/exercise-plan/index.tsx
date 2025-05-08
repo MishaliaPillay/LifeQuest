@@ -27,7 +27,11 @@ import {
   completePlanError,
 } from "./actions";
 
-export const ExercisePlanProvider = ({ children }: { children: React.ReactNode }) => {
+export const ExercisePlanProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const [state, dispatch] = useReducer(ExercisePlanReducer, INITIAL_STATE);
   const instance = getAxiosInstance();
 
@@ -43,7 +47,7 @@ export const ExercisePlanProvider = ({ children }: { children: React.ReactNode }
       })
       .catch((err) => {
         console.error("Error fetching plan:", err);
-        dispatch(getPlanError(err));
+        dispatch(getPlanError());
       });
   };
 
@@ -59,7 +63,7 @@ export const ExercisePlanProvider = ({ children }: { children: React.ReactNode }
       })
       .catch((err) => {
         console.error("Error fetching plan history:", err);
-        dispatch(getPlanHistoryError(err));
+        dispatch(getPlanHistoryError());
       });
   };
 
@@ -75,7 +79,7 @@ export const ExercisePlanProvider = ({ children }: { children: React.ReactNode }
       })
       .catch((err) => {
         console.error("Error creating plan:", err);
-        dispatch(createPlanError(err));
+        dispatch(createPlanError());
       });
   };
 
@@ -91,7 +95,7 @@ export const ExercisePlanProvider = ({ children }: { children: React.ReactNode }
       })
       .catch((err) => {
         console.error("Error updating plan:", err);
-        dispatch(updatePlanError(err));
+        dispatch(updatePlanError());
       });
   };
 
@@ -107,7 +111,7 @@ export const ExercisePlanProvider = ({ children }: { children: React.ReactNode }
       })
       .catch((err) => {
         console.error("Error completing plan:", err);
-        dispatch(completePlanError(err));
+        dispatch(completePlanError());
       });
   };
 
@@ -132,7 +136,9 @@ export const ExercisePlanProvider = ({ children }: { children: React.ReactNode }
 export const useExercisePlanState = () => {
   const context = useContext(ExercisePlanStateContext);
   if (!context) {
-    throw new Error("useExercisePlanState must be used within an ExercisePlanProvider");
+    throw new Error(
+      "useExercisePlanState must be used within an ExercisePlanProvider"
+    );
   }
   return context;
 };
@@ -141,7 +147,9 @@ export const useExercisePlanState = () => {
 export const useExercisePlanActions = () => {
   const context = useContext(ExercisePlanActionContext);
   if (!context) {
-    throw new Error("useExercisePlanActions must be used within an ExercisePlanProvider");
+    throw new Error(
+      "useExercisePlanActions must be used within an ExercisePlanProvider"
+    );
   }
   return context;
 };

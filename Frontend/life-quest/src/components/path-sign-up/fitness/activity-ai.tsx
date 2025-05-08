@@ -16,6 +16,7 @@ import {
   useActivityTypeActions,
   useActivityTypeState,
 } from "@/providers/fitnesspath/activity-provider";
+import { IActivityTypeRequest } from "@/providers/fitnesspath/activity-provider/context";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -32,7 +33,7 @@ const ActivityTypes: React.FC = () => {
     getActivityTypes();
   }, []);
 
-  const handleFinish = async (values: any) => {
+  const handleFinish = async (values: IActivityTypeRequest) => {
     setSubmitting(true);
 
     try {
@@ -42,7 +43,7 @@ const ActivityTypes: React.FC = () => {
         bodyType: values.bodyType,
         fitnessLevel: values.fitnessLevel,
         limitations: values.limitations,
-        preferredExerciseTypes: values.preferredExerciseTypes.join(", "),
+        preferredExerciseTypes: values.preferredExerciseTypes,
         availableEquipment: values.availableEquipment,
       };
 

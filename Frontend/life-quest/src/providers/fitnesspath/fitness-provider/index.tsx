@@ -47,7 +47,7 @@ export const FitnessPathProvider = ({
       })
       .catch((error) => {
         console.error("Error fetching fitness paths:", error);
-        dispatch(getFitnessPathsError(error));
+        dispatch(getFitnessPathsError());
       });
   };
 
@@ -63,7 +63,7 @@ export const FitnessPathProvider = ({
       })
       .catch((error) => {
         console.error("Error fetching fitness path:", error);
-        dispatch(getFitnessPathError(error));
+        dispatch(getFitnessPathError());
       });
   };
 
@@ -79,7 +79,7 @@ export const FitnessPathProvider = ({
       })
       .catch((error) => {
         console.error("Error creating fitness path:", error);
-        dispatch(createFitnessPathError(error));
+        dispatch(createFitnessPathError());
       });
   };
 
@@ -95,7 +95,7 @@ export const FitnessPathProvider = ({
       })
       .catch((error) => {
         console.error("Error updating fitness path:", error);
-        dispatch(updateFitnessPathError(error));
+        dispatch(updateFitnessPathError());
       });
   };
 
@@ -111,7 +111,7 @@ export const FitnessPathProvider = ({
       })
       .catch((error) => {
         console.error("Error deleting fitness path:", error);
-        dispatch(deleteFitnessPathError(error));
+        dispatch(deleteFitnessPathError());
       });
   };
 

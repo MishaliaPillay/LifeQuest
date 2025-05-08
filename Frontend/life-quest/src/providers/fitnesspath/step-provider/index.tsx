@@ -44,7 +44,7 @@ export const StepsProvider = ({ children }: { children: React.ReactNode }) => {
       })
       .catch((error) => {
         console.error("Error fetching steps:", error);
-        dispatch(getStepsError(error));
+        dispatch(getStepsError());
       });
   };
 
@@ -60,7 +60,7 @@ export const StepsProvider = ({ children }: { children: React.ReactNode }) => {
       })
       .catch((error) => {
         console.error("Error fetching step:", error);
-        dispatch(getStepError(error));
+        dispatch(getStepError());
       });
   };
 
@@ -76,7 +76,7 @@ export const StepsProvider = ({ children }: { children: React.ReactNode }) => {
       })
       .catch((error) => {
         console.error("Error creating step:", error);
-        dispatch(createStepError(error));
+        dispatch(createStepError());
       });
   };
 
@@ -92,7 +92,7 @@ export const StepsProvider = ({ children }: { children: React.ReactNode }) => {
       })
       .catch((error) => {
         console.error("Error updating step:", error);
-        dispatch(updateStepError(error));
+        dispatch(updateStepError());
       });
   };
 
@@ -108,7 +108,7 @@ export const StepsProvider = ({ children }: { children: React.ReactNode }) => {
       })
       .catch((error) => {
         console.error("Error deleting step:", error);
-        dispatch(deleteStepError(error));
+        dispatch(deleteStepError());
       });
   };
 

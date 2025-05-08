@@ -68,7 +68,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       })
       .catch((error) => {
         console.error("Error fetching users:", error);
-        dispatch(getUserError(error));
+        dispatch(getUserError());
       });
   };
 
@@ -84,7 +84,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       })
       .catch((error) => {
         console.error("Error creating user:", error);
-        dispatch(createUserError(error));
+        dispatch(createUserError());
       });
   };
 
@@ -100,7 +100,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       })
       .catch((error) => {
         console.error("Error updating user:", error);
-        dispatch(updateUserError(error));
+        dispatch(updateUserError());
       });
   };
 
@@ -116,7 +116,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       })
       .catch((error) => {
         console.error("Error deleting user:", error);
-        dispatch(deleteUserError(error));
+        dispatch(deleteUserError());
       });
   };
 
@@ -131,7 +131,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       })
       .catch((error) => {
         console.error("Error fetching user:", error);
-        dispatch(getUserError(error));
+        dispatch(getUserError());
       });
   };
 

@@ -22,6 +22,15 @@ export interface IGenerateActivityTypeRequest {
     availableEquipment: string[];
   };
 }
+export interface IActivityTypeRequest {
+  age: number;
+  gender: string;
+  bodyType: string;
+  fitnessLevel: string;
+  limitations: string;
+  preferredExerciseTypes: string;
+  availableEquipment: string[];
+}
 
 // State context interface
 export interface ActivityTypeState {
@@ -38,15 +47,7 @@ export interface ActivityTypeActions {
   createActivityType: (type: IActivityType) => void;
   updateActivityType: (type: IActivityType) => void;
   deleteActivityType: (id: string) => void;
-  generateActivityTypes: (requestData: {
-    age: number;
-    gender: string;
-    bodyType: string;
-    fitnessLevel: string;
-    limitations: string;
-    preferredExerciseTypes: string;
-    availableEquipment: string[];
-  }) => void;
+  generateActivityTypes: (requestData: IActivityTypeRequest) => void;
 }
 
 // Initial state
