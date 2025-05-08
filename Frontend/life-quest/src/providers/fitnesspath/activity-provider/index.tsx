@@ -48,7 +48,9 @@ export const ActivityTypeProvider = ({
       })
       .catch((err) => {
         console.error("Error fetching activity types:", err);
-        dispatch(getActivityTypesError(err));
+        dispatch(
+          getActivityTypesError(err.message || "Failed to fetch activity types")
+        );
       });
   };
 
@@ -63,7 +65,11 @@ export const ActivityTypeProvider = ({
       })
       .catch((err) => {
         console.error("Error creating activity type:", err);
-        dispatch(createActivityTypeError(err));
+        dispatch(
+          createActivityTypeError(
+            err.message || "Failed to create activity type"
+          )
+        );
       });
   };
 
@@ -78,7 +84,11 @@ export const ActivityTypeProvider = ({
       })
       .catch((err) => {
         console.error("Error updating activity type:", err);
-        dispatch(updateActivityTypeError(err));
+        dispatch(
+          updateActivityTypeError(
+            err.message || "Failed to update activity type"
+          )
+        );
       });
   };
 
@@ -93,28 +103,62 @@ export const ActivityTypeProvider = ({
       })
       .catch((err) => {
         console.error("Error deleting activity type:", err);
-        dispatch(deleteActivityTypeError(err));
+        dispatch(
+          deleteActivityTypeError(
+            err.message || "Failed to delete activity type"
+          )
+        );
       });
   };
 
-  const generateActivityTypes = async (
-    requestData: IGenerateActivityTypeRequest
-  ) => {
+  const generateActivityTypes = async (requestData: {
+    age: number;
+    gender: string;
+    bodyType: string;
+    fitnessLevel: string;
+    limitations: string;
+    preferredExerciseTypes: string;
+    availableEquipment: string[];
+  }) => {
     dispatch(generateActivityTypePending());
     const endpoint = `/api/services/app/ActivityType/GenerateExerciseActivityTypes`;
 
+    // Format the request as expected by the backend
+    const formattedRequest: IGenerateActivityTypeRequest = {
+      count: 2, // You can adjust this or make it dynamic based on user input
+      baseRequest: {
+        age: requestData.age,
+        gender: requestData.gender,
+        bodyType: requestData.bodyType,
+        fitnessLevel: requestData.fitnessLevel,
+        limitations: requestData.limitations,
+        preferredExerciseTypes: requestData.preferredExerciseTypes,
+        availableEquipment: requestData.availableEquipment,
+      },
+    };
+
+    console.log("Sending request:", formattedRequest);
+
     return instance
-      .post(endpoint, requestData)
+      .post(endpoint, formattedRequest)
       .then((res) => {
+        console.log("Response received:", res.data);
         // The response contains a result.items array of activity types
         const activityTypes = res.data?.result?.items || [];
         dispatch(generateActivityTypeSuccess(activityTypes));
+        return activityTypes;
       })
       .catch((err) => {
         console.error("Error generating activity types:", err);
-        dispatch(generateActivityTypeError(err));
+        dispatch(
+          generateActivityTypeError(
+            err.message || "Failed to generate activity types"
+          )
+        );
+        throw err; // Re-throw to handle in the component
       });
   };
+
   return (
     <ActivityTypeStateContext.Provider value={state}>
       <ActivityTypeActionContext.Provider

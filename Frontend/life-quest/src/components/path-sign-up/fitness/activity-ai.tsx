@@ -16,7 +16,6 @@ import {
   useActivityTypeActions,
   useActivityTypeState,
 } from "@/providers/fitnesspath/activity-provider";
-import { IGenerateActivityTypeRequest } from "@/providers/fitnesspath/activity-provider/context";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -25,7 +24,8 @@ const ActivityTypes: React.FC = () => {
   const [form] = Form.useForm();
   const [submitting, setSubmitting] = useState(false);
   const { generateActivityTypes, getActivityTypes } = useActivityTypeActions();
-  const { activityTypes, loading, error } = useActivityTypeState();
+  const { activityTypes, isPending, isError, errorMessage } =
+    useActivityTypeState();
 
   useEffect(() => {
     // Fetch existing activity types when component mounts
@@ -36,7 +36,7 @@ const ActivityTypes: React.FC = () => {
     setSubmitting(true);
 
     try {
-      const request: IGenerateActivityTypeRequest = {
+      const request = {
         age: values.age,
         gender: values.gender,
         bodyType: values.bodyType,
@@ -46,6 +46,7 @@ const ActivityTypes: React.FC = () => {
         availableEquipment: values.availableEquipment,
       };
 
+      console.log("Submitting request:", request);
       await generateActivityTypes(request);
       message.success("Activity types generated successfully!");
 
@@ -69,11 +70,11 @@ const ActivityTypes: React.FC = () => {
         initialValues={{
           age: 25,
           gender: "male",
-          bodyType: "",
-          fitnessLevel: "",
-          limitations: "",
-          preferredExerciseTypes: [],
-          availableEquipment: [],
+          bodyType: "mesomorph",
+          fitnessLevel: "beginner",
+          limitations: "none",
+          preferredExerciseTypes: ["running"],
+          availableEquipment: ["treadmill"],
         }}
       >
         <Form.Item
@@ -101,7 +102,13 @@ const ActivityTypes: React.FC = () => {
           label="Body Type"
           rules={[{ required: true, message: "Please enter your body type" }]}
         >
-          <Input placeholder="e.g., Ectomorph, Mesomorph, Endomorph" />
+          <Select placeholder="Select your body type">
+            <Option value="ectomorph">Ectomorph (Slim, Lean Body)</Option>
+            <Option value="mesomorph">
+              Mesomorph (Athletic, Muscular Body)
+            </Option>
+            <Option value="endomorph">Endomorph (Soft, Round Body)</Option>
+          </Select>
         </Form.Item>
 
         <Form.Item
@@ -111,7 +118,11 @@ const ActivityTypes: React.FC = () => {
             { required: true, message: "Please enter your fitness level" },
           ]}
         >
-          <Input placeholder="e.g., Beginner, Intermediate, Advanced" />
+          <Select placeholder="Select your fitness level">
+            <Option value="beginner">Beginner</Option>
+            <Option value="intermediate">Intermediate</Option>
+            <Option value="advanced">Advanced</Option>
+          </Select>
         </Form.Item>
 
         <Form.Item
@@ -121,7 +132,10 @@ const ActivityTypes: React.FC = () => {
             { required: true, message: "Please mention any limitations" },
           ]}
         >
-          <Input.TextArea placeholder="e.g., Knee pain, Asthma" rows={2} />
+          <Input.TextArea
+            placeholder="e.g., Knee pain, Asthma, or 'none' if no limitations"
+            rows={2}
+          />
         </Form.Item>
 
         <Form.Item
@@ -189,7 +203,7 @@ const ActivityTypes: React.FC = () => {
             type="primary"
             htmlType="submit"
             block
-            loading={submitting || loading}
+            loading={submitting || isPending}
           >
             Generate Fitness Plan
           </Button>
@@ -197,7 +211,7 @@ const ActivityTypes: React.FC = () => {
       </Form>
 
       {/* Display generated activity types */}
-      {loading ? (
+      {isPending ? (
         <div style={{ textAlign: "center", margin: "40px 0" }}>
           <Spin size="large" />
           <Text style={{ display: "block", marginTop: "10px" }}>
@@ -240,9 +254,9 @@ const ActivityTypes: React.FC = () => {
         )
       )}
 
-      {error && (
+      {isError && errorMessage && (
         <div style={{ marginTop: "20px", color: "red" }}>
-          <Text type="danger">{error}</Text>
+          <Text type="danger">{errorMessage}</Text>
         </div>
       )}
     </div>

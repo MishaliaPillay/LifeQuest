@@ -1,5 +1,4 @@
 "use client";
-
 import { createContext } from "react";
 
 // Activity Type interface
@@ -12,28 +11,25 @@ export interface IActivityType {
 
 // Input model for generating activity types
 export interface IGenerateActivityTypeRequest {
-  age: number;
-  gender: string;
-  bodyType: string;
-  fitnessLevel: string;
-  limitations: string;
-  preferredExerciseTypes: string;
-  availableEquipment: string[];
-}
-
-// Response model from the backend when generating activity types
-export interface IGenerateActivityTypeResponse {
-  count: 2;
-  baseRequest: IGenerateActivityTypeRequest;
-  activityTypes: IActivityType[];
+  count?: number; // Optional count of exercises to generate
+  baseRequest: {
+    age: number;
+    gender: string;
+    bodyType: string;
+    fitnessLevel: string;
+    limitations: string;
+    preferredExerciseTypes: string;
+    availableEquipment: string[];
+  };
 }
 
 // State context interface
 export interface ActivityTypeState {
-  loading: boolean;
-  error: string | null;
+  isPending: boolean;
+  isSuccess: boolean;
+  isError: boolean;
+  errorMessage?: string;
   activityTypes: IActivityType[];
-  generatedActivityTypesResponse?: IGenerateActivityTypeResponse;
 }
 
 // Action context interface
@@ -42,15 +38,24 @@ export interface ActivityTypeActions {
   createActivityType: (type: IActivityType) => void;
   updateActivityType: (type: IActivityType) => void;
   deleteActivityType: (id: string) => void;
-  generateActivityTypes: (request: IGenerateActivityTypeRequest) => void;
+  generateActivityTypes: (requestData: {
+    age: number;
+    gender: string;
+    bodyType: string;
+    fitnessLevel: string;
+    limitations: string;
+    preferredExerciseTypes: string;
+    availableEquipment: string[];
+  }) => void;
 }
 
 // Initial state
 export const INITIAL_STATE: ActivityTypeState = {
-  loading: false,
-  error: null,
+  isPending: false,
+  isSuccess: false,
+  isError: false,
+  errorMessage: undefined,
   activityTypes: [],
-  generatedActivityTypesResponse: undefined,
 };
 
 // Create contexts
