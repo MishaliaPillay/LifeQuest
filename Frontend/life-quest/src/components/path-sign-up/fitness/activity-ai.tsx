@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState} from "react";
 import {
   Typography,
   Form,
@@ -24,14 +24,9 @@ const { Option } = Select;
 const ActivityTypes: React.FC = () => {
   const [form] = Form.useForm();
   const [submitting, setSubmitting] = useState(false);
-  const { generateActivityTypes, getActivityTypes } = useActivityTypeActions();
+  const { generateActivityTypes } = useActivityTypeActions();
   const { activityTypes, isPending, isError, errorMessage } =
     useActivityTypeState();
-
-  useEffect(() => {
-    // Fetch existing activity types when component mounts
-    getActivityTypes();
-  }, []);
 
   const handleFinish = async (values: IBaseActivityTypeRequest) => {
     setSubmitting(true);
@@ -71,7 +66,7 @@ const ActivityTypes: React.FC = () => {
         initialValues={{
           age: 25,
           gender: "male",
-          bodyType: "mesomorph",
+          bodyType: "",
           fitnessLevel: "beginner",
           limitations: "none",
           preferredExerciseTypes: ["running"],

@@ -17,6 +17,7 @@ import { getId } from "@/utils/decoder";
 import withAuth from "../../hoc/withAuth";
 import styles from "./userDashboard.module.css";
 import ActivityTypes from "@/components/path-sign-up/fitness/activity-ai";
+import CreateExercisePlan from "@/components/path-sign-up/fitness/exercise-plan";
 
 const { Title, Paragraph } = Typography;
 
@@ -189,6 +190,7 @@ const UserDashboard: React.FC = () => {
           </Form.Item>
         </Form>
         <ActivityTypes />
+        <CreateExercisePlan />
       </Card>
     </div>
   );
