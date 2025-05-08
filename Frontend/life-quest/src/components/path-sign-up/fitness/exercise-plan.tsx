@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import { useDroppable } from "@dnd-kit/core";
 import { Typography, Card, Row, Col, message, Button, Tabs, Empty } from "antd";
 import {
   DndContext,
@@ -90,9 +91,19 @@ const ActivityItem = ({
 };
 
 // Day Container Component
+
+
 const DayContainer = ({ day, items, onRemoveActivity }) => {
+  const droppableId = `day-${day}`;
+  const { setNodeRef } = useDroppable({ id: droppableId });
+
   return (
-    <Card title={`Day ${day}`} size="small" style={{ height: "100%", minHeight: 150 }}>
+    <Card
+      title={`Day ${day}`}
+      size="small"
+      style={{ height: "100%", minHeight: 150 }}
+      ref={setNodeRef} // Attach the droppable ref here
+    >
       <div style={{ minHeight: 100 }}>
         {items.length === 0 ? (
           <Empty
