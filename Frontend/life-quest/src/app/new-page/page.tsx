@@ -197,7 +197,7 @@ const UserDashboard: React.FC = () => {
 
           <Form.Item>
             <Button type="primary" htmlType="submit" loading={submitting} block>
-              Create Fitness Path
+              Save
             </Button>
           </Form.Item>
         </Form>
@@ -205,7 +205,10 @@ const UserDashboard: React.FC = () => {
         <ActivityTypes
           onActivityTypesGenerated={handleActivityTypesGenerated}
         />
-        <CreateExercisePlan availableActivities={formattedActivities} />
+        <CreateExercisePlan
+          availableActivities={formattedActivities}
+          personId={personId}
+        />
       </Card>
     </div>
   );

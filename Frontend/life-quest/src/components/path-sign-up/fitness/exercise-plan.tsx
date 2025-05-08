@@ -122,7 +122,7 @@ const DayContainer = ({ day, items, onRemoveActivity }) => {
   );
 };
 
-const CreateExercisePlan = ({ availableActivities }) => {
+const CreateExercisePlan = ({ availableActivities ,personId}) => {
   // State for each day's activities
   const [dayActivities, setDayActivities] = useState(
     Array(10)
