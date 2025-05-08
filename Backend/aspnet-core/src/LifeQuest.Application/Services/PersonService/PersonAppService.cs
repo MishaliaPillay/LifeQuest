@@ -43,8 +43,10 @@ namespace LifeQuest.Services.PersonService
                 input.User.Name,
                 input.User.Surname,
                 input.User.Password,
-                input.Avatar
+                input.Avatar,
+                input.PersonDescription // ADD THIS
             );
+
 
             return _mapper.Map<PersonResponseDto>(person);
         }
@@ -82,6 +84,11 @@ namespace LifeQuest.Services.PersonService
             // Use AutoMapper to map Person to PersonResponseDto with PathId
             return _mapper.Map<PersonResponseDto>(person);
         }
+        public async Task<PersonResponseDto> SetDescriptionAsync(SetPersonDescriptionDto input)
+        {
+            var person = await _personManager.SetPersonDescriptionAsync(input.PersonId, input.PersonDescription);
+            return _mapper.Map<PersonResponseDto>(person);
+        }
 
         public async Task<PersonResponseDto> updatePersonAsync(UpdatePersonDto input)
         {
@@ -93,8 +100,10 @@ namespace LifeQuest.Services.PersonService
                 input.Id,
                 input.Avatar,
                 input.Xp,
-                input.Level
+                input.Level,
+                input.PersonDescription // ADD THIS
             );
+
 
             // Use AutoMapper to map Person to PersonResponseDto with PathId
             return _mapper.Map<PersonResponseDto>(updated);

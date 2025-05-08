@@ -29,6 +29,8 @@ namespace LifeQuest.Domain.Person
         public Guid? PathId { get; set; }
         [ForeignKey(nameof(PathId))]
         public virtual Path SelectedPath { get; set; }
+
+        public string PersonDescription { get; set; }
     }
 
 }

@@ -28,7 +28,8 @@ namespace LifeQuest.Domain.Person
             string name,
             string surname,
             string password,
-            string? avatar = null)
+            string? avatar = null,
+            string? personDescription = null) // NEW PARAM)
         {
             var user = new User
             {
@@ -53,7 +54,8 @@ namespace LifeQuest.Domain.Person
                 UserId = user.Id,
                 Xp = 0,
                 Level = 1,
-                Avatar = avatar
+                Avatar = avatar,
+                PersonDescription = personDescription
             };
 
             await _personRepository.InsertAsync(person);
@@ -84,7 +86,8 @@ namespace LifeQuest.Domain.Person
             Guid personId,
             string? avatar = null,
             int? xp = null,
-            int? level = null)
+            int? level = null,
+            string? personDescription = null)
         {
             var person = await _personRepository.GetAsync(personId);
             if (person == null)
@@ -114,6 +117,19 @@ namespace LifeQuest.Domain.Person
 
             return person.PathId.HasValue;  // Check if PathId is assigned
         }
+
+        public async Task<Person> SetPersonDescriptionAsync(Guid personId, string personDescription)
+        {
+            var person = await _personRepository.GetAsync(personId);
+            if (person == null)
+                throw new UserFriendlyException("Person not found");
+
+            person.PersonDescription = personDescription;
+
+            await _personRepository.UpdateAsync(person);
+            return person;
+        }
+
 
         public async Task<Person> SelectPathAsync(long personId, Guid pathId)
         {
