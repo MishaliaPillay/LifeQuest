@@ -9,7 +9,16 @@ export interface IFitnessPath {
   stepEntryIds: string[]; // IDs of linked step entries
   weightEntryIds: string[]; // IDs of linked weight entries
   activityIds: string[]; // IDs of linked activities
-  exercisePlans: string[];
+  exercisePlans: IExercisePlan[];
+}
+export interface IExercisePlan {
+  id: string;
+  fitnessPathId: string;
+  name: string;
+  status: number;
+  activities: any[]; // Ideally type this too
+  creationTime: string;
+  completedAt: string | null;
 }
 
 // State context interface

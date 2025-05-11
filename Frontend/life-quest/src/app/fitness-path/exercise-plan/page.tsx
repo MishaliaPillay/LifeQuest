@@ -36,6 +36,9 @@ export default function WorkoutPlanPage() {
         }
         console.log("pers", person);
         const fitnessPaths = await getFitnessPaths(person.id);
+
+        const exercisePlanId = fitnessPaths.exercisePlans[0]?.id;
+        console.log("Exercise Plan ID:", exercisePlanId);
         console.log(fitnessPaths.exercisePlans[0]);
         if (fitnessPaths?.id) {
           setFitnessPathId(fitnessPaths.id);
