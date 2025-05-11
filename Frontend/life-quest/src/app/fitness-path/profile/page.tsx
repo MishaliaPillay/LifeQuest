@@ -13,7 +13,7 @@ import {
 } from "antd";
 import { UploadOutlined, UserOutlined } from "@ant-design/icons";
 import { useUserState, useUserActions } from "@/providers/user-provider";
-import withAuth from "../../../hoc/withAuth";
+
 import styles from "./profile.module.css";
 
 const { Title, Paragraph } = Typography;

@@ -30,9 +30,9 @@ const menuItems: MenuProps["items"] = [
     label: <Link href="/dashboard">Dashboard</Link>,
   },
   {
-    key: "/activities",
+    key: "/fitness-path/exercise-plan",
     icon: <BarChartOutlined />,
-    label: <Link href="/activities">Activities</Link>,
+    label: <Link href="/fitness-path/exercise-plan">Exercise Plan</Link>,
   },
   {
     key: "/fitness-path/weight",
