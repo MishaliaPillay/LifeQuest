@@ -11,7 +11,6 @@ namespace LifeQuest.Domain.Fitness.Activity
     {
         public string Category { get; set; }
         public int IntensityLevel { get; set; }
-
         public string Description { get; set; }
 
         public virtual ICollection<ActivityActivityType> Activities { get; set; } = new List<ActivityActivityType>();

@@ -14,6 +14,9 @@ using LifeQuest.Domain.Steps;
 using LifeQuest.Domain.Paths.FitnessPath;
 using LifeQuest.Domain.Paths;
 using LifeQuest.Domain.Fitness.ExercisePlan;
+using LifeQuest.Domain.Health.Ingredient;
+using LifeQuest.Domain.Health;
+using LifeQuest.Domain.Health.Meal;
 
 namespace LifeQuest.EntityFrameworkCore;
 
@@ -27,8 +30,10 @@ public class LifeQuestDbContext : AbpZeroDbContext<Tenant, Role, User, LifeQuest
     public DbSet<StepEntry> StepEntries { get; set; }
     public DbSet<Path> Paths { get; set; }
     public DbSet<ExercisePlan> ExercisePlans { get; set; }
-
     public DbSet<FitnessPath> FitnessPaths { get; set; }
+    public DbSet<Ingredient> Ingredients { get; set; }
+    public DbSet<Meal> Meals { get; set; }
+    public DbSet<MealIngredient> MealIngredients { get; set; }
 
 
     public LifeQuestDbContext(DbContextOptions<LifeQuestDbContext> options)
@@ -51,6 +56,19 @@ public class LifeQuestDbContext : AbpZeroDbContext<Tenant, Role, User, LifeQuest
                 ));
             }
         }
+
+        modelBuilder.Entity<MealIngredient>()
+    .HasKey(mi => new { mi.MealId, mi.IngredientId });
+
+        modelBuilder.Entity<MealIngredient>()
+            .HasOne(mi => mi.Meal)
+            .WithMany(m => m.MealIngredients)
+            .HasForeignKey(mi => mi.MealId);
+
+        modelBuilder.Entity<MealIngredient>()
+            .HasOne(mi => mi.Ingredient)
+            .WithMany()
+            .HasForeignKey(mi => mi.IngredientId);
 
         // Configure many-to-many via join entity for ActivityActivityType
         modelBuilder.Entity<ActivityActivityType>()
