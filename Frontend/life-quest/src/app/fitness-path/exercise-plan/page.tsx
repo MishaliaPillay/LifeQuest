@@ -64,7 +64,16 @@ export default function WorkoutPlanPage() {
       <Title level={2}>My 10-Day Workout Plan</Title>
 
       {loading ? (
-        <Spin tip="Loading workout plan..." />
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "60vh", // adjust as needed to center better vertically
+          }}
+        >
+          <Spin tip="Loading workout plan..." size="large" />
+        </div>
       ) : (
         <>
           <Text strong>User ID:</Text> <Text>{userId}</Text>
