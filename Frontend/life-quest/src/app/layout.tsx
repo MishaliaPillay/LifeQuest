@@ -7,6 +7,8 @@ import { UserProvider } from "@/providers/user-provider";
 import { StepsProvider } from "@/providers/fitnesspath/step-provider";
 import { WeightProvider } from "@/providers/fitnesspath/weight-provider";
 import { FitnessPathProvider } from "@/providers/fitnesspath/fitness-provider";
+import { ActivityTypeProvider } from "@/providers/fitnesspath/activity-provider";
+import { ExercisePlanProvider } from "@/providers/fitnesspath/exercise-plan";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -43,10 +45,10 @@ export default function RootLayout({
         <html lang="en">
           <AuthProvider>
             <UserProvider><FitnessPathProvider>
-              <StepsProvider><WeightProvider>
+              <StepsProvider><WeightProvider><ActivityTypeProvider><ExercisePlanProvider>
                 <body className={`${geistSans.variable} ${geistMono.variable}`}>
                   {children}
-                </body></WeightProvider>
+                </body></ExercisePlanProvider></ActivityTypeProvider></WeightProvider>
               </StepsProvider></FitnessPathProvider>
             </UserProvider>
           </AuthProvider>

@@ -47,7 +47,7 @@ export const FitnessPathProvider = ({
       })
       .catch((error) => {
         console.error("Error fetching fitness paths:", error);
-        dispatch(getFitnessPathsError(error));
+        dispatch(getFitnessPathsError());
       });
   };
 
@@ -63,24 +63,28 @@ export const FitnessPathProvider = ({
       })
       .catch((error) => {
         console.error("Error fetching fitness path:", error);
-        dispatch(getFitnessPathError(error));
+        dispatch(getFitnessPathError());
       });
   };
 
   // Create a fitness path
-  const createFitnessPath = async (fitnessPath: IFitnessPath) => {
+  const createFitnessPath = async (
+    fitnessPath: IFitnessPath
+  ): Promise<IFitnessPath> => {
     dispatch(createFitnessPathPending());
     const endpoint = `/api/services/app/FitnessPath/Create`;
 
-    return instance
-      .post(endpoint, fitnessPath)
-      .then((response) => {
-        dispatch(createFitnessPathSuccess(response.data?.result));
-      })
-      .catch((error) => {
-        console.error("Error creating fitness path:", error);
-        dispatch(createFitnessPathError(error));
-      });
+    try {
+      const response = await instance.post(endpoint, fitnessPath);
+      const result = response.data?.result;
+      console.log("fit", result);
+      dispatch(createFitnessPathSuccess(result));
+      return result;
+    } catch (error) {
+      console.error("Error creating fitness path:", error);
+      dispatch(createFitnessPathError());
+      throw error;
+    }
   };
 
   // Update a fitness path
@@ -95,7 +99,7 @@ export const FitnessPathProvider = ({
       })
       .catch((error) => {
         console.error("Error updating fitness path:", error);
-        dispatch(updateFitnessPathError(error));
+        dispatch(updateFitnessPathError());
       });
   };
 
@@ -111,7 +115,7 @@ export const FitnessPathProvider = ({
       })
       .catch((error) => {
         console.error("Error deleting fitness path:", error);
-        dispatch(deleteFitnessPathError(error));
+        dispatch(deleteFitnessPathError());
       });
   };
 
@@ -136,7 +140,9 @@ export const FitnessPathProvider = ({
 export const useFitnessPathState = () => {
   const context = useContext(FitnessPathStateContext);
   if (!context) {
-    throw new Error("useFitnessPathState must be used within a FitnessPathProvider");
+    throw new Error(
+      "useFitnessPathState must be used within a FitnessPathProvider"
+    );
   }
   return context;
 };
@@ -145,7 +151,9 @@ export const useFitnessPathState = () => {
 export const useFitnessPathActions = () => {
   const context = useContext(FitnessPathActionContext);
   if (!context) {
-    throw new Error("useFitnessPathActions must be used within a FitnessPathProvider");
+    throw new Error(
+      "useFitnessPathActions must be used within a FitnessPathProvider"
+    );
   }
   return context;
 };

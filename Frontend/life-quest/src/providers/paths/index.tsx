@@ -34,7 +34,7 @@ export const PathsProvider = ({ children }: { children: React.ReactNode }) => {
       })
       .catch((error) => {
         console.error("Error fetching paths:", error);
-        dispatch(getPathsError(error));
+        dispatch(getPathsError());
       });
   };
 
@@ -50,7 +50,7 @@ export const PathsProvider = ({ children }: { children: React.ReactNode }) => {
       })
       .catch((error) => {
         console.error("Error fetching path:", error);
-        dispatch(getPathError(error));
+        dispatch(getPathError());
       });
   };
 

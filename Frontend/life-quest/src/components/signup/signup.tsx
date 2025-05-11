@@ -1,12 +1,13 @@
 "use client";
 
 import React, { useState } from "react";
-import { Form, Input, message } from "antd";
+import { Form, Input, message, Button } from "antd";
 import { UserOutlined, LockOutlined, MailOutlined } from "@ant-design/icons";
-import { SignupContainer, StyledButton } from "./styles";
 import { useAuthActions } from "@/providers/auth-provider";
 import { IAuth } from "@/providers/auth-provider/context";
 import axios from "axios";
+import styles from "./Signup.module.css";
+
 interface SignupFormProps {
   onSignupSuccess?: () => void;
   onBeforeSubmit?: () => void;
@@ -17,7 +18,7 @@ const SignupComponent: React.FC<SignupFormProps> = ({
   onSignupSuccess,
 }) => {
   const [loading, setLoading] = useState(false);
-  const [form] = Form.useForm(); // Add form instance
+  const [form] = Form.useForm();
   const { signUp } = useAuthActions();
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -28,6 +29,7 @@ const SignupComponent: React.FC<SignupFormProps> = ({
   const showErrorToast = (msg = "Signup failed.") => {
     messageApi.error({ content: msg, duration: 5, style: { marginTop: 20 } });
   };
+
   interface SignupFormValues {
     name: string;
     surname: string;
@@ -35,6 +37,7 @@ const SignupComponent: React.FC<SignupFormProps> = ({
     emailAddress: string;
     password: string;
   }
+
   const onFinishSignup = async (values: SignupFormValues) => {
     try {
       onBeforeSubmit?.();
@@ -48,12 +51,14 @@ const SignupComponent: React.FC<SignupFormProps> = ({
       };
 
       await signUp(auth);
-
       showSuccessToast();
+
       setTimeout(() => {
         form.resetFields();
         onSignupSuccess?.();
       }, 5000);
+
+      window.location.reload();
     } catch (error: unknown) {
       let backendMsg = "Signup failed.";
 
@@ -71,12 +76,10 @@ const SignupComponent: React.FC<SignupFormProps> = ({
     } finally {
       setLoading(false);
     }
-
-    window.location.reload();
   };
 
   return (
-    <SignupContainer>
+    <div className={styles.signupContainer}>
       {contextHolder}
       <h1 style={{ marginBottom: 24, fontWeight: 600 }}>Sign Up</h1>
       <Form
@@ -128,17 +131,18 @@ const SignupComponent: React.FC<SignupFormProps> = ({
         </Form.Item>
 
         <Form.Item>
-          <StyledButton
+          <Button
             type="primary"
             htmlType="submit"
             loading={loading}
             block
+            className={styles.styledButton} // 👈 apply CSS module class
           >
             CREATE ACCOUNT
-          </StyledButton>
+          </Button>
         </Form.Item>
       </Form>
-    </SignupContainer>
+    </div>
   );
 };
 

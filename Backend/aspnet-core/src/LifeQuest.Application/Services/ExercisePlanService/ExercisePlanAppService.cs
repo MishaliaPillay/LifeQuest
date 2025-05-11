@@ -53,8 +53,12 @@ namespace LifeQuest.Services.ExercisePlanService
 
                 var mappedActivities = new List<Activity>();
 
-                foreach (var day in input.Days)
+                for (int dayIndex = 0; dayIndex < input.Days.Count; dayIndex++)
                 {
+                    var day = input.Days[dayIndex];
+
+                    var activityActivityTypes = new List<ActivityActivityType>();
+
                     foreach (var activityTypeId in day.ActivityTypeIds)
                     {
                         var activityType = await _activityTypeRepo.FirstOrDefaultAsync(activityTypeId);
@@ -63,24 +67,27 @@ namespace LifeQuest.Services.ExercisePlanService
                             throw new UserFriendlyException($"ActivityType with ID {activityTypeId} not found.");
                         }
 
-                        var activityActivityTypes = new List<ActivityActivityType>
-                {
-                    new ActivityActivityType { ActivityTypeId = activityType.Id }
-                };
-
-                        var activity = new Activity(
-                            calories: day.Calories,
-                            duration: day.Duration,
-                            xp: 0,
-                            level: 1,
-                            activityActivityTypes: activityActivityTypes,
-                            isComplete: false,
-                            rating: ActivityRating.Neutral,
-                            description: day.Description
-                        );
-
-                        mappedActivities.Add(activity);
+                        activityActivityTypes.Add(new ActivityActivityType
+                        {
+                            ActivityTypeId = activityType.Id
+                        });
                     }
+
+                    // Now create ONE Activity per day
+                    var activity = new Activity(
+                        calories: day.Calories,
+                        duration: day.Duration,
+                        xp: 0,
+                        level: 1,
+                        activityActivityTypes: activityActivityTypes,
+                        isComplete: false,
+                        rating: ActivityRating.Neutral,
+                        description: day.Description,
+                        order: dayIndex
+                    );
+
+                    mappedActivities.Add(activity);
+
                 }
 
                 ExercisePlan plan;
