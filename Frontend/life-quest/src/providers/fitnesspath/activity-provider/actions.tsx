@@ -28,6 +28,9 @@ export enum ActivityTypeActionEnums {
   generateActivityTypePending = "GENERATE_ACTIVITY_TYPE_PENDING",
   generateActivityTypeSuccess = "GENERATE_ACTIVITY_TYPE_SUCCESS",
   generateActivityTypeError = "GENERATE_ACTIVITY_TYPE_ERROR",
+  getExercisePlanPending = "GET_EXERCISE_PLAN_PENDING",
+  getExercisePlanSuccess = "GET_EXERCISE_PLAN_SUCCESS",
+  getExercisePlanError = "GET_EXERCISE_PLAN_ERROR",
 }
 
 // GET ALL
@@ -139,3 +142,22 @@ export const generateActivityTypeError =
     ActivityTypeActionEnums.generateActivityTypeError,
     () => ({ isPending: false, isSuccess: false, isError: true })
   );
+export const getExercisePlanPending = createAction<IActivityTypeStateContext>(
+  ActivityTypeActionEnums.getExercisePlanPending,
+  () => ({ isPending: true, isSuccess: false, isError: false })
+);
+
+export const getExercisePlanSuccess = createAction<
+  IActivityTypeStateContext,
+  IActivityType[]
+>(ActivityTypeActionEnums.getExercisePlanSuccess, (activityTypes) => ({
+  isPending: false,
+  isSuccess: true,
+  isError: false,
+  activityTypes,
+}));
+
+export const getExercisePlanError = createAction<IActivityTypeStateContext>(
+  ActivityTypeActionEnums.getExercisePlanError,
+  () => ({ isPending: false, isSuccess: false, isError: true })
+);
