@@ -11,12 +11,18 @@ export interface IFitnessPath {
   activityIds: string[]; // IDs of linked activities
   exercisePlans: IExercisePlan[];
 }
+export interface IActivity {
+  id: string;
+  category: string;
+  intensityLevel: number;
+  description: string;
+}
 export interface IExercisePlan {
   id: string;
   fitnessPathId: string;
   name: string;
   status: number;
-  activities: any[]; // Ideally type this too
+  activities: IActivity[]; // Ideally type this too
   creationTime: string;
   completedAt: string | null;
 }

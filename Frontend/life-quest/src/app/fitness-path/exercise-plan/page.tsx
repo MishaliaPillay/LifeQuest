@@ -6,6 +6,7 @@ import { getId } from "../../../utils/decoder";
 import { useAuthActions } from "../../../providers/auth-provider";
 import { useFitnessPathActions } from "@/providers/fitnesspath/fitness-provider";
 import { useActivityTypeActions } from "@/providers/fitnesspath/activity-provider";
+import { IExercisePlanDay } from "@/providers/fitnesspath/activity-provider/context";
 
 const { Title, Text } = Typography;
 
@@ -13,7 +14,7 @@ export default function WorkoutPlanPage() {
   const [userId, setUserId] = useState("");
   const [fitnessPathId, setFitnessPathId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [exercisePlan, setExercisePlan] = useState<any[]>([]); // store workout plan days
+  const [exercisePlan, setExercisePlan] = useState<IExercisePlanDay[]>([]); // store workout plan days
 
   const { getExercisePlan } = useActivityTypeActions();
   const { getCurrentPerson } = useAuthActions();
