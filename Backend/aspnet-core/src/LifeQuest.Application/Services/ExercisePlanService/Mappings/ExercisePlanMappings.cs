@@ -11,20 +11,22 @@ namespace LifeQuest.Services.ExercisePlanService.Mappings
     {
         public ExercisePlanMappings()
         {
-            CreateMap<CreateActivityDto, Activity>()
-                .ForMember(dest => dest.ActivityActivityTypes,
-                    opt => opt.MapFrom(src =>
-                        src.ActivityTypeIds.Select(id => new ActivityActivityType
-                        {
-                            ActivityTypeId = id
-                        }).ToList()))
-                .ForMember(dest => dest.IsComplete, opt => opt.MapFrom(_ => false))
-                .ForMember(dest => dest.Rating, opt => opt.MapFrom(_ => 0));
-
+            // Mapping for ExercisePlanDto (you were missing this)
             CreateMap<ExercisePlan, ExercisePlanDto>()
-    .ForMember(dest => dest.Activities, opt => opt.MapFrom(src => src.Activities)) // if needed
-    .ReverseMap(); // optional, if you need two-way mapping
+                .ForMember(dest => dest.Activities, opt => opt.Ignore());
 
+            // Existing mapping for ExercisePlanResponseDto
+            CreateMap<ExercisePlan, ExercisePlanResponseDto>()
+                .ForMember(dest => dest.Activities, opt => opt.Ignore());
+
+            // Mapping for ActivityResponseDto
+            CreateMap<LifeQuest.Domain.Fitness.Activity.Activity, ActivityResponseDto>()
+                .ForMember(dest => dest.Activities,
+                    opt => opt.MapFrom(src =>
+                        src.ActivityActivityTypes.Select(aat => aat.ActivityType).ToList()));
+
+            // Mapping for ActivityTypeDto
+            CreateMap<ActivityType, ActivityTypeDto>();
         }
     }
 }
