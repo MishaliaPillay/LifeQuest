@@ -6,13 +6,15 @@ import { getId } from "../../../utils/decoder";
 import { useAuthActions } from "../../../providers/auth-provider";
 import { useFitnessPathActions } from "@/providers/fitnesspath/fitness-provider";
 import { useActivityTypeActions } from "@/providers/fitnesspath/activity-provider";
+
 const { Title, Text } = Typography;
-const days = Array.from({ length: 10 }, (_, i) => `Day ${i + 1}`);
 
 export default function WorkoutPlanPage() {
   const [userId, setUserId] = useState("");
   const [fitnessPathId, setFitnessPathId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [exercisePlan, setExercisePlan] = useState<any[]>([]); // store workout plan days
+
   const { getExercisePlan } = useActivityTypeActions();
   const { getCurrentPerson } = useAuthActions();
   const { getFitnessPaths } = useFitnessPathActions();
@@ -34,21 +36,18 @@ export default function WorkoutPlanPage() {
           message.warning("Person not found for this user.");
           return;
         }
-        console.log("pers", person);
-        const fitnessPaths = await getFitnessPaths(person.id);
 
+        const fitnessPaths = await getFitnessPaths(person.id);
         const exercisePlanId = fitnessPaths.exercisePlans[0]?.id;
-        console.log("Exercise Plan ID:", exercisePlanId);
-        console.log(fitnessPaths.exercisePlans[0]);
+
         if (fitnessPaths?.id) {
           setFitnessPathId(fitnessPaths.id);
         } else {
           message.warning("Fitness path not found.");
         }
 
-        const exercisePlan = await getExercisePlan(exercisePlanId);
-
-        console.log("wsddfg", exercisePlan);
+        const planResponse = await getExercisePlan(exercisePlanId);
+        setExercisePlan(planResponse); // store the result array
       } catch (error) {
         console.error("Error fetching data:", error);
         message.error("Failed to load workout plan.");
@@ -65,7 +64,7 @@ export default function WorkoutPlanPage() {
       <Title level={2}>My 10-Day Workout Plan</Title>
 
       {loading ? (
-        <Spin tip="Loading user info..." />
+        <Spin tip="Loading workout plan..." />
       ) : (
         <>
           <Text strong>User ID:</Text> <Text>{userId}</Text>
@@ -75,12 +74,24 @@ export default function WorkoutPlanPage() {
             {fitnessPathId ?? "Not assigned"}
           </Text>
           <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
-            {days.map((day) => (
-              <Col xs={24} sm={12} md={8} lg={6} key={day}>
-                <Card title={day} bordered style={{ height: "200px" }}>
-                  <p>📝 Description</p>
-                  <p>🏋️‍♀️ Activity</p>
-                  <p>🔥 Calories</p>
+            {exercisePlan.map((day, index) => (
+              <Col xs={24} sm={12} md={8} lg={6} key={day.id}>
+                <Card
+                  title={`Day ${index + 1}`}
+                  bordered
+                  style={{ height: "250px" }}
+                >
+                  <p>
+                    📝 <strong>Description:</strong>{" "}
+                    {day.description || "No description"}
+                  </p>
+                  <p>
+                    🏋️‍♀️ <strong>Activity:</strong>{" "}
+                    {day.activities?.[0]?.description || "No activity"}
+                  </p>
+                  <p>
+                    🔥 <strong>Calories:</strong> {day.calories}
+                  </p>
                 </Card>
               </Col>
             ))}
