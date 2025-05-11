@@ -203,20 +203,20 @@ export const ActivityTypeProvider = ({
     }
   };
 
-const getExercisePlan = async (id: string): Promise<IExercisePlanDay[]> => {
-  dispatch(getExercisePlanPending());
-  const endpoint = `/api/services/app/ActivityType/GetExercisePlanById?Id=${id}`;
-  try {
-    const response = await instance.get(endpoint);
-    const plan = response.data?.result || [];
-    dispatch(getExercisePlanSuccess({ exercisePlan: plan }));
-    return plan;
-  } catch (err) {
-    console.error("Error fetching exercise plan by ID:", err);
-    dispatch(getExercisePlanError());
-    throw err;
-  }
-};
+  const getExercisePlan = async (id: string): Promise<IExercisePlanDay[]> => {
+    dispatch(getExercisePlanPending());
+    const endpoint = `/api/services/app/Activity/GetByExercisePlanId?exercisePlanId=${id}`;
+    try {
+      const response = await instance.get(endpoint);
+      const plan = response.data?.result || [];
+      dispatch(getExercisePlanSuccess({ exercisePlan: plan }));
+      return plan;
+    } catch (err) {
+      console.error("Error fetching exercise plan by ID:", err);
+      dispatch(getExercisePlanError());
+      throw err;
+    }
+  };
 
   return (
     <ActivityTypeStateContext.Provider value={state}>

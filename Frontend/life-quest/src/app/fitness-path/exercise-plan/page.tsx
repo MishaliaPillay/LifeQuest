@@ -5,7 +5,7 @@ import { Card, Col, Row, Typography, message, Spin } from "antd";
 import { getId } from "../../../utils/decoder";
 import { useAuthActions } from "../../../providers/auth-provider";
 import { useFitnessPathActions } from "@/providers/fitnesspath/fitness-provider";
-
+import { useActivityTypeActions } from "@/providers/fitnesspath/activity-provider";
 const { Title, Text } = Typography;
 const days = Array.from({ length: 10 }, (_, i) => `Day ${i + 1}`);
 
@@ -13,7 +13,7 @@ export default function WorkoutPlanPage() {
   const [userId, setUserId] = useState("");
   const [fitnessPathId, setFitnessPathId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-
+  const { getExercisePlan } = useActivityTypeActions();
   const { getCurrentPerson } = useAuthActions();
   const { getFitnessPaths } = useFitnessPathActions();
 
@@ -45,6 +45,10 @@ export default function WorkoutPlanPage() {
         } else {
           message.warning("Fitness path not found.");
         }
+
+        const exercisePlan = await getExercisePlan(exercisePlanId);
+
+        console.log("wsddfg", exercisePlan);
       } catch (error) {
         console.error("Error fetching data:", error);
         message.error("Failed to load workout plan.");
