@@ -13,5 +13,8 @@ namespace LifeQuest.Services.FitnessService.Activity
         Task<List<ActivityResponseDto>> GetAllActivityAsync();
         Task<ActivityResponseDto> UpdateActivityAsync(UpdateActivityDto input);
         Task DeleteActivityAsync(Guid id);
+
+
+        Task<List<ActivityResponseDto>> GetByExercisePlanIdAsync(Guid exercisePlanId);
     }
 }

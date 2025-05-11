@@ -36,7 +36,8 @@ namespace LifeQuest.Services.FitnessService.Activity
                 selectedActivityTypes,
                 input.IsComplete,
                 input.Rating,
-                input.Description
+                input.Description,
+                input.Order
             // input.PersonId
             );
 
@@ -91,31 +92,6 @@ namespace LifeQuest.Services.FitnessService.Activity
             }).ToList();
         }
 
-        //public async Task<List<ActivityResponseDto>> GetByPersonIdAsync(Guid personId)
-        //{
-        //    // Get the activities for the specified personId
-        //    var activities = await _activityManager.GetByPersonIdAsync(personId);
-
-        //    return activities.Select(a => new ActivityResponseDto
-        //    {
-        //        Id = a.Id,
-        //        Calories = a.Calories,
-        //        Duration = a.Duration,
-        //        Xp = a.Xp,
-        //        Level = a.Level,
-        //        IsComplete = a.IsComplete,
-        //        Rating = a.Rating,
-        //        Description = a.Description,
-        //        PersonId = a.PersonId, // Include PersonId here
-        //        Activities = a.ActivityActivityTypes.Select(aat => new ActivityTypeDto
-        //        {
-        //            Id = aat.ActivityType.Id,
-        //            Category = aat.ActivityType.Category,
-        //            IntensityLevel = aat.ActivityType.IntensityLevel,
-        //            Description = aat.ActivityType.Description
-        //        }).ToList()
-        //    }).ToList();
-        //}
 
         public async Task<List<ActivityResponseDto>> CreateActivityPlanAsync(CreateActivityPlanDto input)
         {
@@ -157,6 +133,34 @@ namespace LifeQuest.Services.FitnessService.Activity
                 throw new UserFriendlyException("An error occurred while creating the activity plan.");
             }
         }
+
+        public async Task<List<ActivityResponseDto>> GetByExercisePlanIdAsync(Guid exercisePlanId)
+        {
+            var activities = await _activityManager.GetByExercisePlanIdAsync(exercisePlanId);
+
+            return activities
+                .OrderBy(a => a.Order) // 👈 Ensure the activities are ordered before mapping
+                .Select(a => new ActivityResponseDto
+                {
+                    Id = a.Id,
+                    Calories = a.Calories,
+                    Duration = a.Duration,
+                    Xp = a.Xp,
+                    Level = a.Level,
+                    IsComplete = a.IsComplete,
+                    Rating = a.Rating,
+                    Description = a.Description,
+                    Order = a.Order, // 👈 Map the Order field
+                    Activities = a.ActivityActivityTypes.Select(aat => new ActivityTypeDto
+                    {
+                        Id = aat.ActivityType.Id,
+                        Category = aat.ActivityType.Category,
+                        IntensityLevel = aat.ActivityType.IntensityLevel,
+                        Description = aat.ActivityType.Description
+                    }).ToList()
+                }).ToList();
+        }
+
 
         public async Task<ActivityResponseDto> UpdateActivityAsync(UpdateActivityDto input)
         {
