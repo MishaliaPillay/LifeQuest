@@ -9,6 +9,7 @@ export interface IFitnessPath {
   stepEntryIds: string[]; // IDs of linked step entries
   weightEntryIds: string[]; // IDs of linked weight entries
   activityIds: string[]; // IDs of linked activities
+  exercisePlans: string[];
 }
 
 // State context interface
@@ -22,7 +23,7 @@ export interface IFitnessPathStateContext {
 
 // Action context interface
 export interface IFitnessPathActionContext {
-  getFitnessPaths: (personId: string) => Promise<IFitnessPath[]>;
+  getFitnessPaths: (personId: string) => Promise<IFitnessPath>;
 
   getFitnessPath: (id: string) => void; // Fetch a single fitness path
   createFitnessPath: (path: IFitnessPath) => Promise<IFitnessPath>; // Create a new fitness path

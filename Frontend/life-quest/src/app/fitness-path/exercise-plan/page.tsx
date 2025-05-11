@@ -36,9 +36,9 @@ export default function WorkoutPlanPage() {
         }
         console.log("pers", person);
         const fitnessPaths = await getFitnessPaths(person.id);
-        const firstPath = fitnessPaths[0];
-        if (firstPath?.id) {
-          setFitnessPathId(firstPath.id);
+        console.log(fitnessPaths.exercisePlans[0]);
+        if (fitnessPaths?.id) {
+          setFitnessPathId(fitnessPaths.id);
         } else {
           message.warning("Fitness path not found.");
         }

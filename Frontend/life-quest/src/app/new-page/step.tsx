@@ -69,6 +69,7 @@ const StepBasedFitnessPlanner: React.FC<{
         weightEntryIds: [],
         activityIds: [],
         personId: personId,
+        exercisePlans: [],
       };
 
       // Await the result and store the ID
@@ -193,8 +194,7 @@ const StepBasedFitnessPlanner: React.FC<{
           extra={[
             <Button onClick={goDashboard} type="primary" key="dashboard">
               Go to Dashboard
-            </Button>
-            ,
+            </Button>,
           ]}
         />
       ),
