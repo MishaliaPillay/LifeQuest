@@ -1,5 +1,4 @@
-"use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Typography,
   Form,
@@ -11,29 +10,40 @@ import {
   List,
   Card,
   Tag,
+  Alert
 } from "antd";
 import {
   useActivityTypeActions,
   useActivityTypeState,
 } from "@/providers/fitnesspath/activity-provider";
-import { IActivityTypeRequest } from "@/providers/fitnesspath/activity-provider/context";
-
+import { IBaseActivityTypeRequest } from "@/providers/fitnesspath/activity-provider/context";
+import { IActivityType } from "@/providers/fitnesspath/activity-provider/context";
 const { Title, Text } = Typography;
 const { Option } = Select;
 
-const ActivityTypes: React.FC = () => {
+const ActivityTypes: React.FC<{
+  onActivityTypesGenerated: (types: IActivityType[]) => void;
+}> = ({ onActivityTypesGenerated }) => {
   const [form] = Form.useForm();
   const [submitting, setSubmitting] = useState(false);
-  const { generateActivityTypes, getActivityTypes } = useActivityTypeActions();
-  const { activityTypes, isPending, isError, errorMessage } =
-    useActivityTypeState();
+  const { generateActivityTypes } = useActivityTypeActions();
+  const { activityTypes, isPending, isError, errorMessage } = useActivityTypeState();
+
+  const previousTypesRef = useRef<IActivityType[]>([]);
 
   useEffect(() => {
-    // Fetch existing activity types when component mounts
-    getActivityTypes();
-  }, []);
+    if (
+      activityTypes &&
+      activityTypes.length > 0 &&
+      JSON.stringify(previousTypesRef.current) !== JSON.stringify(activityTypes)
+    ) {
+      console.log("Effect triggered with new activityTypes:", activityTypes);
+      onActivityTypesGenerated(activityTypes);
+      previousTypesRef.current = activityTypes;
+    }
+  }, [activityTypes, onActivityTypesGenerated]);
 
-  const handleFinish = async (values: IActivityTypeRequest) => {
+  const handleFinish = async (values: IBaseActivityTypeRequest) => {
     setSubmitting(true);
 
     try {
@@ -47,12 +57,8 @@ const ActivityTypes: React.FC = () => {
         availableEquipment: values.availableEquipment,
       };
 
-      console.log("Submitting request:", request);
       await generateActivityTypes(request);
       message.success("Activity types generated successfully!");
-
-      // Don't reset the form so users can make minor adjustments and try again
-      // form.resetFields();
     } catch (error) {
       console.error("Error generating activity types:", error);
       message.error("Failed to generate activity types.");
@@ -63,13 +69,27 @@ const ActivityTypes: React.FC = () => {
 
   return (
     <div>
-      <Title level={2}>Personal Fitness Profile</Title>
+      <Title level={3}>Create Your Fitness Profile</Title>
+      <Text type="secondary" style={{ marginBottom: 16, display: "block" }}>
+        Tell us about yourself so we can generate the best workout activities for your needs
+      </Text>
+      
+      {isError && errorMessage && (
+        <Alert
+          message="Error"
+          description={errorMessage}
+          type="error"
+          showIcon
+          style={{ marginBottom: 16 }}
+        />
+      )}
+
       <Form
         layout="vertical"
         form={form}
         onFinish={handleFinish}
         initialValues={{
-          age: 25,
+          age: 30,
           gender: "male",
           bodyType: "mesomorph",
           fitnessLevel: "beginner",
@@ -78,60 +98,60 @@ const ActivityTypes: React.FC = () => {
           availableEquipment: ["treadmill"],
         }}
       >
-        <Form.Item
-          name="age"
-          label="Age"
-          rules={[{ required: true, message: "Please enter your age" }]}
-        >
-          <Input type="number" min={1} max={120} />
-        </Form.Item>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "16px" }}>
+          <Form.Item
+            name="age"
+            label="Age"
+            rules={[{ required: true, message: "Please enter your age" }]}
+            style={{ flex: "1 0 120px" }}
+          >
+            <Input type="number" min={1} max={120} />
+          </Form.Item>
 
-        <Form.Item
-          name="gender"
-          label="Gender"
-          rules={[{ required: true, message: "Please select your gender" }]}
-        >
-          <Select placeholder="Select gender">
-            <Option value="male">Male</Option>
-            <Option value="female">Female</Option>
-            <Option value="other">Other</Option>
-          </Select>
-        </Form.Item>
+          <Form.Item
+            name="gender"
+            label="Gender"
+            rules={[{ required: true, message: "Please select your gender" }]}
+            style={{ flex: "1 0 200px" }}
+          >
+            <Select placeholder="Select gender">
+              <Option value="male">Male</Option>
+              <Option value="female">Female</Option>
+              <Option value="other">Other</Option>
+            </Select>
+          </Form.Item>
 
-        <Form.Item
-          name="bodyType"
-          label="Body Type"
-          rules={[{ required: true, message: "Please enter your body type" }]}
-        >
-          <Select placeholder="Select your body type">
-            <Option value="ectomorph">Ectomorph (Slim, Lean Body)</Option>
-            <Option value="mesomorph">
-              Mesomorph (Athletic, Muscular Body)
-            </Option>
-            <Option value="endomorph">Endomorph (Soft, Round Body)</Option>
-          </Select>
-        </Form.Item>
+          <Form.Item
+            name="bodyType"
+            label="Body Type"
+            rules={[{ required: true, message: "Please enter your body type" }]}
+            style={{ flex: "1 0 250px" }}
+          >
+            <Select placeholder="Select your body type">
+              <Option value="ectomorph">Ectomorph (Slim, Lean Body)</Option>
+              <Option value="mesomorph">Mesomorph (Athletic, Muscular Body)</Option>
+              <Option value="endomorph">Endomorph (Soft, Round Body)</Option>
+            </Select>
+          </Form.Item>
 
-        <Form.Item
-          name="fitnessLevel"
-          label="Fitness Level"
-          rules={[
-            { required: true, message: "Please enter your fitness level" },
-          ]}
-        >
-          <Select placeholder="Select your fitness level">
-            <Option value="beginner">Beginner</Option>
-            <Option value="intermediate">Intermediate</Option>
-            <Option value="advanced">Advanced</Option>
-          </Select>
-        </Form.Item>
+          <Form.Item
+            name="fitnessLevel"
+            label="Fitness Level"
+            rules={[{ required: true, message: "Please enter your fitness level" }]}
+            style={{ flex: "1 0 200px" }}
+          >
+            <Select placeholder="Select your fitness level">
+              <Option value="beginner">Beginner</Option>
+              <Option value="intermediate">Intermediate</Option>
+              <Option value="advanced">Advanced</Option>
+            </Select>
+          </Form.Item>
+        </div>
 
         <Form.Item
           name="limitations"
           label="Limitations"
-          rules={[
-            { required: true, message: "Please mention any limitations" },
-          ]}
+          rules={[{ required: true, message: "Please mention any limitations" }]}
         >
           <Input.TextArea
             placeholder="e.g., Knee pain, Asthma, or 'none' if no limitations"
@@ -142,9 +162,7 @@ const ActivityTypes: React.FC = () => {
         <Form.Item
           name="preferredExerciseTypes"
           label="Preferred Exercise Types (max 3)"
-          rules={[
-            { required: true, message: "Please select at least one type" },
-          ]}
+          rules={[{ required: true, message: "Please select at least one type" }]}
         >
           <Select
             mode="tags"
@@ -172,9 +190,7 @@ const ActivityTypes: React.FC = () => {
         <Form.Item
           name="availableEquipment"
           label="Available Equipment (max 5)"
-          rules={[
-            { required: true, message: "Please select at least one type" },
-          ]}
+          rules={[{ required: true, message: "Please select at least one type" }]}
         >
           <Select
             mode="tags"
@@ -203,10 +219,9 @@ const ActivityTypes: React.FC = () => {
           <Button
             type="primary"
             htmlType="submit"
-            block
             loading={submitting || isPending}
           >
-            Generate Fitness Plan
+            Generate Activities
           </Button>
         </Form.Item>
       </Form>
@@ -216,13 +231,13 @@ const ActivityTypes: React.FC = () => {
         <div style={{ textAlign: "center", margin: "40px 0" }}>
           <Spin size="large" />
           <Text style={{ display: "block", marginTop: "10px" }}>
-            Generating your personalized fitness plan...
+            Generating your personalized fitness activities...
           </Text>
         </div>
       ) : (
         activityTypes.length > 0 && (
-          <div style={{ marginTop: "40px" }}>
-            <Title level={3}>Your Personalized Fitness Plan</Title>
+          <div style={{ marginTop: "24px" }}>
+            <Title level={4}>Your Personalized Fitness Activities</Title>
             <List
               grid={{ gutter: 16, xs: 1, sm: 2, md: 2, lg: 3, xl: 3, xxl: 3 }}
               dataSource={activityTypes}
@@ -245,6 +260,7 @@ const ActivityTypes: React.FC = () => {
                         Intensity: {item.intensityLevel}
                       </Tag>
                     }
+                    size="small"
                   >
                     <p>{item.description}</p>
                   </Card>
@@ -253,12 +269,6 @@ const ActivityTypes: React.FC = () => {
             />
           </div>
         )
-      )}
-
-      {isError && errorMessage && (
-        <div style={{ marginTop: "20px", color: "red" }}>
-          <Text type="danger">{errorMessage}</Text>
-        </div>
       )}
     </div>
   );

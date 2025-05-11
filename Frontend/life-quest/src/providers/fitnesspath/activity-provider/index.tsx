@@ -4,9 +4,9 @@ import { getAxiosInstance } from "../../../utils/axiosInstance";
 import {
   IActivityType,
   INITIAL_STATE,
-  ActivityTypeStateContext,
+  ActivityTypeStateContext,IGenerateActivityTypeRequest,
   ActivityTypeActionContext,
-  IGenerateActivityTypeRequest,
+
 } from "./context";
 
 import { ActivityTypeReducer } from "./reducer";
@@ -48,9 +48,7 @@ export const ActivityTypeProvider = ({
       })
       .catch((err) => {
         console.error("Error fetching activity types:", err);
-        dispatch(
-          getActivityTypesError(err.message || "Failed to fetch activity types")
-        );
+        dispatch(getActivityTypesError());
       });
   };
 
@@ -65,11 +63,7 @@ export const ActivityTypeProvider = ({
       })
       .catch((err) => {
         console.error("Error creating activity type:", err);
-        dispatch(
-          createActivityTypeError(
-            err.message || "Failed to create activity type"
-          )
-        );
+        dispatch(createActivityTypeError());
       });
   };
 
@@ -84,15 +78,11 @@ export const ActivityTypeProvider = ({
       })
       .catch((err) => {
         console.error("Error updating activity type:", err);
-        dispatch(
-          updateActivityTypeError(
-            err.message || "Failed to update activity type"
-          )
-        );
+        dispatch(updateActivityTypeError());
       });
   };
 
-  const deleteActivityType = async (activityTypeId: string) => {
+  const deleteActivityType = async (activityTypeId: IActivityType) => {
     dispatch(deleteActivityTypePending());
     const endpoint = `/api/services/app/ActivityType/DeleteActivityType?Id=${activityTypeId}`;
 
@@ -103,11 +93,7 @@ export const ActivityTypeProvider = ({
       })
       .catch((err) => {
         console.error("Error deleting activity type:", err);
-        dispatch(
-          deleteActivityTypeError(
-            err.message || "Failed to delete activity type"
-          )
-        );
+        dispatch(deleteActivityTypeError());
       });
   };
 
@@ -117,11 +103,17 @@ export const ActivityTypeProvider = ({
     bodyType: string;
     fitnessLevel: string;
     limitations: string;
-    preferredExerciseTypes: string;
+    preferredExerciseTypes: string | string[]; // Can be either a string or an array
     availableEquipment: string[];
   }) => {
     dispatch(generateActivityTypePending());
     const endpoint = `/api/services/app/ActivityType/GenerateExerciseActivityTypes`;
+
+    // Ensure preferredExerciseTypes is treated as an array before calling .join()
+    const preferredExerciseTypesArray =
+      typeof requestData.preferredExerciseTypes === "string"
+        ? requestData.preferredExerciseTypes.split(",") // If it's a string, split by commas to make it an array
+        : requestData.preferredExerciseTypes; // If it's already an array, keep it as is
 
     // Format the request as expected by the backend
     const formattedRequest: IGenerateActivityTypeRequest = {
@@ -132,7 +124,7 @@ export const ActivityTypeProvider = ({
         bodyType: requestData.bodyType,
         fitnessLevel: requestData.fitnessLevel,
         limitations: requestData.limitations,
-        preferredExerciseTypes: requestData.preferredExerciseTypes,
+        preferredExerciseTypes: preferredExerciseTypesArray.join(","), // Now we can safely use join
         availableEquipment: requestData.availableEquipment,
       },
     };
@@ -150,13 +142,61 @@ export const ActivityTypeProvider = ({
       })
       .catch((err) => {
         console.error("Error generating activity types:", err);
-        dispatch(
-          generateActivityTypeError(
-            err.message || "Failed to generate activity types"
-          )
-        );
+        dispatch(generateActivityTypeError());
         throw err; // Re-throw to handle in the component
       });
+  };
+  // const generateActivityTypes = async (requestData: {
+  //   age: number;
+  //   gender: string;
+  //   bodyType: string;
+  //   fitnessLevel: string;
+  //   limitations: string;
+  //   preferredExerciseTypes: string | string[];
+  //   availableEquipment: string[];
+  // }) => {
+  //   dispatch(generateActivityTypePending());
+
+  //   try {
+  //     // Simulate network delay
+  //     await new Promise((resolve) => setTimeout(resolve, 1000));
+
+  //     // MOCK DATA: Replace this with your desired static mock objects
+  //     const mockActivityTypes = [
+  //       {
+  //         id: "0196b016-1645-7d52-9ab1-5e58916bf9b8",
+  //         category: "Cardio - HIIT",
+  //         intensityLevel: 3,
+  //         description:
+  //           "High-intensity interval training to improve endurance and burn fat quickly.",
+  //       },
+  //       {
+  //         id: "0196b105-9e61-7570-a8d9-d9ff88415662",
+  //         category: "Strength - Bodyweight",
+  //         intensityLevel: 2,
+  //         description:
+  //           "A mix of push-ups, squats, and planks for full-body conditioning.",
+  //       },
+  //     ];
+
+  //     dispatch(generateActivityTypeSuccess(mockActivityTypes));
+  //     return mockActivityTypes;
+  //   } catch (err) {
+  //     console.error("Mock error generating activity types:", err);
+  //     dispatch(generateActivityTypeError());
+  //     throw err;
+  //   }
+  // };
+
+  const getActivityType = async (id: string): Promise<IActivityType> => {
+    const endpoint = `/api/services/app/ActivityType/GetActivityTypeById?Id=${id}`;
+    try {
+      const response = await instance.get(endpoint);
+      return response.data?.result as IActivityType;
+    } catch (err) {
+      console.error("Error fetching activity type by ID:", err);
+      throw err;
+    }
   };
 
   return (
@@ -164,6 +204,7 @@ export const ActivityTypeProvider = ({
       <ActivityTypeActionContext.Provider
         value={{
           getActivityTypes,
+          getActivityType,
           createActivityType,
           updateActivityType,
           deleteActivityType,

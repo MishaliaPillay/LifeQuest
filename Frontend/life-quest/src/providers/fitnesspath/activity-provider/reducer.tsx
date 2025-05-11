@@ -1,13 +1,13 @@
 "use client";
 
 import { handleActions } from "redux-actions";
-import { ActivityTypeState, INITIAL_STATE } from "./context";
+import { IActivityTypeStateContext, INITIAL_STATE } from "./context";
 import { ActivityTypeActionEnums } from "./actions";
 
 // Define the reducer for activity types
 export const ActivityTypeReducer = handleActions<
-  ActivityTypeState,
-  Partial<ActivityTypeState>
+  IActivityTypeStateContext,
+  Partial<IActivityTypeStateContext>
 >(
   {
     [ActivityTypeActionEnums.getActivityTypesPending]: (state, action) => ({

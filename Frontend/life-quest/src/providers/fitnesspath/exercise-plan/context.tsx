@@ -14,7 +14,7 @@ export interface IExercisePlan {
   fitnessPathId: string;
   name: string;
   days: IExerciseDay[];
-  personId: string;
+  
   isCompleted?: boolean;
 }
 
@@ -31,7 +31,7 @@ export interface IExercisePlanStateContext {
 export interface IExercisePlanActionContext {
   getPlan: (id: string) => void;
   getPlanHistory: (personId: string) => void;
-  createPlan: (plan: IExercisePlan) => void;
+  createPlan: (plan: IExercisePlan) => Promise<void>;
   updatePlan: (plan: IExercisePlan) => void;
   completePlan: (id: string) => void;
 }
