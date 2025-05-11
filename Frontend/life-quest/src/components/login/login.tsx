@@ -1,54 +1,30 @@
 import React, { useState } from "react";
 import { Form, Input, Button, message } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
-import styled from "styled-components";
+import styles from "./LoginComponent.module.css";
 import { ISignInRequest } from "@/providers/auth-provider/context";
 import { useAuthActions } from "@/providers/auth-provider";
 import { useUserActions } from "@/providers/user-provider";
+
 interface LoginFormProps {
   onLoginSuccess?: () => void;
   onBeforeSubmit?: () => void;
 }
 
-const LoginContainer = styled.div`
-  width: 100%;
-  max-width: 400px;
-  padding: 20px;
-`;
-
-const StyledButton = styled(Button)`
-  height: 45px;
-  background: linear-gradient(90deg, #ff6b98 0%, #ff9171 100%);
-  border: none;
-  border-radius: 6px;
-  font-weight: 500;
-
-  &:hover,
-  &:focus {
-    background: linear-gradient(90deg, #ff5289 0%, #ff8060 100%);
-  }
-`;
-
-const LoginComponent: React.FC = ({
+const LoginComponent: React.FC<LoginFormProps> = ({
   onLoginSuccess,
   onBeforeSubmit,
-}: LoginFormProps) => {
+}) => {
   const { signIn } = useAuthActions();
-
   const { getCurrentUser } = useUserActions();
   const [loading, setLoading] = useState(false);
-
-  // Configure toast message options
   const [messageApi, contextHolder] = message.useMessage();
 
-  // Toast message display functions
   const showSuccessToast = (msg = "Successfully logged in!") => {
     messageApi.success({
       content: msg,
       duration: 3,
-      style: {
-        marginTop: "20px",
-      },
+      style: { marginTop: "20px" },
     });
   };
 
@@ -58,18 +34,16 @@ const LoginComponent: React.FC = ({
     messageApi.error({
       content: msg,
       duration: 5,
-      style: {
-        marginTop: "20px",
-      },
+      style: { marginTop: "20px" },
     });
   };
+
   const onFinishLogin = async (values: ISignInRequest) => {
     onBeforeSubmit?.();
     setLoading(true);
-  
+
     try {
       const loginResult = await signIn(values);
-
       if (loginResult) {
         const token = sessionStorage.getItem("jwt");
         getCurrentUser(token);
@@ -83,7 +57,7 @@ const LoginComponent: React.FC = ({
     } catch (error) {
       setLoading(false);
       console.error("Login error:", error);
-      if (error.response && error.response.data) {
+      if (error.response?.data) {
         showErrorToast(
           error.response.data.errorMessage ||
             "Login failed! Please check your credentials."
@@ -95,9 +69,9 @@ const LoginComponent: React.FC = ({
   };
 
   return (
-    <LoginContainer>
+    <div className={styles.loginContainer}>
       {contextHolder}
-      <h1 style={{ marginBottom: 24, fontWeight: 600 }}>Sign In</h1>
+      <h1 className={styles.loginTitle}>Sign In</h1>
 
       <Form
         name="login"
@@ -130,17 +104,18 @@ const LoginComponent: React.FC = ({
         </Form.Item>
 
         <Form.Item>
-          <StyledButton
+          <Button
             type="primary"
             htmlType="submit"
             loading={loading}
             block
+            className={styles.styledButton}
           >
             LOGIN
-          </StyledButton>
+          </Button>
         </Form.Item>
       </Form>
-    </LoginContainer>
+    </div>
   );
 };
 
