@@ -1,0 +1,42 @@
+.dashboardWrapper {
+  padding: 24px;
+}
+
+.welcomeCard {
+  margin-bottom: 24px;
+}
+
+.profileCard {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.avatarSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.avatar {
+  background-color: #1890ff;
+}
+
+.uploadText {
+  margin-top: 8px;
+  color: #1890ff;
+  cursor: pointer;
+}
+
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60vh;
+}
+
+.userName {
+  color: #1890ff;
+  font-weight: bold;
+}
