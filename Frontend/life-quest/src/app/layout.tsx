@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { ConfigProvider, App as AntdApp } from "antd";  // ✅ ADD App here
+import { ConfigProvider, App as AntdApp } from "antd";
 import { AuthProvider } from "@/providers/auth-provider";
 import { UserProvider } from "@/providers/user-provider";
 import { StepsProvider } from "@/providers/fitnesspath/step-provider";
@@ -31,29 +31,35 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ConfigProvider
-      theme={{
-        token: {
-          colorPrimary: "#A0A2ED",
-          colorSuccess: "#8EECF5",
-          colorInfo: "#D0BDF4",
-          borderRadius: 12,
-        },
-      }}
-    >
-      <AntdApp> 
-        <html lang="en">
-          <AuthProvider>
-            <UserProvider><FitnessPathProvider>
-              <StepsProvider><WeightProvider><ActivityTypeProvider><ExercisePlanProvider>
-                <body className={`${geistSans.variable} ${geistMono.variable}`}>
-                  {children}
-                </body></ExercisePlanProvider></ActivityTypeProvider></WeightProvider>
-              </StepsProvider></FitnessPathProvider>
-            </UserProvider>
-          </AuthProvider>
-        </html>
-      </AntdApp>
-    </ConfigProvider>
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body>
+        <ConfigProvider
+          theme={{
+            token: {
+              colorPrimary: "#A0A2ED",
+              colorSuccess: "#8EECF5",
+              colorInfo: "#D0BDF4",
+              borderRadius: 12,
+            },
+          }}
+        >
+          <AntdApp>
+            <AuthProvider>
+              <UserProvider>
+                <FitnessPathProvider>
+                  <StepsProvider>
+                    <WeightProvider>
+                      <ActivityTypeProvider>
+                        <ExercisePlanProvider>{children}</ExercisePlanProvider>
+                      </ActivityTypeProvider>
+                    </WeightProvider>
+                  </StepsProvider>
+                </FitnessPathProvider>
+              </UserProvider>
+            </AuthProvider>
+          </AntdApp>
+        </ConfigProvider>
+      </body>
+    </html>
   );
 }

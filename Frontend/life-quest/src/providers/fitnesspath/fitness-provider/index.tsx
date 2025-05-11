@@ -36,19 +36,22 @@ export const FitnessPathProvider = ({
   const instance = getAxiosInstance();
 
   // Fetch all fitness paths for a person
-  const getFitnessPaths = async (personId: string) => {
+  const getFitnessPaths = async (
+    personId: string
+  ): Promise<IFitnessPath | null> => {
     dispatch(getFitnessPathsPending());
-    const endpoint = `/api/services/app/FitnessPath/GetAllForPerson?personId=${personId}`;
+    const endpoint = `/api/services/app/FitnessPath/GetByPersonId?personId=${personId}`;
 
-    return instance
-      .get(endpoint)
-      .then((response) => {
-        dispatch(getFitnessPathsSuccess(response.data?.result ?? []));
-      })
-      .catch((error) => {
-        console.error("Error fetching fitness paths:", error);
-        dispatch(getFitnessPathsError());
-      });
+    try {
+      const response = await instance.get(endpoint);
+      const result = response.data?.result ?? [];
+      dispatch(getFitnessPathsSuccess(result));
+      return result;
+    } catch (error) {
+      console.error("Error fetching fitness paths:", error);
+      dispatch(getFitnessPathsError());
+      return null; // or throw error if you want stricter handling
+    }
   };
 
   // Get a specific fitness path (if your API supports it)

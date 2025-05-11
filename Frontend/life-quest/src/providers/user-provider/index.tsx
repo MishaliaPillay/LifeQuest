@@ -39,7 +39,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((response) => {
-       
         if (response?.data?.result?.user) {
           dispatch(getCurrentUserSuccess(response.data.result.user));
           return response.data.result.user;
@@ -75,7 +74,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   // Create a user
   const createUser = async (user: IUser) => {
     dispatch(createUserPending());
-    const endpoint = `/api/services/app/User/Create`;
+    const endpoint = `/api/services/app/Person/Create`;
 
     return instance
       .post(endpoint, user)

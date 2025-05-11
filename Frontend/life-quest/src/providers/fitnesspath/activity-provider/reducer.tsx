@@ -74,6 +74,19 @@ export const ActivityTypeReducer = handleActions<
       ...state,
       ...(action.payload ?? {}),
     }),
+
+    [ActivityTypeActionEnums.getExercisePlanPending]: (state, action) => ({
+      ...state,
+      ...(action.payload ?? {}),
+    }),
+    [ActivityTypeActionEnums.getExercisePlanSuccess]: (state, action) => ({
+      ...state,
+      ...(action.payload ?? {}),
+    }),
+    [ActivityTypeActionEnums.getExercisePlanError]: (state, action) => ({
+      ...state,
+      ...(action.payload ?? {}),
+    }),
   },
   INITIAL_STATE
 );
