@@ -21,9 +21,12 @@ describe("LoginComponent", () => {
 
     const onLoginSuccess = vi.fn();
 
-    (useAuthActions as any).mockReturnValue({ signIn: mockSignIn });
-    (useUserActions as any).mockReturnValue({ getCurrentUser: mockGetCurrentUser });
-
+    (useAuthActions as unknown as jest.Mock).mockReturnValue({
+      signIn: mockSignIn,
+    });
+    (useUserActions as unknown as jest.Mock).mockReturnValue({
+      getCurrentUser: mockGetCurrentUser,
+    });
     render(<LoginComponent onLoginSuccess={onLoginSuccess} />);
 
     // Fill in the form
