@@ -46,8 +46,8 @@ interface EnhancedExercisePlanDay extends IExercisePlanDay {
 }
 
 export default function WorkoutPlanPage() {
-  const [_userId, setUserId] = useState("");
-  const [_fitnessPathId, setFitnessPathId] = useState<string | null>(null);
+///  const [_userId, setUserId] = useState("");
+ /// const [_fitnessPathId, setFitnessPathId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [exercisePlan, setExercisePlan] = useState<EnhancedExercisePlanDay[]>([]);
   const [selectedDay, setSelectedDay] = useState<EnhancedExercisePlanDay | null>(null);
@@ -60,71 +60,65 @@ export default function WorkoutPlanPage() {
   // Mock data - would come from backend in real app
   
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const token = sessionStorage.getItem("jwt");
-        if (!token) {
-          message.error("JWT not found");
-          return;
-        }
-
-        const id = getId(token);
-        setUserId(id);
-
-        const person = await getCurrentPerson(parseInt(id));
-        if (!person?.id) {
-          message.warning("Person not found for this user.");
-          return;
-        }
-
-        const fitnessPaths = await getFitnessPaths(person.id);
-        const exercisePlanId = fitnessPaths.exercisePlans[0]?.id;
-
-        if (fitnessPaths?.id) {
-          setFitnessPathId(fitnessPaths.id);
-        } else {
-          message.warning("Fitness path not found.");
-        }
-
-        const planResponse = await getExercisePlan(exercisePlanId);
-        
-        // Enhance the exercise plan with additional properties for UI
-        const enhancedPlan = planResponse.map((day: IExercisePlanDay, index: number) => {
-          // Determine difficulty based on calories (just for demo)
-          let difficulty = 'easy';
-          if (day.calories > 400) difficulty = 'medium';
-          if (day.calories > 600) difficulty = 'hard';
-          if (day.calories > 800) difficulty = 'intense';
-          
-          // Determine primary workout type (just for demo)
-          const workoutType = day.description?.toLowerCase().includes('cardio') ? 'cardio' as const : 
-                             day.description?.toLowerCase().includes('strength') ? 'strength' as const :
-                             day.description?.toLowerCase().includes('flex') ? 'flexibility' as const :
-                             day.description?.toLowerCase().includes('recovery') ? 'recovery' as const : 'hiit' as const;
-          
-          // Estimate workout duration based on calories (just for demo)
-          const estimatedDuration = Math.round(day.calories / 10);
-          
-          return {
-            ...day,
-            difficulty,
-            workoutType,
-            estimatedDuration
-          } as EnhancedExercisePlanDay;
-        });
-        
-        setExercisePlan(enhancedPlan);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        message.error("Failed to load workout plan.");
-      } finally {
-        setLoading(false);
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const token = sessionStorage.getItem("jwt");
+      if (!token) {
+        message.error("JWT not found");
+        return;
       }
-    };
 
-    fetchData();
-  }, []);
+      const id = getId(token);
+
+      const person = await getCurrentPerson(parseInt(id));
+      if (!person?.id) {
+        message.warning("Person not found for this user.");
+        return;
+      }
+
+      const fitnessPaths = await getFitnessPaths(person.id);
+      const exercisePlanId = fitnessPaths.exercisePlans[0]?.id;
+
+      if (!fitnessPaths?.id) {
+        message.warning("Fitness path not found.");
+      }
+
+      const planResponse = await getExercisePlan(exercisePlanId);
+      
+      const enhancedPlan = planResponse.map((day: IExercisePlanDay) => {
+        let difficulty = 'easy';
+        if (day.calories > 400) difficulty = 'medium';
+        if (day.calories > 600) difficulty = 'hard';
+        if (day.calories > 800) difficulty = 'intense';
+
+        const workoutType = day.description?.toLowerCase().includes('cardio') ? 'cardio' as const : 
+                            day.description?.toLowerCase().includes('strength') ? 'strength' as const :
+                            day.description?.toLowerCase().includes('flex') ? 'flexibility' as const :
+                            day.description?.toLowerCase().includes('recovery') ? 'recovery' as const : 'hiit' as const;
+
+        const estimatedDuration = Math.round(day.calories / 10);
+
+        return {
+          ...day,
+          difficulty,
+          workoutType,
+          estimatedDuration
+        } as EnhancedExercisePlanDay;
+      });
+
+      setExercisePlan(enhancedPlan);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      message.error("Failed to load workout plan.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchData();
+}, []);
+
 
   const showDayDetails = (day: EnhancedExercisePlanDay) => {
     setSelectedDay(day);
