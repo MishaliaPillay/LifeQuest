@@ -134,7 +134,7 @@ const DayContainer = ({ day, items, onRemoveActivity }) => {
 
 const ExercisePlanBuilder = ({
   availableActivities,
-  personId,
+
   fitnessPathId,
   onPlanSubmit,
 }) => {

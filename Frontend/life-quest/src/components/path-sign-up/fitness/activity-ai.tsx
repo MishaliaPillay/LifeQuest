@@ -1,4 +1,3 @@
-"use client";
 import React, { useState, useEffect, useRef } from "react";
 import {
   Typography,
@@ -18,19 +17,19 @@ import {
   useActivityTypeState,
 } from "@/providers/fitnesspath/activity-provider";
 import { IBaseActivityTypeRequest } from "@/providers/fitnesspath/activity-provider/context";
-
+import { IActivityType } from "@/providers/fitnesspath/activity-provider/context";
 const { Title, Text } = Typography;
 const { Option } = Select;
 
 const ActivityTypes: React.FC<{
-  onActivityTypesGenerated: (types: any[]) => void;
+  onActivityTypesGenerated: (types: IActivityType[]) => void;
 }> = ({ onActivityTypesGenerated }) => {
   const [form] = Form.useForm();
   const [submitting, setSubmitting] = useState(false);
   const { generateActivityTypes } = useActivityTypeActions();
   const { activityTypes, isPending, isError, errorMessage } = useActivityTypeState();
 
-  const previousTypesRef = useRef<any[]>([]);
+  const previousTypesRef = useRef<IActivityType[]>([]);
 
   useEffect(() => {
     if (
