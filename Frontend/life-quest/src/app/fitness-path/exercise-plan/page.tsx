@@ -131,9 +131,12 @@ export default function WorkoutPlanPage() {
     setIsModalVisible(true);
   };
 
-  console.log("toot", exercisePlan)
-const completedCount = 3;
-  const closeModal = () => {
+//  console.log("toot", exercisePlan)
+//const completedCount = 3;
+  
+const completedCount = exercisePlan.filter(day => day.isComplete).length;
+console.log(completedCount)
+const closeModal = () => {
     setIsModalVisible(false);
     setSelectedDay(null);
   };
@@ -161,11 +164,14 @@ const completedCount = 3;
         <Col span={24}>
           <Card bordered={false} style={{ borderRadius: 8 }}>
             <Title level={4}>Your Progress</Title>
-            <Progress 
-              percent={Math.round((completedCount / exercisePlan.length) * 100)} 
-              status="active"
-              style={{ marginBottom: 8 }}
-            />
+        <Progress 
+  percent={exercisePlan.length > 0 
+    ? Math.round((completedCount / exercisePlan.length) * 100) 
+    : 0}
+  status="active"
+  style={{ marginBottom: 8 }}
+/>
+
             <Text>{completedCount} of {exercisePlan.length} workouts completed</Text>
           </Card>
         </Col>
