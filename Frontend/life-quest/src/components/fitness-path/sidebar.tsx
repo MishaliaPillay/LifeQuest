@@ -1,20 +1,19 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { Layout, Menu, Avatar, Drawer, Button } from 'antd';
+import React, { useState, useEffect } from "react";
+import { Layout, Menu, Avatar, Drawer, Button } from "antd";
 import {
   DashboardOutlined,
   TrophyOutlined,
   FireOutlined,
   UserOutlined,
   BarChartOutlined,
-  SettingOutlined,
   LogoutOutlined,
   MenuOutlined,
-} from '@ant-design/icons';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import type { MenuProps } from 'antd';
+} from "@ant-design/icons";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import type { MenuProps } from "antd";
 
 const { Sider } = Layout;
 
@@ -24,44 +23,38 @@ interface SidebarProps {
   setDrawerOpen: (open: boolean) => void;
 }
 
-const menuItems: MenuProps['items'] = [
+const menuItems: MenuProps["items"] = [
   {
-    key: '/dashboard',
+    key: "/dashboard",
     icon: <DashboardOutlined />,
     label: <Link href="/dashboard">Dashboard</Link>,
   },
   {
-    key: '/activities',
+    key: "/fitness-path/exercise-plan",
     icon: <BarChartOutlined />,
-    label: <Link href="/activities">Activities</Link>,
+    label: <Link href="/fitness-path/exercise-plan">Exercise Plan</Link>,
   },
   {
-    key: '/achievements',
+    key: "/fitness-path/weight",
     icon: <TrophyOutlined />,
-    label: <Link href="/achievements">Achievements</Link>,
+    label: <Link href="/fitness-path/weight">Weight</Link>,
   },
   {
-    key: '/fitness-path/steps',
+    key: "/fitness-path/steps",
     icon: <FireOutlined />,
     label: <Link href="/fitness-path/steps">Steps</Link>,
   },
   {
-    key: '/profile',
+    key: "/fitness-path/profile",
     icon: <UserOutlined />,
-    label: <Link href="/profile">Profile</Link>,
+    label: <Link href="/fitness-path/profile">Profile</Link>,
   },
+
   {
-    key: '/settings',
-    icon: <SettingOutlined />,
-    label: <Link href="/settings">Settings</Link>,
-  },
-  {
-    key: 'logout',
+    key: "logout",
     icon: <LogoutOutlined />,
-    label: 'Logout',
-    onClick: () => {
-  
-    },
+    label: "Logout",
+    onClick: () => {},
   },
 ];
 
@@ -79,13 +72,13 @@ const Sidebar: React.FC<SidebarProps> = ({
     };
 
     checkIsMobile();
-    window.addEventListener('resize', checkIsMobile);
+    window.addEventListener("resize", checkIsMobile);
 
-    return () => window.removeEventListener('resize', checkIsMobile);
+    return () => window.removeEventListener("resize", checkIsMobile);
   }, []);
 
   const getSelectedKey = () => {
-    return pathname || '/dashboard';
+    return pathname || "/dashboard";
   };
 
   if (isMobile) {
@@ -96,36 +89,40 @@ const Sidebar: React.FC<SidebarProps> = ({
           icon={<MenuOutlined />}
           onClick={() => setDrawerOpen(true)}
           style={{
-            position: 'absolute',
+            position: "absolute",
             top: 16,
             left: 16,
             zIndex: 101,
           }}
         />
-      <Drawer
-  placement="left"
-  closable
-  onClose={() => setDrawerOpen(false)}
-  open={drawerOpen}
-  width={200}
-  styles={{
-    body: { padding: 0 },
-  }}
->
+        <Drawer
+          placement="left"
+          closable
+          onClose={() => setDrawerOpen(false)}
+          open={drawerOpen}
+          width={200}
+          styles={{
+            body: { padding: 0 },
+          }}
+        >
           <div
             style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              margin: '16px 0',
-              padding: '16px 0',
-              borderBottom: '1px solid #f0f0f0',
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              margin: "16px 0",
+              padding: "16px 0",
+              borderBottom: "1px solid #f0f0f0",
             }}
           >
-            <Avatar style={{ backgroundColor: '#1890ff' }}>A</Avatar>
-            <div style={{ margin: '12px 0' }}>Alex Chen</div>
+            <Avatar style={{ backgroundColor: "#1890ff" }}>A</Avatar>
+            <div style={{ margin: "12px 0" }}>Alex Chen</div>
           </div>
-          <Menu mode="inline" selectedKeys={[getSelectedKey()]} items={menuItems} />
+          <Menu
+            mode="inline"
+            selectedKeys={[getSelectedKey()]}
+            items={menuItems}
+          />
         </Drawer>
       </>
     );
@@ -137,36 +134,38 @@ const Sidebar: React.FC<SidebarProps> = ({
       collapsible
       collapsed={collapsed}
       style={{
-        overflow: 'auto',
-        height: '100vh',
-        position: 'fixed',
+        overflow: "auto",
+        height: "100vh",
+        position: "fixed",
         left: 0,
         top: 0,
         bottom: 0,
         zIndex: 100,
-        backgroundColor: 'pink',
+        backgroundColor: "pink",
       }}
       width={200}
       collapsedWidth={80}
     >
       <div
         style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          margin: '16px 0',
-          color: 'white',
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          margin: "16px 0",
+          color: "white",
         }}
       >
-        <Avatar style={{ backgroundColor: '#fff', color: '#000' }}>A</Avatar>
-        {!collapsed && <div style={{ margin: '12px 0', color: '#000' }}>Alex Chen</div>}
+        <Avatar style={{ backgroundColor: "#fff", color: "#000" }}>A</Avatar>
+        {!collapsed && (
+          <div style={{ margin: "12px 0", color: "#000" }}>Alex Chen</div>
+        )}
       </div>
       <Menu
         mode="inline"
         selectedKeys={[getSelectedKey()]}
         items={menuItems}
         style={{
-          backgroundColor: 'pink',
+          backgroundColor: "pink",
         }}
       />
     </Sider>

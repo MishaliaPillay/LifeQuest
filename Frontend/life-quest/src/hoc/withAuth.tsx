@@ -25,23 +25,27 @@ const withAuth = (WrappedLayout: React.ComponentType<LayoutProps>) => {
         try {
           // Get user ID from token
           const userId = getId(token);
-          
+
           if (userId && userId !== "1") {
             const userIdNum = parseInt(userId, 10);
-            
+
             if (!isNaN(userIdNum)) {
               try {
                 // Get person data using the user ID
                 const personData = await getCurrentPerson(userIdNum);
-                
+
                 if (personData && personData.id) {
                   // Check if pathId exists and is not empty
-                  if (!personData.pathId || personData.pathId === "0" || personData.pathId === "") {
+                  if (
+                    !personData.pathId ||
+                    personData.pathId === "0" ||
+                    personData.pathId === ""
+                  ) {
                     // User doesn't have a path, route to new-page
                     router.push("/new-page");
                   } else {
                     // User has a path, route to user-page
-                    router.push("/user-page");
+                    router.push("/fitness-path");
                   }
                   return;
                 }
@@ -51,13 +55,13 @@ const withAuth = (WrappedLayout: React.ComponentType<LayoutProps>) => {
               }
             }
           }
-          
+
           // Fall back to role-based routing if any of the above fails
           const role = getRole(token);
-          
+
           // Redirect based on role
           if (role === "default") {
-            router.push("/user-page");
+            router.push("/fitness-path");
           } else {
             router.push("/");
           }
@@ -66,10 +70,10 @@ const withAuth = (WrappedLayout: React.ComponentType<LayoutProps>) => {
           router.push("/"); //if decoding fails
         }
       };
-      
+
       checkAuthAndRoute();
     }, []);
-    
+
     return <WrappedLayout {...props}>{children}</WrappedLayout>;
   };
 

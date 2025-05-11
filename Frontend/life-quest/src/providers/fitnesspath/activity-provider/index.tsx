@@ -4,9 +4,10 @@ import { getAxiosInstance } from "../../../utils/axiosInstance";
 import {
   IActivityType,
   INITIAL_STATE,
-  ActivityTypeStateContext,IGenerateActivityTypeRequest,
+  ActivityTypeStateContext,
+  IGenerateActivityTypeRequest,
   ActivityTypeActionContext,
-
+  IExercisePlanDay,
 } from "./context";
 
 import { ActivityTypeReducer } from "./reducer";
@@ -27,6 +28,9 @@ import {
   generateActivityTypePending,
   generateActivityTypeSuccess,
   generateActivityTypeError,
+  getExercisePlanError,
+  getExercisePlanPending,
+  getExercisePlanSuccess,
 } from "./actions";
 
 export const ActivityTypeProvider = ({
@@ -199,6 +203,21 @@ export const ActivityTypeProvider = ({
     }
   };
 
+  const getExercisePlan = async (id: string): Promise<IExercisePlanDay[]> => {
+    dispatch(getExercisePlanPending());
+    const endpoint = `/api/services/app/Activity/GetByExercisePlanId?exercisePlanId=${id}`;
+    try {
+      const response = await instance.get(endpoint);
+      const plan = response.data?.result || [];
+      dispatch(getExercisePlanSuccess({ exercisePlan: plan }));
+      return plan;
+    } catch (err) {
+      console.error("Error fetching exercise plan by ID:", err);
+      dispatch(getExercisePlanError());
+      throw err;
+    }
+  };
+
   return (
     <ActivityTypeStateContext.Provider value={state}>
       <ActivityTypeActionContext.Provider
@@ -209,6 +228,7 @@ export const ActivityTypeProvider = ({
           updateActivityType,
           deleteActivityType,
           generateActivityTypes,
+          getExercisePlan,
         }}
       >
         {children}

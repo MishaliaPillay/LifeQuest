@@ -8,6 +8,25 @@ export interface IActivityType {
   intensityLevel: number;
   description: string;
 }
+export interface IActivity {
+  id: string;
+  category: string;
+  intensityLevel: number;
+  description: string;
+}
+
+export interface IExercisePlanDay {
+  id: string;
+  calories: number;
+  duration: number;
+  xp: number;
+  level: number;
+  activities: IActivity[];
+  isComplete: boolean;
+  rating: number;
+  description: string;
+  order: number;
+}
 
 // Input model for generating activity types
 export interface IBaseActivityTypeRequest {
@@ -42,6 +61,7 @@ export interface IActivityTypeActionContext {
   updateActivityType: (type: IActivityType) => void;
   deleteActivityType: (id: IActivityType) => void;
   generateActivityTypes: (requestData: IBaseActivityTypeRequest) => void;
+  getExercisePlan: (id: string) => Promise<IExercisePlanDay[]>;
 }
 
 // Initial state
