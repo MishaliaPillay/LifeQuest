@@ -22,7 +22,8 @@ export interface IFitnessPathStateContext {
 
 // Action context interface
 export interface IFitnessPathActionContext {
-  getFitnessPaths: (persinId: string) => void; // Fetch all fitness paths
+  getFitnessPaths: (personId: string) => Promise<IFitnessPath[]>;
+
   getFitnessPath: (id: string) => void; // Fetch a single fitness path
   createFitnessPath: (path: IFitnessPath) => Promise<IFitnessPath>; // Create a new fitness path
   updateFitnessPath: (path: IFitnessPath) => void; // Update an existing fitness path

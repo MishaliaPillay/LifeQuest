@@ -4,9 +4,9 @@ import React, { useEffect, useState } from "react";
 import { Card, Col, Row, Typography, message, Spin } from "antd";
 import { getId } from "../../../utils/decoder";
 import { useAuthActions } from "../../../providers/auth-provider";
+import { useFitnessPathActions } from "@/providers/fitnesspath/fitness-provider";
 
 const { Title, Text } = Typography;
-
 const days = Array.from({ length: 10 }, (_, i) => `Day ${i + 1}`);
 
 export default function WorkoutPlanPage() {
@@ -15,6 +15,7 @@ export default function WorkoutPlanPage() {
   const [loading, setLoading] = useState(true);
 
   const { getCurrentPerson } = useAuthActions();
+  const { getFitnessPaths } = useFitnessPathActions();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -25,21 +26,25 @@ export default function WorkoutPlanPage() {
           return;
         }
 
-        const id = getId(token);
+        const id = getId(token); // user ID
         setUserId(id);
-       
-        const response = await getCurrentPerson(parseInt(id));
-        console.log("checking", response);
 
-        if (response?.pathId) {
-          console.log("cee", response);
-          setFitnessPathId(response.pathId);
+        const person = await getCurrentPerson(parseInt(id));
+        if (!person?.id) {
+          message.warning("Person not found for this user.");
+          return;
+        }
+        console.log("pers", person);
+        const fitnessPaths = await getFitnessPaths(person.id);
+        const firstPath = fitnessPaths[0];
+        if (firstPath?.id) {
+          setFitnessPathId(firstPath.id);
         } else {
-          message.warning("Fitness path not found");
+          message.warning("Fitness path not found.");
         }
       } catch (error) {
-        console.error("Error fetching person data:", error);
-        message.error("Failed to load user data");
+        console.error("Error fetching data:", error);
+        message.error("Failed to load workout plan.");
       } finally {
         setLoading(false);
       }
