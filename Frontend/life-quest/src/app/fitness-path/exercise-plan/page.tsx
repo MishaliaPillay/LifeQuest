@@ -283,7 +283,7 @@ export default function WorkoutPlanPage() {
             <Col xs={24} sm={12} md={8} lg={6} key={day.id}>
               <Badge.Ribbon
                 text={day.isComplete ? "Completed" : `Day ${index + 1}`}
-                color={day.isComplete ? "green" : "blue"}
+                color={day.isComplete ? "green" : "#eb2f57"}
               >
                 <Card
                   hoverable
