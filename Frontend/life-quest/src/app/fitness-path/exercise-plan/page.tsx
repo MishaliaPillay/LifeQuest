@@ -80,10 +80,10 @@ export default function WorkoutPlanPage() {
           message.warning("Person not found for this user.");
           return;
         }
-
+        console.log("dd", person);
         const fitnessPaths = await getFitnessPaths(person.id);
         const exercisePlanId = fitnessPaths.exercisePlans[0]?.id;
-
+        console.log("ddddd", fitnessPaths);
         if (!fitnessPaths?.id) {
           message.warning("Fitness path not found.");
         }

@@ -145,7 +145,7 @@ const ExercisePlanBuilder = ({
       .map((_, i) => ({ day: i + 1, activities: [] }))
   );
   const { createPlan } = useExercisePlanActions();
-  
+
   // Setup sensors for drag detection
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -221,7 +221,7 @@ const ExercisePlanBuilder = ({
     const daysWithActivities = dayActivities.filter(
       (d) => d.activities.length > 0
     );
-    
+
     if (daysWithActivities.length === 0) {
       message.error("Please add at least one activity to your plan");
       return;
@@ -235,11 +235,11 @@ const ExercisePlanBuilder = ({
         description: "string",
         activityTypeIds: d.activities.map((a) => a.activityId),
         duration: 0,
-        calories: 0
-      }))
+        calories: 0,
+      })),
     };
 
-
+    console.log("plan", plan);
 
     try {
       await createPlan(plan);
