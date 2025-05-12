@@ -141,7 +141,7 @@ export const useStyles = createStyles({
     padding: 0.75rem;
     border-radius: 0.375rem;
     height: 8rem;
-    background-color:rgb(255, 239, 254);
+    background-color: rgb(255, 239, 254);
     outline: none;
     font-size: 1rem;
 
@@ -236,7 +236,7 @@ export const useStyles = createStyles({
     padding: 1.25rem;
     border: 1px solidrgb(254, 191, 237);
     border-radius: 0.375rem;
-    background-color: #eff6ff;
+    background-color: #fff6fb;
 
     @media (max-width: 768px) {
       margin-top: 1.25rem;

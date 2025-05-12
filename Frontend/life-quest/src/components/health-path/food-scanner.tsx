@@ -3,14 +3,24 @@ import { useState } from "react";
 import { analyzeFoodImage } from "../../utils/gemini-service";
 import { useStyles } from "./styles";
 import jsPDF from "jspdf";
-import { Button, Typography, Divider, Space, Card } from "antd"; // Added more Ant Design components
+import {
+  Button,
+  Typography,
+  Divider,
+  Space,
+  Card,
+  message,
+  Upload,
+  Spin,
+} from "antd";
 import {
   DownloadOutlined,
   SoundOutlined,
-  FileImageOutlined,
-} from "@ant-design/icons"; // Added FileImageOutlined
+  InboxOutlined,
+} from "@ant-design/icons";
 
 const { Title, Text, Paragraph } = Typography;
+const { Dragger } = Upload;
 
 // Reading the text using SpeechSynthesis API
 const speakText = (text) => {
@@ -19,7 +29,6 @@ const speakText = (text) => {
 };
 
 // Generating and downloading the analysis report as PDF
-
 const downloadReportAsPDF = (
   content,
   imageData,
@@ -30,7 +39,7 @@ const downloadReportAsPDF = (
   // Add title
   doc.setFontSize(16);
   doc.setFont("helvetica", "bold");
-  doc.text("Food Image Analysis Report", 10, 20);
+  doc.text("Nutritional Image Analysis Report", 10, 20);
 
   // Add date
   doc.setFontSize(10);
@@ -46,7 +55,7 @@ const downloadReportAsPDF = (
   }
 
   // Add content below the image
-  let textStartY = imageData ? 110 : 45;
+  const textStartY = imageData ? 110 : 45;
 
   doc.setFontSize(12);
   doc.setFont("helvetica", "normal");
@@ -57,7 +66,7 @@ const downloadReportAsPDF = (
   doc.setFontSize(10);
   doc.setFont("helvetica", "italic");
   doc.text(
-    "Disclaimer: This analysis is for informational purposes only and does not constitute advice from a dietician.",
+    "Disclaimer: This analysis is for informational purposes only.",
     10,
     doc.internal.pageSize.height - 20
   );
@@ -71,30 +80,33 @@ export default function HealthAnalysisComponent() {
   const [imagePreview, setImagePreview] = useState(null);
   const [prompt, setPrompt] = useState("");
   const [analysis, setAnalysis] = useState("");
-  const [error, setError] = useState("");
+
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleImageChange = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
+  const handleImageChange = (info) => {
+    const { status } = info.file;
+
+    if (status === "done") {
+      const file = info.file.originFileObj;
       setSelectedImage(file);
 
       // Creating a preview
       const reader = new FileReader();
       reader.onload = () => setImagePreview(reader.result);
       reader.readAsDataURL(file);
+      message.success(`${info.file.name} file uploaded successfully.`);
+    } else if (status === "error") {
+      message.error(`${info.file.name} file upload failed.`);
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
+  const handleSubmit = async () => {
     // Resetting the states
-    setError("");
+
     setAnalysis("");
 
     if (!selectedImage) {
-      setError("Please select an image first");
+      message.error("Please select an image first");
       return;
     }
 
@@ -104,45 +116,56 @@ export default function HealthAnalysisComponent() {
       setAnalysis(result);
       setIsLoading(false);
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "An unknown error occurred"
-      );
+      const errorMessage =
+        err instanceof Error ? err.message : "An unknown error occurred";
+      message.error(errorMessage);
       setIsLoading(false);
     }
+  };
+
+  const uploadProps = {
+    name: "file",
+    multiple: false,
+    accept: "image/*",
+    onChange: handleImageChange,
+    beforeUpload: (file) => {
+      const isImage = file.type.startsWith("image/");
+      if (!isImage) {
+        message.error(`${file.name} is not an image file`);
+      }
+      return isImage || Upload.LIST_IGNORE;
+    },
   };
 
   return (
     <div className={styles.container}>
       <Title level={2} className={styles.title}>
-        Food Scanner
+        Nutrition Image Analyzer
       </Title>
       <Divider />
 
-      <form onSubmit={handleSubmit} className={styles.form}>
+      <div className={styles.form}>
         <div>
           <Title level={4} className={styles.label}>
-            Upload an image
+            Upload Food Image
           </Title>
-          <div className={styles.fileInputContainer}>
-            <label className={styles.fileInputLabel}>
-              <FileImageOutlined /> Choose File
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className={styles.fileInput}
-              />
-            </label>
-            <Text className={styles.fileInputText}>
-              {selectedImage ? selectedImage.name : "No file selected"}
-            </Text>
-          </div>
+          <Dragger {...uploadProps}>
+            <p className="ant-upload-drag-icon">
+              <InboxOutlined />
+            </p>
+            <p className="ant-upload-text">
+              Click or drag image to this area to upload
+            </p>
+            <p className="ant-upload-hint">
+              Support for a single image upload. Only image files are allowed.
+            </p>
+          </Dragger>
         </div>
 
         {imagePreview && (
           <div>
             <Title level={5} className={styles.previewContainer}>
-              Preview
+              Image Preview
             </Title>
             <Card
               bordered={false}
@@ -160,39 +183,37 @@ export default function HealthAnalysisComponent() {
 
         <div>
           <Title level={4} className={styles.label}>
-            Additional context
+            Additional Context (Optional)
           </Title>
           <textarea
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             className={styles.textarea}
-            placeholder="Example:food something "
+            placeholder="Provide additional context about the food image (e.g., meal type, dietary restrictions)"
           />
         </div>
 
         <Button
           type="primary"
-          htmlType="submit"
+          onClick={handleSubmit}
           disabled={isLoading || !selectedImage}
           className={styles.button}
           size="large"
         >
-          {isLoading ? "Analyzing..." : "Analyze Image"}
+          {isLoading ? <Spin size="small" /> : "Analyze Image"}
         </Button>
-      </form>
+      </div>
 
-      {error && (
-        <div className={styles.errorContainer}>
-          <Text type="danger" className={styles.errorMessage}>
-            {error}
-          </Text>
+      {isLoading && (
+        <div style={{ textAlign: "center", marginTop: "20px" }}>
+          <Spin size="large" tip="Analyzing image..." />
         </div>
       )}
 
       {analysis && (
         <Card className={styles.analysisContainer}>
           <Title level={3} className={styles.analysisTitle}>
-            Analysis Results
+            Nutritional Analysis Results
           </Title>
           <Divider />
 
@@ -205,7 +226,8 @@ export default function HealthAnalysisComponent() {
           <div className={styles.disclaimer}>
             <Text type="secondary" italic className={styles.disclaimerText}>
               <strong>Disclaimer:</strong> This analysis is for informational
-              purposes only and does not constitute medical advice.
+              purposes only and does not constitute professional nutritional
+              advice.
             </Text>
           </div>
 
