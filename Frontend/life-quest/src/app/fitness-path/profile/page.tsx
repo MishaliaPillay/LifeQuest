@@ -77,14 +77,14 @@ const Profile: React.FC = () => {
           ...currentUser,
           name: values.name,
           surname: values.surname,
-          emailAddress: values.email, // Change this to values.email since form is using 'email'
+          emailAddress: values.email,
         },
         xp: 0,
         level: 0,
         avatar: "url",
         pathId: person.pathId,
       };
-      console.log(updatedPerson);
+
       await updateUser(updatedPerson);
       message.success("Profile updated successfully!");
     } catch (err) {

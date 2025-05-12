@@ -23,7 +23,7 @@ export interface IPerson {
   user: IUser;
   xp: number;
   level: number;
-  avatar: string; // this should be a URL string
+  avatar: string;
   pathId: string;
 }
 // User action context interface
