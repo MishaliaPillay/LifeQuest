@@ -53,10 +53,11 @@ export default function WorkoutPlanPage() {
   const [exercisePlan, setExercisePlan] = useState<EnhancedExercisePlanDay[]>(
     []
   );
+  const [messageApi, contextHolder] = message.useMessage();
   const [selectedDay, setSelectedDay] =
     useState<EnhancedExercisePlanDay | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
-
+  const [completing, setCompleting] = useState(false);
   const { getExercisePlan, completeActivity } = useActivityTypeActions();
   const { getCurrentPerson } = useAuthActions();
   const { getFitnessPaths } = useFitnessPathActions();
@@ -150,9 +151,11 @@ export default function WorkoutPlanPage() {
     return colorMap[difficulty] || "blue";
   };
   const handleCompleteActivity = async (activityId: string) => {
+    setCompleting(true);
     try {
       await completeActivity(activityId);
-      // Refresh the plan to show updated completion
+
+      // (rest of your existing logic here...)
       const token = sessionStorage.getItem("jwt");
       if (!token) return;
       const id = getId(token);
@@ -161,7 +164,6 @@ export default function WorkoutPlanPage() {
       const exercisePlanId = fitnessPaths.exercisePlans[0]?.id;
       const planResponse = await getExercisePlan(exercisePlanId);
 
-      // Map and update again
       const updatedPlan = planResponse.map((day: IExercisePlanDay) => {
         let difficulty = "easy";
         if (day.calories > 400) difficulty = "medium";
@@ -169,14 +171,14 @@ export default function WorkoutPlanPage() {
         if (day.calories > 800) difficulty = "intense";
 
         const workoutType = day.description?.toLowerCase().includes("cardio")
-          ? ("cardio" as const)
+          ? "cardio"
           : day.description?.toLowerCase().includes("strength")
-          ? ("strength" as const)
+          ? "strength"
           : day.description?.toLowerCase().includes("flex")
-          ? ("flexibility" as const)
+          ? "flexibility"
           : day.description?.toLowerCase().includes("recovery")
-          ? ("recovery" as const)
-          : ("hiit" as const);
+          ? "recovery"
+          : "hiit";
 
         const estimatedDuration = Math.round(day.calories / 10);
 
@@ -189,9 +191,11 @@ export default function WorkoutPlanPage() {
       });
 
       setExercisePlan(updatedPlan);
-      message.success("Marked as completed!");
+      messageApi.success("Workout marked as complete!");
     } catch (error) {
       message.error("Failed to mark as complete.");
+    } finally {
+      setCompleting(false);
     }
   };
 
@@ -200,6 +204,8 @@ export default function WorkoutPlanPage() {
       className="workout-plan-container"
       style={{ padding: "2rem", backgroundColor: "#f5f7fa" }}
     >
+      {contextHolder}
+
       <div className="header-container" style={{ marginBottom: 24 }}>
         <Title level={2} style={{ marginBottom: 8 }}>
           My 10-Day Workout Plan
@@ -349,6 +355,7 @@ export default function WorkoutPlanPage() {
               key="complete"
               type="primary"
               icon={<CheckCircleOutlined />}
+              loading={completing}
               onClick={() => handleCompleteActivity(selectedDay!.id)}
             >
               Mark Complete
