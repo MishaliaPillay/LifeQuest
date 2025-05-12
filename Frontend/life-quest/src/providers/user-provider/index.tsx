@@ -5,6 +5,7 @@ import {
   INITIAL_STATE,
   UserActionContext,
   UserStateContext,
+  IPerson,
 } from "./context";
 import { UserReducer } from "./reducer";
 import { useContext, useReducer } from "react";
@@ -21,9 +22,6 @@ import {
   updateUserPending,
   updateUserSuccess,
   updateUserError,
-  deleteUserSuccess,
-  deleteUserError,
-  deleteUserPending,
 } from "./actions";
 import axios from "axios";
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
@@ -88,9 +86,9 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   // Update a user
-  const updateUser = async (user: IUser) => {
+  const updateUser = async (user: IPerson) => {
     dispatch(updateUserPending());
-    const endpoint = `/api/services/app/User/Update`;
+    const endpoint = `/api/services/app/Person/Update`;
 
     return instance
       .put(endpoint, user)
@@ -100,22 +98,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       .catch((error) => {
         console.error("Error updating user:", error);
         dispatch(updateUserError());
-      });
-  };
-
-  // Delete a user
-  const deleteUser = (id: string) => {
-    dispatch(deleteUserPending());
-    const endpoint = `/api/services/app/User/Delete?input=${id}`;
-
-    return instance
-      .delete(endpoint)
-      .then((response) => {
-        dispatch(deleteUserSuccess(response.data?.result));
-      })
-      .catch((error) => {
-        console.error("Error deleting user:", error);
-        dispatch(deleteUserError());
       });
   };
 
@@ -141,7 +123,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
           getUsers,
           createUser,
           updateUser,
-          deleteUser,
+
           getCurrentUser,
           getUser,
         }}

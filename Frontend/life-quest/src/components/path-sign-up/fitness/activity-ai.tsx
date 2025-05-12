@@ -37,7 +37,7 @@ const ActivityTypes: React.FC<{
       activityTypes.length > 0 &&
       JSON.stringify(previousTypesRef.current) !== JSON.stringify(activityTypes)
     ) {
-      console.log("Effect triggered with new activityTypes:", activityTypes);
+
       onActivityTypesGenerated(activityTypes);
       previousTypesRef.current = activityTypes;
     }

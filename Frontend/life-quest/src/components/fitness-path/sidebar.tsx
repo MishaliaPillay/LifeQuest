@@ -25,9 +25,9 @@ interface SidebarProps {
 
 const menuItems: MenuProps["items"] = [
   {
-    key: "/dashboard",
+    key: "/fitness-path",
     icon: <DashboardOutlined />,
-    label: <Link href="/dashboard">Dashboard</Link>,
+    label: <Link href="/fitness-path">Dashboard</Link>,
   },
   {
     key: "/fitness-path/exercise-plan",

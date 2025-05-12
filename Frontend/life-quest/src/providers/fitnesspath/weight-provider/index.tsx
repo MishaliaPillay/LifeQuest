@@ -39,7 +39,7 @@ export const WeightProvider = ({ children }: { children: React.ReactNode }) => {
     return instance
       .get(endpoint)
       .then((response) => {
-        console.log("cheese", response);
+
         dispatch(getWeightsSuccess(response.data?.result ?? []));
       })
       .catch((error) => {
