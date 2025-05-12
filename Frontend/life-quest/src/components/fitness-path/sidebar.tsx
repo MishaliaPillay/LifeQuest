@@ -14,6 +14,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { MenuProps } from "antd";
+import styles from "./sidebar.module.css";
 
 const { Sider } = Layout;
 
@@ -49,7 +50,6 @@ const menuItems: MenuProps["items"] = [
     icon: <UserOutlined />,
     label: <Link href="/fitness-path/profile">Profile</Link>,
   },
-
   {
     key: "logout",
     icon: <LogoutOutlined />,
@@ -70,16 +70,12 @@ const Sidebar: React.FC<SidebarProps> = ({
     const checkIsMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
-
     checkIsMobile();
     window.addEventListener("resize", checkIsMobile);
-
     return () => window.removeEventListener("resize", checkIsMobile);
   }, []);
 
-  const getSelectedKey = () => {
-    return pathname || "/dashboard";
-  };
+  const getSelectedKey = () => pathname || "/dashboard";
 
   if (isMobile) {
     return (
@@ -88,12 +84,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           type="text"
           icon={<MenuOutlined />}
           onClick={() => setDrawerOpen(true)}
-          style={{
-            position: "absolute",
-            top: 16,
-            left: 16,
-            zIndex: 101,
-          }}
+          className={styles.mobileButton}
         />
         <Drawer
           placement="left"
@@ -101,27 +92,17 @@ const Sidebar: React.FC<SidebarProps> = ({
           onClose={() => setDrawerOpen(false)}
           open={drawerOpen}
           width={200}
-          styles={{
-            body: { padding: 0 },
-          }}
+          styles={{ body: { padding: 0 } }}
         >
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              margin: "16px 0",
-              padding: "16px 0",
-              borderBottom: "1px solid #f0f0f0",
-            }}
-          >
-            <Avatar style={{ backgroundColor: "#1890ff" }}>A</Avatar>
-            <div style={{ margin: "12px 0" }}>Alex Chen</div>
+          <div className={styles.drawerHeader}>
+            <Avatar className={styles.avatar}>A</Avatar>
+            <div className={styles.username}>Alex Chen</div>
           </div>
           <Menu
             mode="inline"
             selectedKeys={[getSelectedKey()]}
             items={menuItems}
+            className={styles.menu}
           />
         </Drawer>
       </>
@@ -133,40 +114,19 @@ const Sidebar: React.FC<SidebarProps> = ({
       trigger={null}
       collapsible
       collapsed={collapsed}
-      style={{
-        overflow: "auto",
-        height: "100vh",
-        position: "fixed",
-        left: 0,
-        top: 0,
-        bottom: 0,
-        zIndex: 100,
-        backgroundColor: "pink",
-      }}
       width={200}
       collapsedWidth={80}
+      className={styles.sidebar}
     >
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          margin: "16px 0",
-          color: "white",
-        }}
-      >
-        <Avatar style={{ backgroundColor: "#fff", color: "#000" }}>A</Avatar>
-        {!collapsed && (
-          <div style={{ margin: "12px 0", color: "#000" }}>Alex Chen</div>
-        )}
+      <div className={styles.avatarContainer}>
+        <Avatar className={styles.avatar}>A</Avatar>
+        {!collapsed && <div className={styles.username}>Alex Chen</div>}
       </div>
       <Menu
         mode="inline"
         selectedKeys={[getSelectedKey()]}
         items={menuItems}
-        style={{
-          backgroundColor: "pink",
-        }}
+        className={styles.menu}
       />
     </Sider>
   );
