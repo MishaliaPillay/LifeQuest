@@ -10,6 +10,7 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@ant-design/charts": "^2.2.7",
     "@ant-design/icons": "^6.0.0",
     "@ant-design/plots": "^1.2.6",
     "@antv/g2plot": "^2.3.32",

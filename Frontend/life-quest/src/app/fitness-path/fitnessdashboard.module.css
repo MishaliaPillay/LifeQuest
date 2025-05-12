@@ -1,0 +1,53 @@
+.container {
+  padding: 24px;
+  background-color: #f5f7fa;
+  min-height: 100vh;
+}
+
+.title {
+  margin-bottom: 24px;
+}
+
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60vh;
+}
+
+/* Card gradients */
+.cardSteps {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
+  background: linear-gradient(135deg, #ffd6e7, #ffc9c9);
+}
+
+.cardToday {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
+  background: linear-gradient(135deg, #d3adf7, #b7daff);
+}
+
+.cardCalories {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
+  background: linear-gradient(135deg, #fff1b8, #ffe58f);
+}
+
+.cardProgress {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
+  background: linear-gradient(135deg, #eb8f8f, #de87e8);
+}
+
+/* Chart container */
+.chartContainer {
+  margin-top: 24px;
+  height: 300px;
+}
+
+.chartLoading,
+.upcomingLoading {
+  text-align: center;
+  padding: 40px;
+}
