@@ -125,11 +125,10 @@ useEffect(() => {
     setIsModalVisible(true);
   };
 
-//  console.log("toot", exercisePlan)
-//const completedCount = 3;
+
   
 const completedCount = exercisePlan.filter(day => day.isComplete).length;
-console.log(completedCount)
+
 const closeModal = () => {
     setIsModalVisible(false);
     setSelectedDay(null);

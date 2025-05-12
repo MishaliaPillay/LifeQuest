@@ -100,8 +100,7 @@ const Profile: React.FC = () => {
             surname: currentUser.surname,
             email: currentUser.emailAddress,
           }}
-          onFinish={(values) => {
-            console.log("Updated values:", values);
+          onFinish={() => {
             message.success("Profile updated (not saved to backend)");
           }}
         >

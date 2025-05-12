@@ -80,7 +80,7 @@ export const FitnessPathProvider = ({
     try {
       const response = await instance.post(endpoint, fitnessPath);
       const result = response.data?.result;
-      console.log("fit", result);
+ 
       dispatch(createFitnessPathSuccess(result));
       return result;
     } catch (error) {
