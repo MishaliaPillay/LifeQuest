@@ -199,7 +199,7 @@ export default function WorkoutPlanPage() {
         messageApi.success("Workout marked as complete!");
         launchConfetti(); // Launch confetti *after* modal is closed
       }, 300); // Add slight delay for better UX
-    } catch (error) {
+    } catch (error) { console.error(error)
       message.error("Failed to mark as complete.");
     } finally {
       setCompleting(false);
