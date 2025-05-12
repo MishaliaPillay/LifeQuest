@@ -88,8 +88,6 @@ export default function HealthAnalysisComponent() {
     foodItems: string[];
   } | null>(null);
 
-  const [error, setError] = useState("");
-
   const handleImageChange = (info) => {
     const { status } = info.file;
 
@@ -114,7 +112,6 @@ export default function HealthAnalysisComponent() {
     setStructuredData(null); // Reset structured data
 
     if (!selectedImage) {
-      setError("Please select an image first");
       return;
     }
 
@@ -272,6 +269,9 @@ export default function HealthAnalysisComponent() {
           <Paragraph>
             <strong>Food Items:</strong> {structuredData.foodItems.join(", ")}
           </Paragraph>
+          <Button onClick={() => console.log(structuredData)} type="default">
+            Log JSON to Console
+          </Button>
         </Card>
       )}
     </div>
