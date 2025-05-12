@@ -1,12 +1,48 @@
 "use client";
 import React, { useEffect, useState, useRef } from "react";
-import { Spin, message } from "antd";
+import { Spin, message, Layout } from "antd";
 import { useUserState, useUserActions } from "@/providers/user-provider";
 import { useAuthActions } from "@/providers/auth-provider";
 import { getId } from "@/utils/decoder";
 import withAuth from "../../hoc/withAuth";
-import styles from "./userDashboard.module.css";
 import StepBasedFitnessPlanner from "./step";
+
+const { Content } = Layout;
+
+// Define the theme using your provided color palette
+const theme = {
+  colors: {
+    primary: "#F23D5E",
+    secondary: "#D9328E",
+    tertiary: "#BF3FB7",
+    accent1: "#F24141",
+    accent2: "#FB765C"
+  }
+};
+
+// Custom styles for the dashboard
+const styles = {
+  loadingContainer: {
+    display: "flex",
+    FlexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    height: "100vh",
+    background: "linear-gradient(135deg, #fff 0%, #f9f9f9 100%)"
+  },
+  loadingContent: {
+    marginTop: "16px",
+    fontSize: "16px",
+    color: "#333"
+  },
+  dashboardWrapper: {
+    minHeight: "100vh",
+    background: "linear-gradient(135deg, #fff 0%, #f9f9f9 100%)"
+  },
+  spinnerColor: {
+    color: theme.colors.primary
+  }
+};
 
 const UserDashboard: React.FC = () => {
   const { currentUser } = useUserState();
@@ -72,17 +108,23 @@ const UserDashboard: React.FC = () => {
 
   if (loading || !currentUser?.name) {
     return (
-      <div className={styles.loadingContainer}>
-        <Spin size="large" />
-        <div className={styles.loadingContent}>Loading your dashboard...</div>
+      <div style={styles.loadingContainer}>
+        <Spin size="large" style={{ ...styles.spinnerColor }} />
+        <div style={styles.loadingContent}>
+          <span style={{ background: `linear-gradient(90deg, ${theme.colors.primary} 0%, ${theme.colors.secondary} 100%)`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            Loading your fitness journey...
+          </span>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className={styles.dashboardWrapper}>
-      <StepBasedFitnessPlanner personId={personId} />
-    </div>
+    <Layout style={styles.dashboardWrapper}>
+      <Content>
+        <StepBasedFitnessPlanner personId={personId} />
+      </Content>
+    </Layout>
   );
 };
 

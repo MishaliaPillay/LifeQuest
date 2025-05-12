@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { useDroppable } from "@dnd-kit/core";
-import { Typography, Card, Row, Col, message, Button, Tabs, Empty } from "antd";
+import { Typography, Card, Row, Col, message, Button, Tabs, Empty, Spin } from "antd";
 import {
   DndContext,
   closestCenter,
@@ -134,7 +134,6 @@ const DayContainer = ({ day, items, onRemoveActivity }) => {
 
 const ExercisePlanBuilder = ({
   availableActivities,
-
   fitnessPathId,
   onPlanSubmit,
 }) => {
@@ -144,6 +143,7 @@ const ExercisePlanBuilder = ({
       .fill(null)
       .map((_, i) => ({ day: i + 1, activities: [] }))
   );
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { createPlan } = useExercisePlanActions();
 
   // Setup sensors for drag detection
@@ -215,23 +215,26 @@ const ExercisePlanBuilder = ({
     );
   };
 
+  // Check if all 10 days have at least one activity
+  const allDaysFilled = dayActivities.every(day => day.activities.length > 0);
+
   // Handle plan submission
   const handleSubmitPlan = async () => {
-    // Filter days with activities
-    const daysWithActivities = dayActivities.filter(
-      (d) => d.activities.length > 0
-    );
-
-    if (daysWithActivities.length === 0) {
-      message.error("Please add at least one activity to your plan");
+    // Ensure all days have activities
+    if (!allDaysFilled) {
+      message.error("Please add at least one activity to each day");
       return;
     }
 
-    // Format the plan according to EXACTLY your API specifications
+    // Show loading message
+    const loadingMessage = message.loading("Creating your exercise plan...", 0);
+    setIsSubmitting(true);
+
+    // Format the plan according to API specifications
     const plan = {
       fitnessPathId: fitnessPathId,
       name: "string",
-      days: daysWithActivities.map((d) => ({
+      days: dayActivities.map((d) => ({
         description: "string",
         activityTypeIds: d.activities.map((a) => a.activityId),
         duration: 0,
@@ -239,15 +242,31 @@ const ExercisePlanBuilder = ({
       })),
     };
 
-    console.log("plan", plan);
-
     try {
       await createPlan(plan);
-      message.success("Exercise Plan created successfully!");
+      // Close loading message
+      setTimeout(loadingMessage, 0);
+      message.success({
+        content: "Exercise Plan created successfully!",
+        duration: 3,
+        style: {
+          marginTop: '20px',
+        },
+      });
       if (onPlanSubmit) onPlanSubmit();
     } catch (error) {
       console.error("Error creating plan:", error);
-      message.error("Failed to create Exercise Plan");
+      // Close loading message
+      setTimeout(loadingMessage, 0);
+      message.error({
+        content: "Failed to create Exercise Plan",
+        duration: 3,
+        style: {
+          marginTop: '20px',
+        },
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -256,7 +275,7 @@ const ExercisePlanBuilder = ({
       <Title level={3}>Build Your Exercise Plan</Title>
       <Text type="secondary" style={{ marginBottom: 16, display: "block" }}>
         Drag and drop activities into each day to create your personalized
-        workout plan
+        workout plan. You must add at least one activity to each day.
       </Text>
 
       <DndContext
@@ -291,54 +310,62 @@ const ExercisePlanBuilder = ({
           </div>
         </Card>
 
-        <Tabs defaultActiveKey="1">
-          <TabPane tab="Days 1-5" key="1">
-            <Row gutter={[16, 16]}>
-              <SortableContext
-                items={dayActivities.slice(0, 5).map((day) => `day-${day.day}`)}
-                strategy={verticalListSortingStrategy}
-              >
-                {dayActivities.slice(0, 5).map((day) => (
-                  <Col xs={24} sm={12} md={12} lg={8} key={`day-${day.day}`}>
-                    <div id={`day-${day.day}`}>
-                      <DayContainer
-                        day={day.day}
-                        items={day.activities}
-                        onRemoveActivity={handleRemoveActivity}
-                      />
-                    </div>
-                  </Col>
-                ))}
-              </SortableContext>
-            </Row>
-          </TabPane>
-          <TabPane tab="Days 6-10" key="2">
-            <Row gutter={[16, 16]}>
-              <SortableContext
-                items={dayActivities
-                  .slice(5, 10)
-                  .map((day) => `day-${day.day}`)}
-                strategy={verticalListSortingStrategy}
-              >
-                {dayActivities.slice(5, 10).map((day) => (
-                  <Col xs={24} sm={12} md={12} lg={8} key={`day-${day.day}`}>
-                    <div id={`day-${day.day}`}>
-                      <DayContainer
-                        day={day.day}
-                        items={day.activities}
-                        onRemoveActivity={handleRemoveActivity}
-                      />
-                    </div>
-                  </Col>
-                ))}
-              </SortableContext>
-            </Row>
-          </TabPane>
-        </Tabs>
+        <Spin spinning={isSubmitting} tip="Creating your plan...">
+          <Tabs defaultActiveKey="1">
+            <TabPane tab="Days 1-5" key="1">
+              <Row gutter={[16, 16]}>
+                <SortableContext
+                  items={dayActivities.slice(0, 5).map((day) => `day-${day.day}`)}
+                  strategy={verticalListSortingStrategy}
+                >
+                  {dayActivities.slice(0, 5).map((day) => (
+                    <Col xs={24} sm={12} md={12} lg={8} key={`day-${day.day}`}>
+                      <div id={`day-${day.day}`}>
+                        <DayContainer
+                          day={day.day}
+                          items={day.activities}
+                          onRemoveActivity={handleRemoveActivity}
+                        />
+                      </div>
+                    </Col>
+                  ))}
+                </SortableContext>
+              </Row>
+            </TabPane>
+            <TabPane tab="Days 6-10" key="2">
+              <Row gutter={[16, 16]}>
+                <SortableContext
+                  items={dayActivities
+                    .slice(5, 10)
+                    .map((day) => `day-${day.day}`)}
+                  strategy={verticalListSortingStrategy}
+                >
+                  {dayActivities.slice(5, 10).map((day) => (
+                    <Col xs={24} sm={12} md={12} lg={8} key={`day-${day.day}`}>
+                      <div id={`day-${day.day}`}>
+                        <DayContainer
+                          day={day.day}
+                          items={day.activities}
+                          onRemoveActivity={handleRemoveActivity}
+                        />
+                      </div>
+                    </Col>
+                  ))}
+                </SortableContext>
+              </Row>
+            </TabPane>
+          </Tabs>
+        </Spin>
 
         <div style={{ marginTop: 24, textAlign: "right" }}>
-          <Button type="primary" onClick={handleSubmitPlan} size="large">
-            Submit Exercise Plan
+          <Button 
+            type="primary" 
+            onClick={handleSubmitPlan} 
+            size="large"
+            disabled={!allDaysFilled || isSubmitting}
+            loading={isSubmitting}
+          >
+            {isSubmitting ? "Submitting..." : "Submit Exercise Plan"}
           </Button>
         </div>
       </DndContext>
