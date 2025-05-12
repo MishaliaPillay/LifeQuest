@@ -5,6 +5,7 @@ import {
   INITIAL_STATE,
   UserActionContext,
   UserStateContext,
+  IPerson,
 } from "./context";
 import { UserReducer } from "./reducer";
 import { useContext, useReducer } from "react";
@@ -88,9 +89,9 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   // Update a user
-  const updateUser = async (user: IUser) => {
+  const updateUser = async (user: IPerson) => {
     dispatch(updateUserPending());
-    const endpoint = `/api/services/app/User/Update`;
+    const endpoint = `/api/services/app/Person/Update`;
 
     return instance
       .put(endpoint, user)

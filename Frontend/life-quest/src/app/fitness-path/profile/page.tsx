@@ -13,15 +13,16 @@ import {
 } from "antd";
 import { UploadOutlined, UserOutlined } from "@ant-design/icons";
 import { useUserState, useUserActions } from "@/providers/user-provider";
-
 import styles from "./profile.module.css";
-
+import { IPerson } from "@/providers/user-provider/context";
+import { IUser } from "@/providers/user-provider/context";
 const { Title, Paragraph } = Typography;
 
 const Profile: React.FC = () => {
   const { currentUser } = useUserState();
-  const { getCurrentUser,updateUser } = useUserActions();
+  const { getCurrentUser, updateUser } = useUserActions();
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const hasFetched = useRef(false);
 
   const [form] = Form.useForm();
@@ -36,7 +37,7 @@ const Profile: React.FC = () => {
       setLoading(false);
     }
   }, [currentUser, getCurrentUser]);
-  console.log("curretnt", currentUser);
+
   const handleUpload = (file: File) => {
     if (!file.type.startsWith("image/")) {
       message.error("Only image files allowed.");
@@ -49,6 +50,33 @@ const Profile: React.FC = () => {
     };
     reader.readAsDataURL(file);
     return false;
+  };
+
+  const handleSave = async (values: IUser) => {
+    if (!currentUser) return;
+    setSaving(true);
+    try {
+      const updatedPerson: IPerson = {
+        id: String(currentUser.id ?? ""), // Ensure it's a string
+        user: {
+          ...currentUser, // Spread current user properties
+          name: values.name,
+          surname: values.surname,
+          emailAddress: values.emailAddress,
+        },
+        xp: 0,
+        level: 0,
+        avatar: "",
+        pathId: "",
+      };
+      console.log(updatedPerson);
+      await updateUser(updatedPerson); // Send the updated person object to the backend
+      message.success("Profile updated successfully!");
+    } catch (err) {
+      message.error("Failed to update profile.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   if (loading || !currentUser?.name) {
@@ -100,9 +128,7 @@ const Profile: React.FC = () => {
             surname: currentUser.surname,
             email: currentUser.emailAddress,
           }}
-          onFinish={() => {
-            message.success("Profile updated (not saved to backend)");
-          }}
+          onFinish={handleSave}
         >
           <Form.Item label="Name" name="name">
             <Input />
@@ -114,7 +140,7 @@ const Profile: React.FC = () => {
             <Input type="email" />
           </Form.Item>
           <Form.Item>
-            <Button type="primary" htmlType="submit">
+            <Button type="primary" htmlType="submit" loading={saving}>
               Save Profile
             </Button>
           </Form.Item>
