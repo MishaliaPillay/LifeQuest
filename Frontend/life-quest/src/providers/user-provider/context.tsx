@@ -3,7 +3,8 @@ import { createContext } from "react";
 
 // Context shape interface
 export interface IUser {
-  id?: number | string;
+  email?: string;
+  id?: number;
   name: string;
   surname: string;
   emailAddress: string;
@@ -31,8 +32,7 @@ export interface IUserActionContext {
   getUsers: () => void; // Fetch all users
   getUser: (id: string) => void; // Fetch a single user
   createUser: (user: IUser) => void; // Create a new user
-  updateUser: (user: IPerson) => void; // Update an existing user
-  deleteUser: (id: string) => void; // Delete a user
+  updateUser: (user: IPerson) => void; // Delete a user
 }
 
 // Initial state with default values

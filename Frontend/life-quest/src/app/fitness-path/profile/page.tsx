@@ -16,27 +16,40 @@ import { useUserState, useUserActions } from "@/providers/user-provider";
 import styles from "./profile.module.css";
 import { IPerson } from "@/providers/user-provider/context";
 import { IUser } from "@/providers/user-provider/context";
+import { useAuthActions } from "@/providers/auth-provider";
+import { IAuth } from "@/providers/auth-provider/context";
 const { Title, Paragraph } = Typography;
 
 const Profile: React.FC = () => {
   const { currentUser } = useUserState();
+  const [person, setPerson] = useState<IAuth | null>(null);
   const { getCurrentUser, updateUser } = useUserActions();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const hasFetched = useRef(false);
-
+  const { getCurrentPerson } = useAuthActions();
   const [form] = Form.useForm();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
   useEffect(() => {
     const token = sessionStorage.getItem("jwt");
-    if (token && !currentUser && !hasFetched.current) {
-      hasFetched.current = true;
-      getCurrentUser(token).finally(() => setLoading(false));
-    } else {
-      setLoading(false);
-    }
-  }, [currentUser, getCurrentUser]);
+    const fetchData = async () => {
+      if (token && !hasFetched.current) {
+        hasFetched.current = true;
+        await getCurrentUser(token);
+        const userId = currentUser?.id;
+        if (userId) {
+          const personData = await getCurrentPerson(userId); // Make sure this returns an IPerson
+          console.log("dd", personData);
+          setPerson(personData);
+        }
+        setLoading(false);
+      } else {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [currentUser, getCurrentUser, getCurrentPerson]);
 
   const handleUpload = (file: File) => {
     if (!file.type.startsWith("image/")) {
@@ -53,16 +66,18 @@ const Profile: React.FC = () => {
   };
 
   const handleSave = async (values: IUser) => {
+    console.log("chhes");
     if (!currentUser) return;
     setSaving(true);
     try {
+      console.log("chdddddddddddddddhes");
       const updatedPerson: IPerson = {
-        id: String(currentUser.id ?? ""), // Ensure it's a string
+        id: person.id,
         user: {
-          ...currentUser, // Spread current user properties
+          ...currentUser,
           name: values.name,
           surname: values.surname,
-          emailAddress: values.emailAddress,
+          emailAddress: values.email, // Change this to values.email since form is using 'email'
         },
         xp: 0,
         level: 0,
@@ -70,7 +85,7 @@ const Profile: React.FC = () => {
         pathId: "",
       };
       console.log(updatedPerson);
-      await updateUser(updatedPerson); // Send the updated person object to the backend
+      await updateUser(updatedPerson);
       message.success("Profile updated successfully!");
     } catch (err) {
       message.error("Failed to update profile.");

@@ -22,9 +22,6 @@ import {
   updateUserPending,
   updateUserSuccess,
   updateUserError,
-  deleteUserSuccess,
-  deleteUserError,
-  deleteUserPending,
 } from "./actions";
 import axios from "axios";
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
@@ -104,22 +101,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       });
   };
 
-  // Delete a user
-  const deleteUser = (id: string) => {
-    dispatch(deleteUserPending());
-    const endpoint = `/api/services/app/User/Delete?input=${id}`;
-
-    return instance
-      .delete(endpoint)
-      .then((response) => {
-        dispatch(deleteUserSuccess(response.data?.result));
-      })
-      .catch((error) => {
-        console.error("Error deleting user:", error);
-        dispatch(deleteUserError());
-      });
-  };
-
   // Get a specific user
   const getUser = async (id: string) => {
     dispatch(getUserPending());
@@ -142,7 +123,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
           getUsers,
           createUser,
           updateUser,
-          deleteUser,
+
           getCurrentUser,
           getUser,
         }}
