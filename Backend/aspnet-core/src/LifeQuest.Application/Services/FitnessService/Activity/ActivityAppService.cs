@@ -12,7 +12,7 @@ using static LifeQuest.Services.FitnessService.Activity.Dtos.ActivityResponseDto
 
 namespace LifeQuest.Services.FitnessService.Activity
 {
-    public class ActivityAppService : ApplicationService, IActivityAppService
+    public class ActivityAppService : ApplicationService
     {
         private readonly ActivityManager _activityManager;
         private readonly ActivityTypeManager _activityTypeManager;
@@ -162,6 +162,7 @@ namespace LifeQuest.Services.FitnessService.Activity
         }
 
 
+
         public async Task<ActivityResponseDto> UpdateActivityAsync(UpdateActivityDto input)
         {
             var activityTypes = await _activityTypeManager.GetAllAsync();
@@ -201,5 +202,33 @@ namespace LifeQuest.Services.FitnessService.Activity
                 }).ToList()
             };
         }
+
+
+
+        public async Task<ActivityResponseDto> MarkActivityAsCompleteAsync(Guid activityId)
+        {
+            var activity = await _activityManager.MarkAsCompleteAsync(activityId);
+
+            return new ActivityResponseDto
+            {
+                Id = activity.Id,
+                Calories = activity.Calories,
+                Duration = activity.Duration,
+                Xp = activity.Xp,
+                Level = activity.Level,
+                IsComplete = activity.IsComplete,
+                Rating = activity.Rating,
+                Description = activity.Description,
+                Order = activity.Order,
+                Activities = activity.ActivityActivityTypes.Select(aat => new ActivityTypeDto
+                {
+                    Id = aat.ActivityType.Id,
+                    Category = aat.ActivityType.Category,
+                    IntensityLevel = aat.ActivityType.IntensityLevel,
+                    Description = aat.ActivityType.Description
+                }).ToList()
+            };
+        }
+
     }
 }
