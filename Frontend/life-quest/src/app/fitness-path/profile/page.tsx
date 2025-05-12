@@ -22,8 +22,8 @@ const { Title, Paragraph } = Typography;
 
 const Profile: React.FC = () => {
   const { currentUser } = useUserState();
-  const [person, setPerson] = useState<IAuth | null>(null);
   const { getCurrentUser, updateUser } = useUserActions();
+  const [person, setPerson] = useState<IAuth | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const hasFetched = useRef(false);
@@ -33,23 +33,25 @@ const Profile: React.FC = () => {
 
   useEffect(() => {
     const token = sessionStorage.getItem("jwt");
-    const fetchData = async () => {
-      if (token && !hasFetched.current) {
-        hasFetched.current = true;
-        await getCurrentUser(token);
-        const userId = currentUser?.id;
-        if (userId) {
-          const personData = await getCurrentPerson(userId); // Make sure this returns an IPerson
-          console.log("dd", personData);
-          setPerson(personData);
-        }
-        setLoading(false);
-      } else {
+
+    if (token && !currentUser && !hasFetched.current) {
+      hasFetched.current = true;
+      getCurrentUser(token); // don't await
+    }
+  }, [currentUser, getCurrentUser]);
+
+  useEffect(() => {
+    const fetchPerson = async () => {
+      if (currentUser?.id && !person) {
+        const personData = await getCurrentPerson(currentUser.id);
+
+        setPerson(personData);
         setLoading(false);
       }
     };
-    fetchData();
-  }, [currentUser, getCurrentUser, getCurrentPerson]);
+
+    fetchPerson();
+  }, [getCurrentUser]);
 
   const handleUpload = (file: File) => {
     if (!file.type.startsWith("image/")) {
@@ -66,11 +68,9 @@ const Profile: React.FC = () => {
   };
 
   const handleSave = async (values: IUser) => {
-    console.log("chhes");
     if (!currentUser) return;
     setSaving(true);
     try {
-      console.log("chdddddddddddddddhes");
       const updatedPerson: IPerson = {
         id: person.id,
         user: {
@@ -81,8 +81,8 @@ const Profile: React.FC = () => {
         },
         xp: 0,
         level: 0,
-        avatar: "",
-        pathId: "",
+        avatar: "url",
+        pathId: person.pathId,
       };
       console.log(updatedPerson);
       await updateUser(updatedPerson);
