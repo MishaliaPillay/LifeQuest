@@ -28,9 +28,14 @@ export enum ActivityTypeActionEnums {
   generateActivityTypePending = "GENERATE_ACTIVITY_TYPE_PENDING",
   generateActivityTypeSuccess = "GENERATE_ACTIVITY_TYPE_SUCCESS",
   generateActivityTypeError = "GENERATE_ACTIVITY_TYPE_ERROR",
+
   getExercisePlanPending = "GET_EXERCISE_PLAN_PENDING",
   getExercisePlanSuccess = "GET_EXERCISE_PLAN_SUCCESS",
   getExercisePlanError = "GET_EXERCISE_PLAN_ERROR",
+
+  markCompletePlanPending = "MARK_COMPLETE_PENDING",
+  markCompletePlanSuccess = "MARK_COMPLETE_SUCCESS",
+  markCompletePlanError = "MARK_COMPLETE_ERROR",
 }
 
 // GET ALL
@@ -159,5 +164,24 @@ export const getExercisePlanSuccess = createAction<
 
 export const getExercisePlanError = createAction<IActivityTypeStateContext>(
   ActivityTypeActionEnums.getExercisePlanError,
+  () => ({ isPending: false, isSuccess: false, isError: true })
+);
+export const markCompletePlanPending = createAction<IActivityTypeStateContext>(
+  ActivityTypeActionEnums.markCompletePlanPending,
+  () => ({ isPending: true, isSuccess: false, isError: false })
+);
+
+export const markCompletePlanSuccess = createAction<
+  IActivityTypeStateContext,
+  IActivityType[]
+>(ActivityTypeActionEnums.markCompletePlanSuccess, (activityTypes) => ({
+  isPending: false,
+  isSuccess: true,
+  isError: false,
+  activityTypes,
+}));
+
+export const markCompletePlanError = createAction<IActivityTypeStateContext>(
+  ActivityTypeActionEnums.markCompletePlanError,
   () => ({ isPending: false, isSuccess: false, isError: true })
 );

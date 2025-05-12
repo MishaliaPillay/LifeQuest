@@ -24,6 +24,7 @@ import { getId } from "../../../utils/decoder";
 import { useAuthActions } from "../../../providers/auth-provider";
 import { useFitnessPathActions } from "@/providers/fitnesspath/fitness-provider";
 import { useActivityTypeActions } from "@/providers/fitnesspath/activity-provider";
+
 import {
   IExercisePlanDay,
   IActivity,
@@ -48,8 +49,6 @@ interface EnhancedExercisePlanDay extends IExercisePlanDay {
 }
 
 export default function WorkoutPlanPage() {
-  ///  const [_userId, setUserId] = useState("");
-  /// const [_fitnessPathId, setFitnessPathId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [exercisePlan, setExercisePlan] = useState<EnhancedExercisePlanDay[]>(
     []
@@ -58,7 +57,7 @@ export default function WorkoutPlanPage() {
     useState<EnhancedExercisePlanDay | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
-  const { getExercisePlan } = useActivityTypeActions();
+  const { getExercisePlan, completeActivity } = useActivityTypeActions();
   const { getCurrentPerson } = useAuthActions();
   const { getFitnessPaths } = useFitnessPathActions();
 
@@ -149,6 +148,51 @@ export default function WorkoutPlanPage() {
       intense: "red",
     };
     return colorMap[difficulty] || "blue";
+  };
+  const handleCompleteActivity = async (activityId: string) => {
+    try {
+      await completeActivity(activityId);
+      // Refresh the plan to show updated completion
+      const token = sessionStorage.getItem("jwt");
+      if (!token) return;
+      const id = getId(token);
+      const person = await getCurrentPerson(parseInt(id));
+      const fitnessPaths = await getFitnessPaths(person.id);
+      const exercisePlanId = fitnessPaths.exercisePlans[0]?.id;
+      const planResponse = await getExercisePlan(exercisePlanId);
+
+      // Map and update again
+      const updatedPlan = planResponse.map((day: IExercisePlanDay) => {
+        let difficulty = "easy";
+        if (day.calories > 400) difficulty = "medium";
+        if (day.calories > 600) difficulty = "hard";
+        if (day.calories > 800) difficulty = "intense";
+
+        const workoutType = day.description?.toLowerCase().includes("cardio")
+          ? ("cardio" as const)
+          : day.description?.toLowerCase().includes("strength")
+          ? ("strength" as const)
+          : day.description?.toLowerCase().includes("flex")
+          ? ("flexibility" as const)
+          : day.description?.toLowerCase().includes("recovery")
+          ? ("recovery" as const)
+          : ("hiit" as const);
+
+        const estimatedDuration = Math.round(day.calories / 10);
+
+        return {
+          ...day,
+          difficulty,
+          workoutType,
+          estimatedDuration,
+        } as EnhancedExercisePlanDay;
+      });
+
+      setExercisePlan(updatedPlan);
+      message.success("Marked as completed!");
+    } catch (error) {
+      message.error("Failed to mark as complete.");
+    }
   };
 
   return (
@@ -305,7 +349,7 @@ export default function WorkoutPlanPage() {
               key="complete"
               type="primary"
               icon={<CheckCircleOutlined />}
-              onClick={closeModal}
+              onClick={() => handleCompleteActivity(selectedDay!.id)}
             >
               Mark Complete
             </Button>

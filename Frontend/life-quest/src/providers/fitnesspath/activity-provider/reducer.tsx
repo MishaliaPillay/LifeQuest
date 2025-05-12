@@ -87,6 +87,19 @@ export const ActivityTypeReducer = handleActions<
       ...state,
       ...(action.payload ?? {}),
     }),
+
+    [ActivityTypeActionEnums.markCompletePlanPending]: (state, action) => ({
+      ...state,
+      ...(action.payload ?? {}),
+    }),
+    [ActivityTypeActionEnums.markCompletePlanSuccess]: (state, action) => ({
+      ...state,
+      ...(action.payload ?? {}),
+    }),
+    [ActivityTypeActionEnums.markCompletePlanError]: (state, action) => ({
+      ...state,
+      ...(action.payload ?? {}),
+    }),
   },
   INITIAL_STATE
 );

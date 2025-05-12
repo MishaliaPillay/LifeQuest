@@ -31,6 +31,9 @@ import {
   getExercisePlanError,
   getExercisePlanPending,
   getExercisePlanSuccess,
+  markCompletePlanPending,
+  markCompletePlanSuccess,
+  markCompletePlanError,
 } from "./actions";
 
 export const ActivityTypeProvider = ({
@@ -215,6 +218,22 @@ export const ActivityTypeProvider = ({
     }
   };
 
+  const completeActivity = async (activityId: string) => {
+    dispatch(markCompletePlanPending());
+
+    const endpoint = `/api/services/app/Activity/MarkActivityAsComplete?activityId=${activityId}`;
+
+    return instance
+      .post(endpoint)
+      .then((res) => {
+        dispatch(markCompletePlanSuccess(res.data?.result));
+      })
+      .catch((err) => {
+        console.error("Error marking activity as complete:", err);
+        dispatch(markCompletePlanError());
+      });
+  };
+
   return (
     <ActivityTypeStateContext.Provider value={state}>
       <ActivityTypeActionContext.Provider
@@ -226,6 +245,7 @@ export const ActivityTypeProvider = ({
           deleteActivityType,
           generateActivityTypes,
           getExercisePlan,
+          completeActivity,
         }}
       >
         {children}
