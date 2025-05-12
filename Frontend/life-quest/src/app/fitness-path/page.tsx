@@ -54,8 +54,6 @@ const workoutCategories = {
 };
 
 export default function FitnessDashboard() {
-  // State for authentication and data fetching
-  const [personId, setPersonId] = useState("");
   const [loading, setLoading] = useState(true);
   const [loadingWorkouts, setLoadingWorkouts] = useState(true);
   const [loadingSteps, setLoadingSteps] = useState(true);
@@ -69,8 +67,7 @@ export default function FitnessDashboard() {
   const { getFitnessPaths } = useFitnessPathActions();
   const { getSteps } = useStepsActions();
   const { steps } = useStepsState();
-  personId == "";
-  // Fetch user data and initialize dashboard
+
   useEffect(() => {
     const initializeDashboard = async () => {
       try {
@@ -89,8 +86,6 @@ export default function FitnessDashboard() {
           message.warning("Person not found for this user.");
           return;
         }
-
-        setPersonId(person.id);
 
         // Fetch workout plan data
         await fetchWorkoutPlan(person.id);

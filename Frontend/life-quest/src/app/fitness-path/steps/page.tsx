@@ -400,7 +400,7 @@ const StepsGraphPage: React.FC = () => {
               }}
             >
               <Statistic
-                title={<Text strong>Today's Steps</Text>}
+                title={<Text strong>Today&apos;s Steps</Text>}
                 value={stats.todaySteps}
                 suffix="steps"
                 valueStyle={{ color: COLORS.primary }}

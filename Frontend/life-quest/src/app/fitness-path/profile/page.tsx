@@ -20,7 +20,7 @@ const { Title, Paragraph } = Typography;
 
 const Profile: React.FC = () => {
   const { currentUser } = useUserState();
-  const { getCurrentUser } = useUserActions();
+  const { getCurrentUser,updateUser } = useUserActions();
   const [loading, setLoading] = useState(true);
   const hasFetched = useRef(false);
 
@@ -36,7 +36,7 @@ const Profile: React.FC = () => {
       setLoading(false);
     }
   }, [currentUser, getCurrentUser]);
-
+  console.log("curretnt", currentUser);
   const handleUpload = (file: File) => {
     if (!file.type.startsWith("image/")) {
       message.error("Only image files allowed.");
