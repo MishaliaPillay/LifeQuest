@@ -24,7 +24,14 @@ export const getImageData = async (file: File): Promise<string> => {
 export const analyzeFoodImage = async (
   imageFile: File,
   contextPrompt: string
-): Promise<string> => {
+): Promise<{
+  fullText: string;
+  structured: {
+    totalCalories: number;
+    healthScore: number;
+    foodItems: string[];
+  } | null;
+}> => {
   try {
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
@@ -45,15 +52,21 @@ export const analyzeFoodImage = async (
       - A health score from 1 to 10 based on general nutritional guidelines
       - Any health insights (e.g., "High in sugar", "Good protein source", etc.)
       - Recommendations for improvement if the meal is unbalanced
-      
+
       Context: ${contextPrompt}
 
       Important:
       - Don't guess food if unclear
       - Be honest about uncertainty
+
+      At the end, provide this summary in strict JSON format:
+      {
+        "totalCalories": number,
+        "healthScore": number,
+        "foodItems": string[]
+      }
     `;
 
-    // Generate content based on the image and the propmt
     const result = await model.generateContent({
       contents: [
         {
@@ -62,11 +75,25 @@ export const analyzeFoodImage = async (
         },
       ],
     });
-    return result.response.text();
+
+    const fullText = result.response.text();
+
+    // Try to extract the JSON block from the result
+    const jsonMatch = fullText.match(/\{[\s\S]*?\}/);
+    let structured = null;
+
+    if (jsonMatch) {
+      try {
+        structured = JSON.parse(jsonMatch[0]);
+      } catch (jsonErr) {
+        console.warn("Failed to parse structured JSON:", jsonErr);
+      }
+    }
+
+    return { fullText, structured };
   } catch (error: unknown) {
     console.error("Error analyzing image:", error);
 
-    //  handling unknown error type
     const errorMessage =
       error instanceof Error ? error.message : "Unknown error";
 

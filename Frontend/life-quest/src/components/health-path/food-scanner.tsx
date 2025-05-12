@@ -82,6 +82,13 @@ export default function HealthAnalysisComponent() {
   const [analysis, setAnalysis] = useState("");
 
   const [isLoading, setIsLoading] = useState(false);
+  const [structuredData, setStructuredData] = useState<{
+    totalCalories: number;
+    healthScore: number;
+    foodItems: string[];
+  } | null>(null);
+
+  const [error, setError] = useState("");
 
   const handleImageChange = (info) => {
     const { status } = info.file;
@@ -100,20 +107,22 @@ export default function HealthAnalysisComponent() {
     }
   };
 
-  const handleSubmit = async () => {
-    // Resetting the states
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
     setAnalysis("");
+    setStructuredData(null); // Reset structured data
 
     if (!selectedImage) {
-      message.error("Please select an image first");
+      setError("Please select an image first");
       return;
     }
 
     setIsLoading(true);
     try {
       const result = await analyzeFoodImage(selectedImage, prompt);
-      setAnalysis(result);
+      setAnalysis(result.fullText); // this is a string
+      setStructuredData(result.structured); // this is your JSON
       setIsLoading(false);
     } catch (err) {
       const errorMessage =
@@ -249,6 +258,20 @@ export default function HealthAnalysisComponent() {
               Text to Speech
             </Button>
           </Space>
+        </Card>
+      )}
+      {structuredData && (
+        <Card className={styles.analysisContainer}>
+          <Title level={4}>AI Summary</Title>
+          <Paragraph>
+            <strong>Total Calories:</strong> {structuredData.totalCalories}
+          </Paragraph>
+          <Paragraph>
+            <strong>Health Score:</strong> {structuredData.healthScore}/10
+          </Paragraph>
+          <Paragraph>
+            <strong>Food Items:</strong> {structuredData.foodItems.join(", ")}
+          </Paragraph>
         </Card>
       )}
     </div>
