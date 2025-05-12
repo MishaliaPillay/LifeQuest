@@ -15,6 +15,5 @@ namespace LifeQuest.Domain.Weight
         public DateTime Date { get; set; }
         public string? Note { get; set; }
         public virtual PersonEntity Person { get; set; }
-
     }
 }

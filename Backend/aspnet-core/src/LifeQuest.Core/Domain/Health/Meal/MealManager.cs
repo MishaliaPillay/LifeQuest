@@ -36,6 +36,28 @@ namespace LifeQuest.Domain.Health.Meal
             return await _mealRepository.UpdateAsync(meal);
         }
 
+        public async Task<Meal> GenerateAIMealAsync(string name, string description, int calories, List<Guid> ingredientIds)
+        {
+            if (ingredientIds == null || !ingredientIds.Any())
+                throw new UserFriendlyException("A meal must have at least one ingredient.");
+
+            var meal = new Meal
+            {
+                Id = Guid.NewGuid(),
+                Name = name,
+                Description = description,
+                Calories = calories,
+                MealIngredients = ingredientIds.Select(id => new MealIngredient
+                {
+                    IngredientId = id
+                }).ToList()
+            };
+
+            return await _mealRepository.InsertAsync(meal); // no autoSave here
+        }
+
+
+
         public async Task DeleteMealAsync(Guid id)
         {
             var meal = await _mealRepository.FirstOrDefaultAsync(id);

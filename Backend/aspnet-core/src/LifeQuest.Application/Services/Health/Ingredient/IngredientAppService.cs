@@ -27,7 +27,7 @@ namespace LifeQuest.Services.HealthService.Ingredient
                 input.ServingSize,
                 input.Calories,
                 input.Protein,
-                input.Carbohhydrates,
+                input.Carbohydrates,
                 input.Fats
             );
 

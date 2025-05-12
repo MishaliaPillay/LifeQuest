@@ -13,6 +13,8 @@ namespace LifeQuest.Domain.Health.Meal
         public string Description { get; set; }
         public int Calories { get; set; }
 
+        public int Score { get; set; }
+
         public ICollection<MealIngredient> MealIngredients { get; set; }
 
         public Meal()
