@@ -75,7 +75,6 @@ export const ExercisePlanProvider = ({
     return instance
       .post(endpoint, plan)
       .then((res) => {
-    
         dispatch(createPlanSuccess(res.data?.result));
       })
       .catch((err) => {
@@ -103,7 +102,7 @@ export const ExercisePlanProvider = ({
   // Mark a plan as completed
   const completePlan = async (planId: string) => {
     dispatch(completePlanPending());
-    const endpoint = `/api/services/app/ExercisePlan/Complete?planId=${planId}`;
+    const endpoint = `/api/services/app/ExercisePlan/CompletePlan?planId=${planId}`;
 
     return instance
       .post(endpoint)
