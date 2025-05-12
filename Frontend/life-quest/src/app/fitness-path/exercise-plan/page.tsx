@@ -24,11 +24,12 @@ import { getId } from "../../../utils/decoder";
 import { useAuthActions } from "../../../providers/auth-provider";
 import { useFitnessPathActions } from "@/providers/fitnesspath/fitness-provider";
 import { useActivityTypeActions } from "@/providers/fitnesspath/activity-provider";
-
+import { useExercisePlanActions } from "@/providers/fitnesspath/exercise-plan";
 import {
   IExercisePlanDay,
   IActivity,
 } from "@/providers/fitnesspath/activity-provider/context";
+import { launchConfetti } from "../../../utils/confetti"; // adjust path if needed
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -61,8 +62,10 @@ export default function WorkoutPlanPage() {
   const { getExercisePlan, completeActivity } = useActivityTypeActions();
   const { getCurrentPerson } = useAuthActions();
   const { getFitnessPaths } = useFitnessPathActions();
+  const [planId, setPlanId] = useState<string | null>(null);
+  const [completingPlan, setCompletingPlan] = useState(false);
 
-  // Mock data - would come from backend in real app
+  const { completePlan } = useExercisePlanActions();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -80,10 +83,10 @@ export default function WorkoutPlanPage() {
           message.warning("Person not found for this user.");
           return;
         }
-        console.log("dd", person);
+
         const fitnessPaths = await getFitnessPaths(person.id);
         const exercisePlanId = fitnessPaths.exercisePlans[0]?.id;
-        console.log("ddddd", fitnessPaths);
+        setPlanId(exercisePlanId);
         if (!fitnessPaths?.id) {
           message.warning("Fitness path not found.");
         }
@@ -155,7 +158,6 @@ export default function WorkoutPlanPage() {
     try {
       await completeActivity(activityId);
 
-      // (rest of your existing logic here...)
       const token = sessionStorage.getItem("jwt");
       if (!token) return;
       const id = getId(token);
@@ -191,7 +193,12 @@ export default function WorkoutPlanPage() {
       });
 
       setExercisePlan(updatedPlan);
-      messageApi.success("Workout marked as complete!");
+      setIsModalVisible(false); // Close modal first
+
+      setTimeout(() => {
+        messageApi.success("Workout marked as complete!");
+        launchConfetti(); // Launch confetti *after* modal is closed
+      }, 300); // Add slight delay for better UX
     } catch (error) {
       message.error("Failed to mark as complete.");
     } finally {
@@ -236,6 +243,27 @@ export default function WorkoutPlanPage() {
           </Card>
         </Col>
       </Row>
+      {planId && (
+        <Button
+          type="primary"
+          icon={<CheckCircleOutlined />}
+          disabled={completedCount < exercisePlan.length}
+          loading={completingPlan}
+          onClick={async () => {
+            setCompletingPlan(true);
+            try {
+              await completePlan(planId);
+              message.success("Plan marked as complete!");
+            } catch {
+              message.error("Failed to complete plan.");
+            } finally {
+              setCompletingPlan(false);
+            }
+          }}
+        >
+          Complete Plan
+        </Button>
+      )}
 
       {loading ? (
         <div
