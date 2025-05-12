@@ -133,12 +133,9 @@ export const ActivityTypeProvider = ({
       },
     };
 
-    console.log("Sending request:", formattedRequest);
-
     return instance
       .post(endpoint, formattedRequest)
       .then((res) => {
-        console.log("Response received:", res.data);
         // The response contains a result.items array of activity types
         const activityTypes = res.data?.result?.items || [];
         dispatch(generateActivityTypeSuccess(activityTypes));

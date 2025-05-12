@@ -239,7 +239,7 @@ const ExercisePlanBuilder = ({
       }))
     };
 
-    console.log("Submitting plan with exact format:", plan);
+
 
     try {
       await createPlan(plan);

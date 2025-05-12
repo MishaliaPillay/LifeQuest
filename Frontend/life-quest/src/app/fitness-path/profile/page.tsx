@@ -13,29 +13,45 @@ import {
 } from "antd";
 import { UploadOutlined, UserOutlined } from "@ant-design/icons";
 import { useUserState, useUserActions } from "@/providers/user-provider";
-
 import styles from "./profile.module.css";
-
+import { IPerson } from "@/providers/user-provider/context";
+import { IUser } from "@/providers/user-provider/context";
+import { useAuthActions } from "@/providers/auth-provider";
+import { IAuth } from "@/providers/auth-provider/context";
 const { Title, Paragraph } = Typography;
 
 const Profile: React.FC = () => {
   const { currentUser } = useUserState();
-  const { getCurrentUser } = useUserActions();
+  const { getCurrentUser, updateUser } = useUserActions();
+  const [person, setPerson] = useState<IAuth | null>(null);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const hasFetched = useRef(false);
-
+  const { getCurrentPerson } = useAuthActions();
   const [form] = Form.useForm();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
   useEffect(() => {
     const token = sessionStorage.getItem("jwt");
+
     if (token && !currentUser && !hasFetched.current) {
       hasFetched.current = true;
-      getCurrentUser(token).finally(() => setLoading(false));
-    } else {
-      setLoading(false);
+      getCurrentUser(token); // don't await
     }
   }, [currentUser, getCurrentUser]);
+
+  useEffect(() => {
+    const fetchPerson = async () => {
+      if (currentUser?.id && !person) {
+        const personData = await getCurrentPerson(currentUser.id);
+
+        setPerson(personData);
+        setLoading(false);
+      }
+    };
+
+    fetchPerson();
+  }, [getCurrentUser]);
 
   const handleUpload = (file: File) => {
     if (!file.type.startsWith("image/")) {
@@ -49,6 +65,34 @@ const Profile: React.FC = () => {
     };
     reader.readAsDataURL(file);
     return false;
+  };
+
+  const handleSave = async (values: IUser) => {
+    if (!currentUser) return;
+    setSaving(true);
+    try {
+      const updatedPerson: IPerson = {
+        id: person.id,
+        user: {
+          ...currentUser,
+          name: values.name,
+          surname: values.surname,
+          emailAddress: values.email,
+        },
+        xp: 0,
+        level: 0,
+        avatar: "url",
+        pathId: person.pathId,
+      };
+
+      await updateUser(updatedPerson);
+      message.success("Profile updated successfully!");
+    } catch (err) {
+      console.error(err);
+      message.error("Failed to update profile.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   if (loading || !currentUser?.name) {
@@ -100,10 +144,7 @@ const Profile: React.FC = () => {
             surname: currentUser.surname,
             email: currentUser.emailAddress,
           }}
-          onFinish={(values) => {
-            console.log("Updated values:", values);
-            message.success("Profile updated (not saved to backend)");
-          }}
+          onFinish={handleSave}
         >
           <Form.Item label="Name" name="name">
             <Input />
@@ -115,7 +156,7 @@ const Profile: React.FC = () => {
             <Input type="email" />
           </Form.Item>
           <Form.Item>
-            <Button type="primary" htmlType="submit">
+            <Button type="primary" htmlType="submit" loading={saving}>
               Save Profile
             </Button>
           </Form.Item>
