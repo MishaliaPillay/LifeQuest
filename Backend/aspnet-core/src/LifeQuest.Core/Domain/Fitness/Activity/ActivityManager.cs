@@ -120,6 +120,17 @@ namespace LifeQuest.Domain.Fitness.Activity
                 .ToListAsync();
         }
 
+        public async Task<Activity> MarkAsCompleteAsync(Guid id)
+        {
+            var activity = await _activityRepository.FirstOrDefaultAsync(id);
+            if (activity == null)
+                throw new UserFriendlyException("Activity not found.");
+
+            activity.IsComplete = true;
+
+            await _activityRepository.UpdateAsync(activity);
+            return activity;
+        }
 
         public async Task DeleteActivityAsync(Guid id)
         {
