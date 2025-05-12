@@ -24,10 +24,12 @@ import { getId } from "../../../utils/decoder";
 import { useAuthActions } from "../../../providers/auth-provider";
 import { useFitnessPathActions } from "@/providers/fitnesspath/fitness-provider";
 import { useActivityTypeActions } from "@/providers/fitnesspath/activity-provider";
+import { useExercisePlanActions } from "@/providers/fitnesspath/exercise-plan";
 import {
   IExercisePlanDay,
   IActivity,
 } from "@/providers/fitnesspath/activity-provider/context";
+import { launchConfetti } from "../../../utils/confetti"; // adjust path if needed
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -48,21 +50,22 @@ interface EnhancedExercisePlanDay extends IExercisePlanDay {
 }
 
 export default function WorkoutPlanPage() {
-  ///  const [_userId, setUserId] = useState("");
-  /// const [_fitnessPathId, setFitnessPathId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [exercisePlan, setExercisePlan] = useState<EnhancedExercisePlanDay[]>(
     []
   );
+  const [messageApi, contextHolder] = message.useMessage();
   const [selectedDay, setSelectedDay] =
     useState<EnhancedExercisePlanDay | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
-
-  const { getExercisePlan } = useActivityTypeActions();
+  const [completing, setCompleting] = useState(false);
+  const { getExercisePlan, completeActivity } = useActivityTypeActions();
   const { getCurrentPerson } = useAuthActions();
   const { getFitnessPaths } = useFitnessPathActions();
+  const [planId, setPlanId] = useState<string | null>(null);
+  const [completingPlan, setCompletingPlan] = useState(false);
 
-  // Mock data - would come from backend in real app
+  const { completePlan } = useExercisePlanActions();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -80,10 +83,10 @@ export default function WorkoutPlanPage() {
           message.warning("Person not found for this user.");
           return;
         }
-        console.log("dd", person);
+
         const fitnessPaths = await getFitnessPaths(person.id);
         const exercisePlanId = fitnessPaths.exercisePlans[0]?.id;
-        console.log("ddddd", fitnessPaths);
+        setPlanId(exercisePlanId);
         if (!fitnessPaths?.id) {
           message.warning("Fitness path not found.");
         }
@@ -150,12 +153,66 @@ export default function WorkoutPlanPage() {
     };
     return colorMap[difficulty] || "blue";
   };
+  const handleCompleteActivity = async (activityId: string) => {
+    setCompleting(true);
+    try {
+      await completeActivity(activityId);
+
+      const token = sessionStorage.getItem("jwt");
+      if (!token) return;
+      const id = getId(token);
+      const person = await getCurrentPerson(parseInt(id));
+      const fitnessPaths = await getFitnessPaths(person.id);
+      const exercisePlanId = fitnessPaths.exercisePlans[0]?.id;
+      const planResponse = await getExercisePlan(exercisePlanId);
+
+      const updatedPlan = planResponse.map((day: IExercisePlanDay) => {
+        let difficulty = "easy";
+        if (day.calories > 400) difficulty = "medium";
+        if (day.calories > 600) difficulty = "hard";
+        if (day.calories > 800) difficulty = "intense";
+
+        const workoutType = day.description?.toLowerCase().includes("cardio")
+          ? "cardio"
+          : day.description?.toLowerCase().includes("strength")
+          ? "strength"
+          : day.description?.toLowerCase().includes("flex")
+          ? "flexibility"
+          : day.description?.toLowerCase().includes("recovery")
+          ? "recovery"
+          : "hiit";
+
+        const estimatedDuration = Math.round(day.calories / 10);
+
+        return {
+          ...day,
+          difficulty,
+          workoutType,
+          estimatedDuration,
+        } as EnhancedExercisePlanDay;
+      });
+
+      setExercisePlan(updatedPlan);
+      setIsModalVisible(false); // Close modal first
+
+      setTimeout(() => {
+        messageApi.success("Workout marked as complete!");
+        launchConfetti(); // Launch confetti *after* modal is closed
+      }, 300); // Add slight delay for better UX
+    } catch (error) { console.error(error)
+      message.error("Failed to mark as complete.");
+    } finally {
+      setCompleting(false);
+    }
+  };
 
   return (
     <div
       className="workout-plan-container"
       style={{ padding: "2rem", backgroundColor: "#f5f7fa" }}
     >
+      {contextHolder}
+
       <div className="header-container" style={{ marginBottom: 24 }}>
         <Title level={2} style={{ marginBottom: 8 }}>
           My 10-Day Workout Plan
@@ -186,6 +243,27 @@ export default function WorkoutPlanPage() {
           </Card>
         </Col>
       </Row>
+      {planId && (
+        <Button
+          type="primary"
+          icon={<CheckCircleOutlined />}
+          disabled={completedCount < exercisePlan.length}
+          loading={completingPlan}
+          onClick={async () => {
+            setCompletingPlan(true);
+            try {
+              await completePlan(planId);
+              message.success("Plan marked as complete!");
+            } catch {
+              message.error("Failed to complete plan.");
+            } finally {
+              setCompletingPlan(false);
+            }
+          }}
+        >
+          Complete Plan
+        </Button>
+      )}
 
       {loading ? (
         <div
@@ -305,7 +383,8 @@ export default function WorkoutPlanPage() {
               key="complete"
               type="primary"
               icon={<CheckCircleOutlined />}
-              onClick={closeModal}
+              loading={completing}
+              onClick={() => handleCompleteActivity(selectedDay!.id)}
             >
               Mark Complete
             </Button>

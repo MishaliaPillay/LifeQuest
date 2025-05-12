@@ -62,6 +62,7 @@ export interface IActivityTypeActionContext {
   deleteActivityType: (id: IActivityType) => void;
   generateActivityTypes: (requestData: IBaseActivityTypeRequest) => void;
   getExercisePlan: (id: string) => Promise<IExercisePlanDay[]>;
+  completeActivity: (id: string) => void;
 }
 
 // Initial state
