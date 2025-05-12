@@ -119,7 +119,7 @@ export default function HealthAnalysisComponent() {
     try {
       const result = await analyzeFoodImage(selectedImage, prompt);
       setAnalysis(result.fullText); // this is a string
-      setStructuredData(result.structured); // this is your JSON
+      setStructuredData(result.structured);
       setIsLoading(false);
     } catch (err) {
       const errorMessage =
@@ -174,7 +174,7 @@ export default function HealthAnalysisComponent() {
               Image Preview
             </Title>
             <Card
-              bordered={false}
+              variant="borderless"
               style={{ marginBottom: "20px" }}
               bodyStyle={{ display: "flex", justifyContent: "center" }}
             >

@@ -1,0 +1,64 @@
+/* Sidebar.module.css */
+
+.sidebar {
+  background-color: #ffffff;
+  border-right: 1px solid #f0f0f0;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 100;
+  overflow: auto;
+}
+
+.avatarContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.avatar {
+  background-color: #F23D5E;
+  color: #fff;
+  font-weight: bold;
+}
+
+.username {
+  margin-top: 12px;
+  color: #333;
+  font-weight: 500;
+}
+
+.menu {
+  background-color: transparent;
+  border-inline-end: none;
+}
+
+.menu :global(.ant-menu-item-selected) {
+  background-color: #F23D5E !important;
+  color: white !important;
+  border-radius: 4px;
+}
+
+.menu :global(.ant-menu-item:hover) {
+  background-color: #FB765C !important;
+  color: white !important;
+}
+
+.mobileButton {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 101;
+}
+
+.drawerHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
