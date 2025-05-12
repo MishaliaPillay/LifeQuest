@@ -88,6 +88,7 @@ const Profile: React.FC = () => {
       await updateUser(updatedPerson);
       message.success("Profile updated successfully!");
     } catch (err) {
+      console.error(err);
       message.error("Failed to update profile.");
     } finally {
       setSaving(false);
