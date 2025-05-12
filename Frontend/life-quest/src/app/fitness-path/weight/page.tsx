@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import {
-  Input,
+
   Button,
   Card,
   message,
@@ -40,15 +40,13 @@ import {
   TrophyOutlined,
   ArrowUpOutlined,
   ArrowDownOutlined,
-  DashboardOutlined,
-  UserOutlined,
   CalendarOutlined,
 } from "@ant-design/icons";
 import {
   useWeightActions,
   useWeightState,
 } from "../../../providers/fitnesspath/weight-provider/index";
-import { useAuthState, useAuthActions } from "../../../providers/auth-provider";
+import {  useAuthActions } from "../../../providers/auth-provider";
 import { getId } from "../../../utils/decoder";
 
 const { Title, Text, Paragraph } = Typography;
@@ -80,7 +78,7 @@ const WeightGraphPage: React.FC = () => {
 
   const { getWeights, createWeight, updateWeight } = useWeightActions();
   const { weights } = useWeightState();
-  const { Auth } = useAuthState();
+
   const { getCurrentPerson } = useAuthActions();
 
   useEffect(() => {
@@ -355,18 +353,7 @@ const WeightGraphPage: React.FC = () => {
         <Card
           title={
             <div style={{ display: "flex", alignItems: "center" }}>
-              <Avatar
-                size={54}
-                style={{
-                  backgroundColor: COLORS.secondary,
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  marginRight: 16,
-                }}
-              >
-                <DashboardOutlined style={{ fontSize: 28, color: "white" }} />
-              </Avatar>
+           
               <div>
                 <Title level={2} style={{ margin: 0, color: "#fff" }}>
                   Weight Tracker Dashboard
@@ -377,7 +364,7 @@ const WeightGraphPage: React.FC = () => {
               </div>
             </div>
           }
-          bordered={false}
+          variant="outlined"
           style={{
             borderRadius: 20,
             boxShadow: COLORS.cardShadow,
@@ -413,25 +400,7 @@ const WeightGraphPage: React.FC = () => {
                     marginBottom: 24,
                   }}
                 >
-                  <div style={{ display: "flex", alignItems: "center" }}>
-                    <Avatar
-                      icon={<UserOutlined />}
-                      style={{
-                        backgroundColor: COLORS.accent,
-                        marginRight: 12,
-                      }}
-                    />
-                    <Input
-                      placeholder="Person ID (Auto-detected from login)"
-                      value={personId}
-                      onChange={(e) => setPersonId(e.target.value)}
-                      style={{ width: 250, borderRadius: 8 }}
-                      disabled={!!Auth?.id}
-                      prefix={
-                        <Badge status="processing" style={{ marginRight: 8 }} />
-                      }
-                    />
-                  </div>
+          
                   <Button
                     type="primary"
                     onClick={() => handleFetchWeight()}

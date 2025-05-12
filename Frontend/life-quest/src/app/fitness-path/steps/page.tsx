@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import {
-  Input,
+ 
   Button,
   Card,
   Spin,
@@ -42,23 +42,29 @@ import {
   useStepsActions,
   useStepsState,
 } from "../../../providers/fitnesspath/step-provider/index";
-import { useAuthState, useAuthActions } from "../../../providers/auth-provider";
+import {useAuthActions } from "../../../providers/auth-provider";
 import { getId } from "../../../utils/decoder";
 
 const { Title, Text } = Typography;
 
 // Professional color palette
 const COLORS = {
-  primary: "#D9328E", // Primary brand color
-  secondary: "#BF3FB7", // Secondary brand color
-  accent: "#F23D5E", // Accent color
-  highlight: "#FB765C", // Highlight color
-  danger: "#F24141", // Danger/alert color
-  lightBg: "#FFF5F9", // Light background
-  darkBg: "#2A0D24", // Dark background
-  textLight: "#FFFFFF", // Light text
-  textDark: "#333333", // Dark text
-  borderLight: "#F8D1E5", // Light border
+  primary: "#F23D5E", 
+  secondary: "#D9328E", 
+  accent: "#BF3FB7", 
+  highlight: "#F24141", 
+  gradient: "#FB765C", 
+  success: "#52c41a", 
+  chartGradientStart: "#F23D5E",
+  chartGradientEnd: "#FB765C",
+  bgGradient: "linear-gradient(135deg, #FFFFFF 0%, #FFF5F7 100%)",
+  cardHeaderGradient: "linear-gradient(90deg, #F23D5E 0%, #FB765C 100%)",
+  cardShadow: "0 20px 40px rgba(242, 61, 94, 0.1)",
+  lightBg: "#f8f8f8", // Example color
+  borderLight: "#E0E0E0", // Example color
+  textDark: "#333333", // Example color
+  textLight: "#fcfcfcfc", // Example color
+  danger: "#FF4D4F", // Example color
 };
 
 const StepsGraphPage: React.FC = () => {
@@ -73,8 +79,7 @@ const StepsGraphPage: React.FC = () => {
 
   const { getSteps, createStep, updateStep } = useStepsActions();
   const { steps } = useStepsState();
-  // Get auth state and actions
-  const { Auth } = useAuthState();
+
   const { getCurrentPerson } = useAuthActions();
 
   // Get the user ID from JWT token, then fetch person data using that ID
@@ -312,11 +317,15 @@ const StepsGraphPage: React.FC = () => {
       }}
     >
       <Card
-        title={
+        title={<div>
           <Title level={2} style={{ margin: 0, color: COLORS.textLight }}>
-            <span style={{ marginRight: 10 }}>🚶‍♂️</span>
+          
             Step Tracker Dashboard
+         
           </Title>
+             <Text style={{ color: "rgba(255, 255, 255, 0.85)" }}>
+                  Track and monitor your weight progress
+                </Text></div>
         }
         variant="borderless"
         style={{
@@ -345,19 +354,7 @@ const StepsGraphPage: React.FC = () => {
                 marginBottom: 16,
               }}
             >
-              <Input
-                placeholder="Person ID (Auto-detected from login)"
-                value={personId}
-                onChange={(e) => setPersonId(e.target.value)}
-                style={{
-                  width: 300,
-                  marginRight: 16,
-                  borderRadius: 8,
-                  height: 40,
-                  borderColor: COLORS.borderLight,
-                }}
-                disabled={!!Auth?.id || loadingAuth}
-              />
+         
               <Button
                 type="primary"
                 onClick={() => handleFetchSteps()}
@@ -418,7 +415,7 @@ const StepsGraphPage: React.FC = () => {
                 style={{
                   borderRadius: 8,
                   boxShadow: "0 2px 8px rgba(0,0,0,0.09)",
-                  background: `linear-gradient(135deg, ${COLORS.primary}22, ${COLORS.accent}22)`,
+                 
                 }}
               >
                 <Statistic
@@ -436,7 +433,7 @@ const StepsGraphPage: React.FC = () => {
                 style={{
                   borderRadius: 8,
                   boxShadow: "0 2px 8px rgba(0,0,0,0.09)",
-                  background: `linear-gradient(135deg, ${COLORS.secondary}22, ${COLORS.primary}22)`,
+                 
                 }}
               >
                 <Statistic
@@ -452,7 +449,7 @@ const StepsGraphPage: React.FC = () => {
                 style={{
                   borderRadius: 8,
                   boxShadow: "0 2px 8px rgba(0,0,0,0.09)",
-                  background: `linear-gradient(135deg, ${COLORS.highlight}22, ${COLORS.danger}22)`,
+                
                 }}
               >
                 <Statistic
@@ -469,7 +466,7 @@ const StepsGraphPage: React.FC = () => {
                 style={{
                   borderRadius: 8,
                   boxShadow: "0 2px 8px rgba(0,0,0,0.09)",
-                  background: `linear-gradient(135deg, ${COLORS.accent}22, ${COLORS.secondary}22)`,
+                  
                 }}
               >
                 <Statistic
@@ -712,51 +709,63 @@ const StepsGraphPage: React.FC = () => {
       </Card>
 
       <Modal
-        title="Add or Update Today's Steps"
-        open={adding}
-        onOk={handleAddOrUpdateToday}
-        onCancel={() => setAdding(false)}
-        okText="Save"
-        centered
-        styles={{
-          header: {
-            backgroundColor: COLORS.primary,
-            color: COLORS.textLight,
-          },
-          body: { padding: "24px" },
-          footer: { borderTop: `1px solid ${COLORS.borderLight}` },
-        }}
-        okButtonProps={{
-          style: {
-            backgroundColor: COLORS.primary,
-            borderColor: COLORS.primary,
-          },
-        }}
-      >
-        <div style={{ textAlign: "center" }}>
-          <Title level={4} style={{ marginBottom: 24 }}>
-            How many steps did you take today?
-          </Title>
-          <InputNumber
-            min={0}
-            max={100000}
-            value={newSteps}
-            onChange={(value) => setNewSteps(value || 0)}
-            placeholder="Enter step count"
-            style={{ width: "100%", height: 50, fontSize: 20 }}
-            size="large"
-            formatter={(value) =>
-              `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-            }
-            parser={(value) => Number(value!.replace(/\$\s?|(,*)/g, ""))}
-          />
+  title="Add or Update Today's Steps"
+  open={adding}
+  onOk={handleAddOrUpdateToday}
+  onCancel={() => setAdding(false)}
+  okText="Save"
+  centered
+  styles={{
+    header: {
+      
+      color: COLORS.bgGradient,
+      borderBottom: `1px solid ${COLORS.borderLight}`, // optional: adds separation for header
+    },
+    body: {
+      padding: "24px",
+    },
+    footer: {
+      borderTop: `1px solid ${COLORS.borderLight}`,
+      display: "flex",
+      justifyContent: "center", // Optional: centers the footer content
+    },
+  }}
+  okButtonProps={{
+    style: {
+      backgroundColor: COLORS.primary,
+      borderColor: COLORS.primary,
+      color: COLORS.textLight, // Optional: ensures button text color contrasts well
+    },
+  }}
+>
+  <div style={{ textAlign: "center" }}>
+    <Title level={4} style={{ marginBottom: 24 }}>
+      How many steps did you take today?
+    </Title>
+    <InputNumber
+      min={0}
+      max={100000}
+      value={newSteps}
+      onChange={(value) => setNewSteps(value || 0)}
+      placeholder="Enter step count"
+      style={{
+        width: "100%",
+        height: 50,
+        fontSize: 20,
+        marginBottom: 16, // Added space below the input
+      }}
+      size="large"
+      formatter={(value) =>
+        `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+      }
+      parser={(value) => Number(value!.replace(/\$\s?|(,*)/g, ""))}
+    />
+    <Text type="secondary" style={{ display: "block", marginTop: 16 }}>
+      This will calculate to approximately {Math.round(newSteps * 0.04)} calories burned
+    </Text>
+  </div>
+</Modal>
 
-          <Text type="secondary" style={{ display: "block", marginTop: 16 }}>
-            This will calculate to approximately {Math.round(newSteps * 0.04)}{" "}
-            calories burned
-          </Text>
-        </div>
-      </Modal>
     </div>
   );
 };
