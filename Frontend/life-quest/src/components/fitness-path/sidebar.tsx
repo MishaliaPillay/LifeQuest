@@ -1,6 +1,5 @@
-"use client";
-
-import React, { useState, useEffect } from "react";
+"use client"; 
+import React, { useState, useEffect, useRef } from "react";
 import { Layout, Menu, Avatar, Drawer, Button } from "antd";
 import {
   DashboardOutlined,
@@ -14,6 +13,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { MenuProps } from "antd";
+import { useUserActions, useUserState } from "@/providers/user-provider"; // Import the user context
 import styles from "./sidebar.module.css";
 
 const { Sider } = Layout;
@@ -65,6 +65,18 @@ const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const pathname = usePathname();
   const [isMobile, setIsMobile] = useState(false);
+  const { currentUser } = useUserState();
+  const { getCurrentUser } = useUserActions(); // Hook to access the actions
+  const hasFetched = useRef(false); // Ref to track if data has been fetched
+
+  useEffect(() => {
+    const token = sessionStorage.getItem("jwt");
+
+    if (token && !currentUser && !hasFetched.current) {
+      hasFetched.current = true; // Mark as fetched
+      getCurrentUser(token); // We don't need to track loading here
+    }
+  }, [currentUser, getCurrentUser]);
 
   useEffect(() => {
     const checkIsMobile = () => {
@@ -95,8 +107,8 @@ const Sidebar: React.FC<SidebarProps> = ({
           styles={{ body: { padding: 0 } }}
         >
           <div className={styles.drawerHeader}>
-            <Avatar className={styles.avatar}>A</Avatar>
-            <div className={styles.username}>Alex Chen</div>
+            <Avatar className={styles.avatar}>{currentUser?.name[0]}</Avatar>
+            <div className={styles.username}>{currentUser?.name}</div>
           </div>
           <Menu
             mode="inline"
@@ -119,8 +131,8 @@ const Sidebar: React.FC<SidebarProps> = ({
       className={styles.sidebar}
     >
       <div className={styles.avatarContainer}>
-        <Avatar className={styles.avatar}>A</Avatar>
-        {!collapsed && <div className={styles.username}>Alex Chen</div>}
+        <Avatar className={styles.avatar}>{currentUser?.name[0]}</Avatar>
+        {!collapsed && <div className={styles.username}>{currentUser?.name}</div>}
       </div>
       <Menu
         mode="inline"

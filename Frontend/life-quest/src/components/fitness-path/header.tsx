@@ -132,7 +132,7 @@ const Header: React.FC<HeaderProps> = ({
             <Avatar style={{ backgroundColor: "#1890ff" }}>
               <UserOutlined />
             </Avatar>
-            <span className="hidden sm:inline">Alex Chen</span>
+            <span className="hidden sm:inline">Alex Cdxdxdhen</span>
           </Space>
         </Dropdown>
       </div>

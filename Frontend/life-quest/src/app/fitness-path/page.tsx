@@ -408,13 +408,13 @@ export default function FitnessDashboard() {
           </Row>
 
           {/* Main Content Tabs */}
-          <Card bordered={false} style={{ borderRadius: 12 }}>
+          <Card variant="outlined" style={{ borderRadius: 12 }}>
             <Tabs defaultActiveKey="1">
               {/* Activity Overview Tab */}
               <TabPane tab="Activity Overview" key="1">
                 <Row gutter={[16, 16]}>
                   <Col xs={24} md={12}>
-                    <Card title="Steps Progress" bordered={false}>
+                    <Card title="Steps Progress" variant="outlined">
                       <Progress
                         percent={stepsStats.weeklyProgress}
                         status={
@@ -498,7 +498,7 @@ export default function FitnessDashboard() {
                   </Col>
 
                   <Col xs={24} md={12}>
-                    <Card title="Workout Plan Progress" bordered={false}>
+                    <Card title="Workout Plan Progress" variant="outlined">
                       <Progress
                         percent={workoutProgress}
                         status={workoutProgress >= 100 ? "success" : "active"}
@@ -596,7 +596,7 @@ export default function FitnessDashboard() {
               <TabPane tab="Recent Activity" key="2">
                 <Row gutter={[16, 16]}>
                   <Col xs={24}>
-                    <Card title="Recent Workouts" bordered={false}>
+                    <Card title="Recent Workouts" variant="outlined">
                       {loadingWorkouts ? (
                         <div style={{ textAlign: "center", padding: 40 }}>
                           <Spin />
@@ -710,7 +710,7 @@ export default function FitnessDashboard() {
               <TabPane tab="Stats & Trends" key="3">
                 <Row gutter={[16, 16]}>
                   <Col xs={24}>
-                    <Card title="Step Tracking" bordered={false}>
+                    <Card title="Step Tracking" variant="outlined">
                       {loadingSteps ? (
                         <div style={{ textAlign: "center", padding: 40 }}>
                           <Spin />

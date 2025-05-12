@@ -385,7 +385,7 @@ const WeightGraphPage: React.FC = () => {
           <Row gutter={[24, 24]}>
             <Col xs={24} lg={16}>
               <Card
-                bordered={false}
+                variant="outlined"
                 style={{
                   borderRadius: 16,
                   boxShadow: "0 6px 16px rgba(242, 61, 94, 0.1)",
@@ -577,7 +577,7 @@ const WeightGraphPage: React.FC = () => {
               <Row gutter={[16, 16]}>
                 <Col span={8}>
                   <Card
-                    bordered={false}
+                    variant="outlined"
                     style={{
                       borderRadius: 16,
                       boxShadow: "0 6px 16px rgba(242, 61, 94, 0.1)",
@@ -608,7 +608,7 @@ const WeightGraphPage: React.FC = () => {
                 </Col>
                 <Col span={8}>
                   <Card
-                    bordered={false}
+                    variant="outlined"
                     style={{
                       borderRadius: 16,
                       boxShadow: "0 6px 16px rgba(242, 61, 94, 0.1)",
@@ -648,7 +648,7 @@ const WeightGraphPage: React.FC = () => {
                 </Col>
                 <Col span={8}>
                   <Card
-                    bordered={false}
+                    variant="outlined"
                     style={{
                       borderRadius: 16,
                       boxShadow: "0 6px 16px rgba(242, 61, 94, 0.1)",
@@ -694,7 +694,7 @@ const WeightGraphPage: React.FC = () => {
 
             <Col xs={24} lg={8}>
               <Card
-                bordered={false}
+                variant="outlined"
                 style={{
                   borderRadius: 16,
                   boxShadow: "0 6px 16px rgba(242, 61, 94, 0.1)",
@@ -809,7 +809,7 @@ const WeightGraphPage: React.FC = () => {
                       border: "1px solid #b7eb8f",
                     }}
                     bodyStyle={{ padding: 16 }}
-                    bordered={false}
+                    variant="outlined"
                   >
                     <div style={{ display: "flex", alignItems: "center" }}>
                       <Avatar
@@ -844,7 +844,7 @@ const WeightGraphPage: React.FC = () => {
                   }}
                   headStyle={{ borderBottom: `1px solid ${COLORS.primary}20` }}
                   bodyStyle={{ padding: 16 }}
-                  bordered={false}
+                  variant="outlined"
                   size="small"
                 >
                   <ul style={{ paddingLeft: 20, margin: 0 }}>
