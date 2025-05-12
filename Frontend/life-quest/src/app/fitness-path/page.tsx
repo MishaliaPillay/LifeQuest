@@ -314,73 +314,93 @@ export default function FitnessDashboard() {
           {/* Overview Cards */}
           <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
             <Col xs={24} sm={12} md={6}>
-              <Card
-                bordered={false}
-                style={{
-                  borderRadius: 8,
-                  boxShadow: "0 2px 8px rgba(0,0,0,0.09)",
-                  background: "linear-gradient(135deg, #ffd6e7, #ffc9c9)",
-                }}
-              >
-                <Statistic
-                  title="Daily Step Average"
-                  value={stepsStats.weeklyAverage}
-                  suffix="steps"
-                  valueStyle={{ color: "#eb2f96" }}
-                  prefix={<TrophyOutlined />}
-                />
-              </Card>
+      <Card
+  variant="outlined"
+  style={{
+    borderRadius: 8,
+    boxShadow: "0 2px 8px rgba(0,0,0,0.09)",
+    backgroundColor: "#ffffff", // white background
+  }}
+>
+  <Statistic
+    title="Daily Step Average"
+    value={stepsStats.weeklyAverage}
+    suffix="steps"
+    valueStyle={{
+      background: "linear-gradient(135deg, #F23D5E, #D9328E, #BF3FB7, #F24141, #FB765C)",
+      WebkitBackgroundClip: "text",
+      WebkitTextFillColor: "transparent",
+      fontWeight: 600,
+    }}
+    prefix={<TrophyOutlined />}
+  />
+</Card>
+
             </Col>
             <Col xs={24} sm={12} md={6}>
               <Card
-                bordered={false}
+                variant="outlined"
                 style={{
-                  borderRadius: 8,
-                  boxShadow: "0 2px 8px rgba(0,0,0,0.09)",
-                  background: "linear-gradient(135deg, #d3adf7, #b7daff)",
-                }}
+    borderRadius: 8,
+    boxShadow: "0 2px 8px rgba(0,0,0,0.09)",
+    backgroundColor: "#ffffff", // white background
+  }}
               >
                 <Statistic
                   title="Today's Steps"
                   value={stepsStats.todaySteps}
                   suffix="steps"
-                  valueStyle={{ color: "#722ed1" }}
+                  valueStyle={{
+      background: "linear-gradient(135deg, #F23D5E, #D9328E, #BF3FB7, #F24141, #FB765C)",
+      WebkitBackgroundClip: "text",
+      WebkitTextFillColor: "transparent",
+      fontWeight: 600,
+     }}
                   prefix={<CalendarOutlined />}
                 />
               </Card>
             </Col>
             <Col xs={24} sm={12} md={6}>
               <Card
-                bordered={false}
+               variant="outlined"
                 style={{
-                  borderRadius: 8,
-                  boxShadow: "0 2px 8px rgba(0,0,0,0.09)",
-                  background: "linear-gradient(135deg, #fff1b8, #ffe58f)",
-                }}
+    borderRadius: 8,
+    boxShadow: "0 2px 8px rgba(0,0,0,0.09)",
+    backgroundColor: "#ffffff", // white background
+  }}
               >
                 <Statistic
                   title="Calories Burned"
                   value={stepsStats.caloriesBurned}
-                  valueStyle={{ color: "#fa8c16" }}
+                  valueStyle={{
+      background: "linear-gradient(135deg, #F23D5E, #D9328E, #BF3FB7, #F24141, #FB765C)",
+      WebkitBackgroundClip: "text",
+      WebkitTextFillColor: "transparent",
+      fontWeight: 600,
+     }}
                   prefix={<FireOutlined />}
                 />
               </Card>
             </Col>
             <Col xs={24} sm={12} md={6}>
               <Card
-                bordered={false}
+                variant="outlined"
                 style={{
-                  borderRadius: 8,
-                  boxShadow: "0 2px 8px rgba(0,0,0,0.09)",
-                  background:
-                    "linear-gradient(135deg,rgb(235, 143, 143),rgb(222, 135, 232))",
-                }}
+    borderRadius: 8,
+    boxShadow: "0 2px 8px rgba(0,0,0,0.09)",
+    backgroundColor: "#ffffff", // white background
+  }}
               >
                 <Statistic
                   title="Workout Completion"
                   value={workoutProgress}
                   suffix="%"
-                  valueStyle={{ color: "#52c41a" }}
+                  valueStyle={{
+      background: "linear-gradient(135deg, #F23D5E, #D9328E, #BF3FB7, #F24141, #FB765C)",
+      WebkitBackgroundClip: "text",
+      WebkitTextFillColor: "transparent",
+      fontWeight: 600,
+     }}
                   prefix={<CheckCircleOutlined />}
                 />
               </Card>

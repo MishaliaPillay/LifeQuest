@@ -363,7 +363,9 @@ const StepBasedFitnessPlanner: React.FC<{
               alignItems: "center",
               justifyContent: "center"
             }}>
-              <CheckCircleOutlined style={{ fontSize: "48px", color: "white" }} />
+              <CheckCircleOutlined style={{ fontSize: "48px", color: "white" ,   display: "flex",
+              alignItems: "center",
+              justifyContent: "center"}} />
             </div>}
             extra={[
               <Button 
@@ -401,8 +403,8 @@ const StepBasedFitnessPlanner: React.FC<{
                 <Card hoverable style={{ height: "100%" }}>
                   <Space direction="vertical" align="center" style={{ width: "100%", textAlign: "center" }}>
                     <Avatar size={64} style={{ backgroundColor: theme.colors.secondary }}>2</Avatar>
-                    <Text strong>Join a Community</Text>
-                    <Text type="secondary">Connect with others who share similar fitness goals</Text>
+                    <Text strong>Earn XP</Text>
+                    <Text type="secondary">Level up and upgrade your avatar</Text>
                   </Space>
                 </Card>
               </Col>
@@ -410,8 +412,8 @@ const StepBasedFitnessPlanner: React.FC<{
                 <Card hoverable style={{ height: "100%" }}>
                   <Space direction="vertical" align="center" style={{ width: "100%", textAlign: "center" }}>
                     <Avatar size={64} style={{ backgroundColor: theme.colors.tertiary }}>3</Avatar>
-                    <Text strong>Set New Challenges</Text>
-                    <Text type="secondary">Keep yourself motivated by adding new goals to your fitness journey</Text>
+                    <Text strong>Challenge yourself</Text>
+                    <Text type="secondary">Check your stats to get better everyday</Text>
                   </Space>
                 </Card>
               </Col>
@@ -449,7 +451,7 @@ const StepBasedFitnessPlanner: React.FC<{
         {current === 0 && <FitnessStats />}
       </Card>
 
-      {/* Steps Component */}
+      
       <Steps
         current={current}
         items={steps.map((item, index) => ({ 
@@ -466,8 +468,6 @@ const StepBasedFitnessPlanner: React.FC<{
 
       {/* Dynamic Content based on current step */}
       <div>{steps[current].content}</div>
-      
-      {/* Show testimonials only on first step */}
       
     </Content>
   );
