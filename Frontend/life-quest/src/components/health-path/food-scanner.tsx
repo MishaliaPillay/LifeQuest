@@ -212,7 +212,7 @@ export default function HealthAnalysisComponent() {
 
       {isLoading && (
         <div style={{ textAlign: "center", marginTop: "20px" }}>
-          <Spin size="large" tip="Analyzing image..." />
+          <Spin size="large"  />
         </div>
       )}
 

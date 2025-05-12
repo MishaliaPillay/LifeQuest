@@ -347,7 +347,7 @@ const WeightGraphPage: React.FC = () => {
             height: "100vh",
           }}
         >
-          <Spin size="large" tip="Loading user data..." />
+          <Spin size="large"  />
         </div>
       ) : (
         <Card

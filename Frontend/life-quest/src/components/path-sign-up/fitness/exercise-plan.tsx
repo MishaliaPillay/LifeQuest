@@ -310,7 +310,7 @@ const ExercisePlanBuilder = ({
           </div>
         </Card>
 
-        <Spin spinning={isSubmitting} tip="Creating your plan...">
+        <Spin spinning={isSubmitting} >
           <Tabs defaultActiveKey="1">
             <TabPane tab="Days 1-5" key="1">
               <Row gutter={[16, 16]}>

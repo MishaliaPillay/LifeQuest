@@ -276,7 +276,7 @@ export default function WorkoutPlanPage() {
             height: "60vh",
           }}
         >
-          <Spin tip="Loading your workout plan..." size="large" />
+          <Spin size="large" />
         </div>
       ) : (
         <Row gutter={[16, 16]}>
@@ -455,7 +455,7 @@ export default function WorkoutPlanPage() {
           </div>
         ) : (
           <div style={{ textAlign: "center", padding: "20px 0" }}>
-            <Spin tip="Loading workout details..." />
+            <Spin />
           </div>
         )}
       </Modal>

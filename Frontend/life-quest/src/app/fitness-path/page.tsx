@@ -13,6 +13,7 @@ import {
   Tag,
   Statistic,
   Tabs,
+  App,
 } from "antd";
 import {
   FireOutlined,
@@ -261,7 +262,7 @@ export default function FitnessDashboard() {
   // Custom tooltip for charts
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
-      return (
+      return (<App>
         <div
           style={{
             backgroundColor: "#fff",
@@ -280,13 +281,13 @@ export default function FitnessDashboard() {
               style={{ margin: "5px 0", color: "#ff7a45" }}
             >{`Calories: ${payload[1].value?.toLocaleString()}`}</p>
           )}
-        </div>
+        </div></App>
       );
     }
     return null;
   };
 
-  return (
+  return (<App>
     <div
       style={{
         padding: "24px",
@@ -307,7 +308,7 @@ export default function FitnessDashboard() {
             height: "60vh",
           }}
         >
-          <Spin size="large" tip="Loading your fitness data..." />
+          <Spin size="large" />
         </div>
       ) : (
         <>
@@ -797,6 +798,6 @@ export default function FitnessDashboard() {
           </Card>
         </>
       )}
-    </div>
+    </div></App>
   );
 }
