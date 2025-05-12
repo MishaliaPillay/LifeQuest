@@ -19,13 +19,18 @@ const speakText = (text) => {
 };
 
 // Generating and downloading the analysis report as PDF
-const downloadReportAsPDF = (content, fileName = "AI_Health_Report.pdf") => {
+
+const downloadReportAsPDF = (
+  content,
+  imageData,
+  fileName = "AI_Food_Report.pdf"
+) => {
   const doc = new jsPDF();
 
   // Add title
   doc.setFontSize(16);
   doc.setFont("helvetica", "bold");
-  doc.text("Health Image Analysis Report", 10, 20);
+  doc.text("Food Image Analysis Report", 10, 20);
 
   // Add date
   doc.setFontSize(10);
@@ -35,17 +40,24 @@ const downloadReportAsPDF = (content, fileName = "AI_Health_Report.pdf") => {
   // Add divider
   doc.line(10, 35, 200, 35);
 
-  // Add content
+  // Embed image if available
+  if (imageData) {
+    doc.addImage(imageData, "JPEG", 10, 40, 60, 60); // x, y, width, height
+  }
+
+  // Add content below the image
+  let textStartY = imageData ? 110 : 45;
+
   doc.setFontSize(12);
   doc.setFont("helvetica", "normal");
   const lines = doc.splitTextToSize(content, 180);
-  doc.text(lines, 10, 45);
+  doc.text(lines, 10, textStartY);
 
-  // Add disclaimer
+  // Add disclaimer at the bottom
   doc.setFontSize(10);
   doc.setFont("helvetica", "italic");
   doc.text(
-    "Disclaimer: This analysis is for informational purposes only and does not constitute medical advice.",
+    "Disclaimer: This analysis is for informational purposes only and does not constitute advice from a dietician.",
     10,
     doc.internal.pageSize.height - 20
   );
@@ -201,7 +213,7 @@ export default function HealthAnalysisComponent() {
             <Button
               type="primary"
               icon={<DownloadOutlined />}
-              onClick={() => downloadReportAsPDF(analysis)}
+              onClick={() => downloadReportAsPDF(analysis, imagePreview)}
               className={styles.button}
             >
               Download PDF
