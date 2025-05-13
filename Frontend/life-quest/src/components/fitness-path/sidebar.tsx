@@ -9,6 +9,7 @@ import {
   BarChartOutlined,
   LogoutOutlined,
   MenuOutlined,
+  MessageOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -81,6 +82,11 @@ const Sidebar: React.FC<SidebarProps> = ({
       key: "/fitness-path/steps",
       icon: <FireOutlined />,
       label: <Link href="/fitness-path/steps">Steps</Link>,
+    },
+    {
+      key: "/fitness-path/chat-fit",
+      icon: <MessageOutlined/>,
+      label: <Link href="/fitness-path/chat-fit">Chat</Link>,
     },
     {
       key: "/fitness-path/profile",
