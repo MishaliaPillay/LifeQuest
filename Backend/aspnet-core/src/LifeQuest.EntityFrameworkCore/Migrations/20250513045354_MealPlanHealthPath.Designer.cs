@@ -3,6 +3,7 @@ using System;
 using LifeQuest.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LifeQuest.Migrations
 {
     [DbContext(typeof(LifeQuestDbContext))]
-    partial class LifeQuestDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250513045354_MealPlanHealthPath")]
+    partial class MealPlanHealthPath
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1746,9 +1749,6 @@ namespace LifeQuest.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.Property<bool>("IsComplete")
-                        .HasColumnType("boolean");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
@@ -1758,9 +1758,6 @@ namespace LifeQuest.Migrations
                     b.Property<long?>("LastModifierUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<Guid?>("MealPlanId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
@@ -1768,8 +1765,6 @@ namespace LifeQuest.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("MealPlanId");
 
                     b.ToTable("Meals");
                 });
@@ -1822,14 +1817,9 @@ namespace LifeQuest.Migrations
                     b.Property<Guid>("MealId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("MealId1")
-                        .HasColumnType("uuid");
-
                     b.HasKey("MealPlanId", "MealId");
 
                     b.HasIndex("MealId");
-
-                    b.HasIndex("MealId1");
 
                     b.ToTable("MealPlanMeals");
                 });
@@ -2352,15 +2342,6 @@ namespace LifeQuest.Migrations
                     b.Navigation("FitnessPath");
                 });
 
-            modelBuilder.Entity("LifeQuest.Domain.Health.Meal.Meal", b =>
-                {
-                    b.HasOne("LifeQuest.Domain.Health.MealPlan.MealPlan", "MealPlan")
-                        .WithMany()
-                        .HasForeignKey("MealPlanId");
-
-                    b.Navigation("MealPlan");
-                });
-
             modelBuilder.Entity("LifeQuest.Domain.Health.MealIngredient", b =>
                 {
                     b.HasOne("LifeQuest.Domain.Health.Ingredient.Ingredient", "Ingredient")
@@ -2398,10 +2379,6 @@ namespace LifeQuest.Migrations
                         .HasForeignKey("MealId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("LifeQuest.Domain.Health.Meal.Meal", null)
-                        .WithMany("MealPlanMeals")
-                        .HasForeignKey("MealId1");
 
                     b.HasOne("LifeQuest.Domain.Health.MealPlan.MealPlan", "MealPlan")
                         .WithMany("MealPlanMeals")
@@ -2593,8 +2570,6 @@ namespace LifeQuest.Migrations
             modelBuilder.Entity("LifeQuest.Domain.Health.Meal.Meal", b =>
                 {
                     b.Navigation("MealIngredients");
-
-                    b.Navigation("MealPlanMeals");
                 });
 
             modelBuilder.Entity("LifeQuest.Domain.Health.MealPlan.MealPlan", b =>

@@ -3,6 +3,7 @@ using System;
 using LifeQuest.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LifeQuest.Migrations
 {
     [DbContext(typeof(LifeQuestDbContext))]
-    partial class LifeQuestDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250511210008_AddedIngredients")]
+    partial class AddedIngredients
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1722,118 +1725,6 @@ namespace LifeQuest.Migrations
                     b.ToTable("Ingredients");
                 });
 
-            modelBuilder.Entity("LifeQuest.Domain.Health.Meal.Meal", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Calories")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<long?>("CreatorUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("DeleterUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsComplete")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<long?>("LastModifierUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<Guid?>("MealPlanId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
-
-                    b.Property<int>("Score")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MealPlanId");
-
-                    b.ToTable("Meals");
-                });
-
-            modelBuilder.Entity("LifeQuest.Domain.Health.MealIngredient", b =>
-                {
-                    b.Property<Guid>("MealId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("IngredientId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("MealId", "IngredientId");
-
-                    b.HasIndex("IngredientId");
-
-                    b.ToTable("MealIngredients");
-                });
-
-            modelBuilder.Entity("LifeQuest.Domain.Health.MealPlan.MealPlan", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("CompletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("HealthPathId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("HealthPathId");
-
-                    b.ToTable("MealPlans");
-                });
-
-            modelBuilder.Entity("LifeQuest.Domain.Health.MealPlan.MealPlanMeal", b =>
-                {
-                    b.Property<Guid>("MealPlanId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("MealId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("MealId1")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("MealPlanId", "MealId");
-
-                    b.HasIndex("MealId");
-
-                    b.HasIndex("MealId1");
-
-                    b.ToTable("MealPlanMeals");
-                });
-
             modelBuilder.Entity("LifeQuest.Domain.Paths.Path", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1983,9 +1874,6 @@ namespace LifeQuest.Migrations
                     b.Property<Guid?>("FitnessPathId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("HealthPathId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("Note")
                         .HasColumnType("text");
 
@@ -1998,8 +1886,6 @@ namespace LifeQuest.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("FitnessPathId");
-
-                    b.HasIndex("HealthPathId");
 
                     b.HasIndex("PersonId");
 
@@ -2128,13 +2014,6 @@ namespace LifeQuest.Migrations
                     b.HasBaseType("LifeQuest.Domain.Paths.Path");
 
                     b.HasDiscriminator().HasValue("FitnessPath");
-                });
-
-            modelBuilder.Entity("LifeQuest.Domain.Paths.HealthPath.HealthPath", b =>
-                {
-                    b.HasBaseType("LifeQuest.Domain.Paths.Path");
-
-                    b.HasDiscriminator().HasValue("HealthPath");
                 });
 
             modelBuilder.Entity("Abp.Authorization.Roles.RoleClaim", b =>
@@ -2352,68 +2231,6 @@ namespace LifeQuest.Migrations
                     b.Navigation("FitnessPath");
                 });
 
-            modelBuilder.Entity("LifeQuest.Domain.Health.Meal.Meal", b =>
-                {
-                    b.HasOne("LifeQuest.Domain.Health.MealPlan.MealPlan", "MealPlan")
-                        .WithMany()
-                        .HasForeignKey("MealPlanId");
-
-                    b.Navigation("MealPlan");
-                });
-
-            modelBuilder.Entity("LifeQuest.Domain.Health.MealIngredient", b =>
-                {
-                    b.HasOne("LifeQuest.Domain.Health.Ingredient.Ingredient", "Ingredient")
-                        .WithMany()
-                        .HasForeignKey("IngredientId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("LifeQuest.Domain.Health.Meal.Meal", "Meal")
-                        .WithMany("MealIngredients")
-                        .HasForeignKey("MealId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Ingredient");
-
-                    b.Navigation("Meal");
-                });
-
-            modelBuilder.Entity("LifeQuest.Domain.Health.MealPlan.MealPlan", b =>
-                {
-                    b.HasOne("LifeQuest.Domain.Paths.HealthPath.HealthPath", "HealthPath")
-                        .WithMany("MealPlans")
-                        .HasForeignKey("HealthPathId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("HealthPath");
-                });
-
-            modelBuilder.Entity("LifeQuest.Domain.Health.MealPlan.MealPlanMeal", b =>
-                {
-                    b.HasOne("LifeQuest.Domain.Health.Meal.Meal", "Meal")
-                        .WithMany()
-                        .HasForeignKey("MealId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("LifeQuest.Domain.Health.Meal.Meal", null)
-                        .WithMany("MealPlanMeals")
-                        .HasForeignKey("MealId1");
-
-                    b.HasOne("LifeQuest.Domain.Health.MealPlan.MealPlan", "MealPlan")
-                        .WithMany("MealPlanMeals")
-                        .HasForeignKey("MealPlanId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Meal");
-
-                    b.Navigation("MealPlan");
-                });
-
             modelBuilder.Entity("LifeQuest.Domain.Paths.Path", b =>
                 {
                     b.HasOne("LifeQuest.Domain.Person.Person", "Person")
@@ -2463,10 +2280,6 @@ namespace LifeQuest.Migrations
                     b.HasOne("LifeQuest.Domain.Paths.FitnessPath.FitnessPath", null)
                         .WithMany("WeightEntries")
                         .HasForeignKey("FitnessPathId");
-
-                    b.HasOne("LifeQuest.Domain.Paths.HealthPath.HealthPath", null)
-                        .WithMany("WeightEntries")
-                        .HasForeignKey("HealthPathId");
 
                     b.HasOne("LifeQuest.Domain.Person.Person", "Person")
                         .WithMany()
@@ -2590,18 +2403,6 @@ namespace LifeQuest.Migrations
                     b.Navigation("Activities");
                 });
 
-            modelBuilder.Entity("LifeQuest.Domain.Health.Meal.Meal", b =>
-                {
-                    b.Navigation("MealIngredients");
-
-                    b.Navigation("MealPlanMeals");
-                });
-
-            modelBuilder.Entity("LifeQuest.Domain.Health.MealPlan.MealPlan", b =>
-                {
-                    b.Navigation("MealPlanMeals");
-                });
-
             modelBuilder.Entity("LifeQuest.Domain.Person.Person", b =>
                 {
                     b.Navigation("Paths");
@@ -2612,13 +2413,6 @@ namespace LifeQuest.Migrations
                     b.Navigation("ExercisePlans");
 
                     b.Navigation("StepEntries");
-
-                    b.Navigation("WeightEntries");
-                });
-
-            modelBuilder.Entity("LifeQuest.Domain.Paths.HealthPath.HealthPath", b =>
-                {
-                    b.Navigation("MealPlans");
 
                     b.Navigation("WeightEntries");
                 });

@@ -27,7 +27,7 @@ namespace LifeQuest.Services.FitnessService.Activity.Dtos
             bool isComplete,
             ActivityRating rating,
             string description,
-            int order, // 👈 Add this
+            int order, 
             Guid personId) : base(id)
         {
             Calories = calories;
@@ -38,7 +38,7 @@ namespace LifeQuest.Services.FitnessService.Activity.Dtos
             IsComplete = isComplete;
             Rating = rating;
             Description = description;
-            Order = order; // 👈 Assign this
+            Order = order; 
                            // PersonId = personId;
         }
 
