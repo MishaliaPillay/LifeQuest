@@ -139,7 +139,7 @@ namespace LifeQuest.Services.FitnessService.Activity
             var activities = await _activityManager.GetByExercisePlanIdAsync(exercisePlanId);
 
             return activities
-                .OrderBy(a => a.Order) // 👈 Ensure the activities are ordered before mapping
+                .OrderBy(a => a.Order) 
                 .Select(a => new ActivityResponseDto
                 {
                     Id = a.Id,
@@ -150,7 +150,7 @@ namespace LifeQuest.Services.FitnessService.Activity
                     IsComplete = a.IsComplete,
                     Rating = a.Rating,
                     Description = a.Description,
-                    Order = a.Order, // 👈 Map the Order field
+                    Order = a.Order, 
                     Activities = a.ActivityActivityTypes.Select(aat => new ActivityTypeDto
                     {
                         Id = aat.ActivityType.Id,

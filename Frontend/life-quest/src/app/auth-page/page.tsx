@@ -1,4 +1,4 @@
-"use client"; 
+"use client";
 import React, { useState, useEffect } from "react";
 import { Tabs } from "antd";
 import LoginComponent from "../../components/login/login";
@@ -38,41 +38,45 @@ const AuthPage: React.FC = () => {
 
   const handleSuccessfulLogin = async (token: string | null) => {
     if (!token) return;
-    
+
     try {
       // Get user ID from token
       const userId = getId(token);
-      
+
       if (userId && userId !== "1") {
         const userIdNum = parseInt(userId, 10);
-        
+
         if (!isNaN(userIdNum)) {
           // Get person data using the user ID
           const personData = await getCurrentPerson(userIdNum);
-          
+
           if (personData && personData.id) {
             // Check if pathId exists and is not empty
-            if (!personData.pathId || personData.pathId === "0" || personData.pathId === "") {
+            if (
+              !personData.pathId ||
+              personData.pathId === "0" ||
+              personData.pathId === ""
+            ) {
               // User doesn't have a path, route to new-page
               router.push("/new-page");
             } else {
               // User has a path, route to user-page
-              router.push("/user-page");
+              router.push("/fitness-path");
             }
           } else {
             console.error("Person data not found");
             // Default fallback route
-            router.push("/user-page");
+            router.push("/fitness-path");
           }
         } else {
           console.error("Invalid user ID format");
-          router.push("/user-page"); // Default fallback
+          router.push("/fitness-path"); // Default fallback
         }
       } else {
         const role = getRole(token);
         // Fallback to original routing logic
         if (role === "default") {
-          router.push("/user-page");
+          router.push("/fitness-path");
         } else {
           router.push("/");
         }
@@ -82,7 +86,7 @@ const AuthPage: React.FC = () => {
       // Fallback to original routing logic
       const role = getRole(token);
       if (role === "default") {
-        router.push("/user-page");
+        router.push("/auth-page");
       } else {
         router.push("/");
       }
