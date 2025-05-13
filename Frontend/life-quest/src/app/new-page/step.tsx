@@ -185,10 +185,11 @@ const StepBasedFitnessPlanner: React.FC<{
   const handleActivityTypesGenerated = (generatedActivityTypes) => {
     const formatted = generatedActivityTypes.map((activity) => ({
       id: activity.id,
-      content: `${activity.category} (Intensity: ${activity.intensityLevel})`,
+      content: `${activity.category} (Calories: ${activity.calories})`,
       category: activity.category,
-      intensityLevel: activity.intensityLevel,
+      calories: activity.calories,
       description: activity.description,
+      duration:activity.duration
     }));
 
     setActivityTypes(formatted);

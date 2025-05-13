@@ -109,6 +109,7 @@ export const ActivityTypeProvider = ({
     gender: string;
     bodyType: string;
     fitnessLevel: string;
+    currentWeight:number;
     limitations: string;
     preferredExerciseTypes: string | string[]; // Can be either a string or an array
     availableEquipment: string[];
@@ -130,6 +131,7 @@ export const ActivityTypeProvider = ({
         gender: requestData.gender,
         bodyType: requestData.bodyType,
         fitnessLevel: requestData.fitnessLevel,
+        currentWeight:requestData.currentWeight,
         limitations: requestData.limitations,
         preferredExerciseTypes: preferredExerciseTypesArray.join(","), // Now we can safely use join
         availableEquipment: requestData.availableEquipment,
