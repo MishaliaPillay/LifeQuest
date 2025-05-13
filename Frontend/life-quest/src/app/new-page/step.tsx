@@ -7,7 +7,6 @@ import {
   Button,
   message,
   Steps,
-
   Input,
   Result,
   Layout,
@@ -15,7 +14,7 @@ import {
   Col,
   Badge,
   Avatar,
-  Space
+  Space,
 } from "antd";
 import { useUserState } from "@/providers/user-provider";
 import { useFitnessPathActions } from "@/providers/fitnesspath/fitness-provider";
@@ -29,8 +28,8 @@ import {
   FireOutlined,
   ArrowLeftOutlined,
   ArrowRightOutlined,
-  UserOutlined
-} from '@ant-design/icons';
+  UserOutlined,
+} from "@ant-design/icons";
 
 const { Title, Paragraph, Text } = Typography;
 const { Content } = Layout;
@@ -45,12 +44,12 @@ const theme = {
     accent2: "#FB765C",
     lightGray: "#f7f7f7",
     darkGray: "#333333",
-    white: "#FFFFFF"
+    white: "#FFFFFF",
   },
   gradients: {
     main: "linear-gradient(90deg, #F23D5E 0%, #D9328E 50%, #BF3FB7 100%)",
-    secondary: "linear-gradient(90deg, #F24141 0%, #FB765C 100%)"
-  }
+    secondary: "linear-gradient(90deg, #F24141 0%, #FB765C 100%)",
+  },
 };
 
 // Custom styles for components
@@ -62,60 +61,60 @@ const styles = {
     color: theme.colors.white,
     padding: "24px",
     marginBottom: "32px",
-    border: "none"
+    border: "none",
   },
   welcomeTitle: {
     color: theme.colors.white,
     fontSize: "32px",
     fontWeight: "bold",
-    marginBottom: "12px"
+    marginBottom: "12px",
   },
   welcomeText: {
     color: theme.colors.white,
     fontSize: "16px",
-    opacity: "0.9"
+    opacity: "0.9",
   },
   container: {
     maxWidth: "1200px",
     margin: "0 auto",
-    padding: "32px 24px"
+    padding: "32px 24px",
   },
   stepCard: {
     borderRadius: "12px",
     boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08)",
     marginTop: "32px",
-    background: theme.colors.white
+    background: theme.colors.white,
   },
   button: {
     background: theme.colors.primary,
     borderColor: theme.colors.primary,
     borderRadius: "6px",
     height: "40px",
-    fontWeight: "500"
+    fontWeight: "500",
   },
   secondaryButton: {
     borderColor: theme.colors.darkGray,
     borderRadius: "6px",
     height: "40px",
-    fontWeight: "500"
+    fontWeight: "500",
   },
   statsCard: {
     background: theme.colors.lightGray,
     borderRadius: "8px",
     padding: "16px",
     height: "100%",
-    TextAlign: "center"
+    TextAlign: "center",
   },
   badge: {
     backgroundColor: theme.colors.secondary,
     color: theme.colors.white,
     fontSize: "14px",
     padding: "4px 12px",
-    borderRadius: "16px"
+    borderRadius: "16px",
   },
   steps: {
-    colorPrimary: theme.colors.primary
-  }
+    colorPrimary: theme.colors.primary,
+  },
 };
 
 interface FitnessPathFormValues {
@@ -124,34 +123,50 @@ interface FitnessPathFormValues {
   fitnessGoal: string;
 }
 
-
 // Stats component to display on welcome page
 const FitnessStats = () => (
   <Row gutter={[16, 16]} style={{ marginTop: "32px" }}>
     <Col xs={24} sm={8}>
       <Card style={styles.statsCard}>
-        <FireOutlined style={{ fontSize: '28px', color: theme.colors.accent1, marginBottom: '8px' }} />
+        <FireOutlined
+          style={{
+            fontSize: "28px",
+            color: theme.colors.accent1,
+            marginBottom: "8px",
+          }}
+        />
         <Title level={4}>85%</Title>
         <Text type="secondary">Success Rate</Text>
       </Card>
     </Col>
     <Col xs={24} sm={8}>
       <Card style={styles.statsCard}>
-        <TrophyOutlined style={{ fontSize: '28px', color: theme.colors.secondary, marginBottom: '8px' }} />
+        <TrophyOutlined
+          style={{
+            fontSize: "28px",
+            color: theme.colors.secondary,
+            marginBottom: "8px",
+          }}
+        />
         <Title level={4}>10+</Title>
         <Text type="secondary">Active Users</Text>
       </Card>
     </Col>
     <Col xs={24} sm={8}>
       <Card style={styles.statsCard}>
-        <CheckCircleOutlined style={{ fontSize: '28px', color: theme.colors.tertiary, marginBottom: '8px' }} />
+        <CheckCircleOutlined
+          style={{
+            fontSize: "28px",
+            color: theme.colors.tertiary,
+            marginBottom: "8px",
+          }}
+        />
         <Title level={4}>3+</Title>
         <Text type="secondary">Exercise Types</Text>
       </Card>
     </Col>
   </Row>
 );
-
 
 // Enhanced StepBasedFitnessPlanner component
 const StepBasedFitnessPlanner: React.FC<{
@@ -178,7 +193,7 @@ const StepBasedFitnessPlanner: React.FC<{
 
     setActivityTypes(formatted);
   };
-  
+
   const goDashboard = () => {
     router.push("/fitness-path");
   };
@@ -232,7 +247,9 @@ const StepBasedFitnessPlanner: React.FC<{
       icon: <UserOutlined />,
       content: (
         <Card style={styles.stepCard}>
-          <Title level={4} style={{ marginBottom: "24px" }}>Tell us about your fitness journey</Title>
+          <Title level={4} style={{ marginBottom: "24px" }}>
+            Tell us about your fitness journey
+          </Title>
           <Form form={form} layout="vertical" onFinish={handleBasicInfoSubmit}>
             <Form.Item
               name="name"
@@ -244,14 +261,12 @@ const StepBasedFitnessPlanner: React.FC<{
                 },
               ]}
             >
-              <Input 
-                placeholder="e.g., Summer Shred 2025" 
+              <Input
+                placeholder="e.g., Summer Shred 2025"
                 size="large"
                 style={{ borderRadius: "6px" }}
               />
             </Form.Item>
-
-           
 
             <Form.Item
               name="description"
@@ -271,9 +286,9 @@ const StepBasedFitnessPlanner: React.FC<{
             </Form.Item>
 
             <Form.Item style={{ marginTop: "32px", textAlign: "right" }}>
-              <Button 
-                type="primary" 
-                htmlType="submit" 
+              <Button
+                type="primary"
+                htmlType="submit"
                 loading={submitting}
                 style={styles.button}
                 size="large"
@@ -291,13 +306,15 @@ const StepBasedFitnessPlanner: React.FC<{
       icon: <UserOutlined />,
       content: (
         <Card style={styles.stepCard}>
-          <Title level={4} style={{ marginBottom: "24px" }}>Build Your Fitness Profile</Title>
+          <Title level={4} style={{ marginBottom: "24px" }}>
+            Build Your Fitness Profile
+          </Title>
           <ActivityTypes
             onActivityTypesGenerated={handleActivityTypesGenerated}
           />
           <div style={{ marginTop: "24px", textAlign: "right" }}>
-            <Button 
-              onClick={() => setCurrent(0)} 
+            <Button
+              onClick={() => setCurrent(0)}
               style={{ ...styles.secondaryButton, marginRight: "12px" }}
               icon={<ArrowLeftOutlined />}
             >
@@ -327,15 +344,17 @@ const StepBasedFitnessPlanner: React.FC<{
       icon: <FireOutlined />,
       content: (
         <Card style={styles.stepCard}>
-          <Title level={4} style={{ marginBottom: "24px" }}>Create Your Custom Workout Plan</Title>
+          <Title level={4} style={{ marginBottom: "24px" }}>
+            Create Your Custom Workout Plan
+          </Title>
           <ExercisePlanBuilder
             availableActivities={activityTypes}
             onPlanSubmit={handleExercisePlanSubmit}
             fitnessPathId={fitnessPathId}
           />
           <div style={{ marginTop: "24px", textAlign: "right" }}>
-            <Button 
-              onClick={() => setCurrent(1)} 
+            <Button
+              onClick={() => setCurrent(1)}
               style={{ ...styles.secondaryButton, marginRight: "12px" }}
               icon={<ArrowLeftOutlined />}
             >
@@ -354,66 +373,110 @@ const StepBasedFitnessPlanner: React.FC<{
             status="success"
             title="Your Fitness Plan Has Been Created!"
             subTitle="You can now start following your personalized fitness journey."
-            icon={<div style={{ 
-              width: "80px", 
-              height: "80px", 
-              borderRadius: "50%", 
-              background: theme.gradients.main,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center"
-            }}>
-              <CheckCircleOutlined style={{ fontSize: "48px", color: "white" ,   display: "flex",
-              alignItems: "center",
-              justifyContent: "center"}} />
-            </div>}
+            icon={
+              <div
+                style={{
+                  width: "80px",
+                  height: "80px",
+                  borderRadius: "50%",
+                  background: theme.gradients.main,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <CheckCircleOutlined
+                  style={{
+                    fontSize: "48px",
+                    color: "white",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                />
+              </div>
+            }
             extra={[
-              <Button 
-                onClick={goDashboard} 
-                type="primary" 
+              <Button
+                onClick={goDashboard}
+                type="primary"
                 key="dashboard"
                 size="large"
-                style={{ 
-                  ...styles.button, 
-                  background: theme.gradients.main, 
-                  height: "48px", 
-                  fontSize: "16px", 
-                  padding: "0 32px"
+                style={{
+                  ...styles.button,
+                  background: theme.gradients.main,
+                  height: "48px",
+                  fontSize: "16px",
+                  padding: "0 32px",
                 }}
               >
                 Go to Dashboard
               </Button>,
             ]}
           />
-          
+
           {/* Added follow-up suggestions */}
           <div style={{ marginTop: "48px" }}>
-            <Title level={4}>What's Next?</Title>
+            <Title level={4}>What&apos;s Next?</Title>
             <Row gutter={[16, 16]} style={{ marginTop: "16px" }}>
               <Col xs={24} md={8}>
                 <Card hoverable style={{ height: "100%" }}>
-                  <Space direction="vertical" align="center" style={{ width: "100%", textAlign: "center" }}>
-                    <Avatar size={64} style={{ backgroundColor: theme.colors.primary }}>1</Avatar>
+                  <Space
+                    direction="vertical"
+                    align="center"
+                    style={{ width: "100%", textAlign: "center" }}
+                  >
+                    <Avatar
+                      size={64}
+                      style={{ backgroundColor: theme.colors.primary }}
+                    >
+                      1
+                    </Avatar>
                     <Text strong>Track Your Progress</Text>
-                    <Text type="secondary">Log your workouts and measurements to see your improvement over time</Text>
+                    <Text type="secondary">
+                      Log your workouts and measurements to see your improvement
+                      over time
+                    </Text>
                   </Space>
                 </Card>
               </Col>
               <Col xs={24} md={8}>
                 <Card hoverable style={{ height: "100%" }}>
-                  <Space direction="vertical" align="center" style={{ width: "100%", textAlign: "center" }}>
-                    <Avatar size={64} style={{ backgroundColor: theme.colors.secondary }}>2</Avatar>
+                  <Space
+                    direction="vertical"
+                    align="center"
+                    style={{ width: "100%", textAlign: "center" }}
+                  >
+                    <Avatar
+                      size={64}
+                      style={{ backgroundColor: theme.colors.secondary }}
+                    >
+                      2
+                    </Avatar>
                     <Text strong>Earn XP</Text>
-                    <Text type="secondary">Level up and upgrade your avatar</Text>
+                    <Text type="secondary">
+                      Level up and upgrade your avatar
+                    </Text>
                   </Space>
                 </Card>
               </Col>
               <Col xs={24} md={8}>
                 <Card hoverable style={{ height: "100%" }}>
-                  <Space direction="vertical" align="center" style={{ width: "100%", textAlign: "center" }}>
-                    <Avatar size={64} style={{ backgroundColor: theme.colors.tertiary }}>3</Avatar>
+                  <Space
+                    direction="vertical"
+                    align="center"
+                    style={{ width: "100%", textAlign: "center" }}
+                  >
+                    <Avatar
+                      size={64}
+                      style={{ backgroundColor: theme.colors.tertiary }}
+                    >
+                      3
+                    </Avatar>
                     <Text strong>Challenge yourself</Text>
-                    <Text type="secondary">Check your stats to get better everyday</Text>
+                    <Text type="secondary">
+                      Check your stats to get better everyday
+                    </Text>
                   </Space>
                 </Card>
               </Col>
@@ -429,14 +492,16 @@ const StepBasedFitnessPlanner: React.FC<{
       {/* Welcome Card with Gradient Background */}
       <Card style={styles.welcomeCard}>
         <Space align="center" style={{ marginBottom: "16px" }}>
-          <RocketOutlined style={{ fontSize: "36px", color: theme.colors.white }} />
-          <Badge 
-            count="Premium" 
-            style={{ 
-              backgroundColor: "rgba(255, 255, 255, 0.2)", 
+          <RocketOutlined
+            style={{ fontSize: "36px", color: theme.colors.white }}
+          />
+          <Badge
+            count="Premium"
+            style={{
+              backgroundColor: "rgba(255, 255, 255, 0.2)",
               color: theme.colors.white,
               fontWeight: "bold",
-              fontSize: "12px" 
+              fontSize: "12px",
             }}
           />
         </Space>
@@ -444,31 +509,31 @@ const StepBasedFitnessPlanner: React.FC<{
           Welcome, {currentUser?.name || "Fitness Enthusiast"}!
         </Title>
         <Paragraph style={styles.welcomeText}>
-          You're about to create a personalized fitness plan designed specifically for your body and goals.
-          Our AI-powered system will guide you through creating an effective exercise regimen that fits your lifestyle.
+          You&apos;re about to create a personalized fitness plan designed
+          specifically for your body and goals. Our AI-powered system will guide
+          you through creating an effective exercise regimen that fits your
+          lifestyle.
         </Paragraph>
-        
+
         {current === 0 && <FitnessStats />}
       </Card>
 
-      
       <Steps
         current={current}
-        items={steps.map((item, index) => ({ 
-          key: index, 
+        items={steps.map((item, index) => ({
+          key: index,
           title: item.title,
-          icon: item.icon
+          icon: item.icon,
         }))}
         progressDot
-        style={{ 
+        style={{
           marginBottom: "32px",
-          ...styles.steps 
+          ...styles.steps,
         }}
       />
 
       {/* Dynamic Content based on current step */}
       <div>{steps[current].content}</div>
-      
     </Content>
   );
 };
