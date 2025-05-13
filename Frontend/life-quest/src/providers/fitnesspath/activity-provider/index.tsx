@@ -1,4 +1,5 @@
 "use client";
+ import { defaultActivityTypes } from "../../../utils/defaultActivityTypes"; // Adjust path as needed
 
 import { getAxiosInstance } from "../../../utils/axiosInstance";
 import {
@@ -27,7 +28,7 @@ import {
   deleteActivityTypeError,
   generateActivityTypePending,
   generateActivityTypeSuccess,
-  generateActivityTypeError,
+  
   getExercisePlanError,
   getExercisePlanPending,
   getExercisePlanSuccess,
@@ -104,95 +105,60 @@ export const ActivityTypeProvider = ({
       });
   };
 
-  const generateActivityTypes = async (requestData: {
-    age: number;
-    gender: string;
-    bodyType: string;
-    fitnessLevel: string;
-    currentWeight:number;
-    limitations: string;
-    preferredExerciseTypes: string | string[]; // Can be either a string or an array
-    availableEquipment: string[];
-  }) => {
-    dispatch(generateActivityTypePending());
-    const endpoint = `/api/services/app/ActivityType/GenerateExerciseActivityTypes`;
 
-    // Ensure preferredExerciseTypes is treated as an array before calling .join()
-    const preferredExerciseTypesArray =
-      typeof requestData.preferredExerciseTypes === "string"
-        ? requestData.preferredExerciseTypes.split(",") // If it's a string, split by commas to make it an array
-        : requestData.preferredExerciseTypes; // If it's already an array, keep it as is
 
-    // Format the request as expected by the backend
-    const formattedRequest: IGenerateActivityTypeRequest = {
-      count: 2, // You can adjust this or make it dynamic based on user input
-      baseRequest: {
-        age: requestData.age,
-        gender: requestData.gender,
-        bodyType: requestData.bodyType,
-        fitnessLevel: requestData.fitnessLevel,
-        currentWeight:requestData.currentWeight,
-        limitations: requestData.limitations,
-        preferredExerciseTypes: preferredExerciseTypesArray.join(","), // Now we can safely use join
-        availableEquipment: requestData.availableEquipment,
-      },
-    };
+const generateActivityTypes = async (requestData: {
+  age: number;
+  gender: string;
+  bodyType: string;
+  fitnessLevel: string;
+  currentWeight: number;
+  limitations: string;
+  preferredExerciseTypes: string | string[];
+  availableEquipment: string[];
+}) => {
+  dispatch(generateActivityTypePending());
 
-    return instance
-      .post(endpoint, formattedRequest)
-      .then((res) => {
-        // The response contains a result.items array of activity types
-        const activityTypes = res.data?.result?.items || [];
-        dispatch(generateActivityTypeSuccess(activityTypes));
-        return activityTypes;
-      })
-      .catch((err) => {
-        console.error("Error generating activity types:", err);
-        dispatch(generateActivityTypeError());
-        throw err; // Re-throw to handle in the component
-      });
+  const endpoint = `/api/services/app/ActivityType/GenerateExerciseActivityTypes`;
+
+  const preferredExerciseTypesArray =
+    typeof requestData.preferredExerciseTypes === "string"
+      ? requestData.preferredExerciseTypes.split(",")
+      : requestData.preferredExerciseTypes;
+
+  const formattedRequest: IGenerateActivityTypeRequest = {
+    count: 2,
+    baseRequest: {
+      age: requestData.age,
+      gender: requestData.gender,
+      bodyType: requestData.bodyType,
+      fitnessLevel: requestData.fitnessLevel,
+      currentWeight: requestData.currentWeight,
+      limitations: requestData.limitations,
+      preferredExerciseTypes: preferredExerciseTypesArray.join(","),
+      availableEquipment: requestData.availableEquipment,
+    },
   };
-  // const generateActivityTypes = async (requestData: {
-  //   age: number;
-  //   gender: string;
-  //   bodyType: string;
-  //   fitnessLevel: string;
-  //   limitations: string;
-  //   preferredExerciseTypes: string | string[];
-  //   availableEquipment: string[];
-  // }) => {
-  //   dispatch(generateActivityTypePending());
 
-  //   try {
-  //     // Simulate network delay
-  //     await new Promise((resolve) => setTimeout(resolve, 1000));
+  try {
+    const res = await instance.post(endpoint, formattedRequest);
+    const activityTypes = res.data?.result?.items;
 
-  //     // MOCK DATA: Replace this with your desired static mock objects
-  //     const mockActivityTypes = [
-  //       {
-  //         id: "0196b016-1645-7d52-9ab1-5e58916bf9b8",
-  //         category: "Cardio - HIIT",
-  //         intensityLevel: 3,
-  //         description:
-  //           "High-intensity interval training to improve endurance and burn fat quickly.",
-  //       },
-  //       {
-  //         id: "0196b105-9e61-7570-a8d9-d9ff88415662",
-  //         category: "Strength - Bodyweight",
-  //         intensityLevel: 2,
-  //         description:
-  //           "A mix of push-ups, squats, and planks for full-body conditioning.",
-  //       },
-  //     ];
+    if (!activityTypes || activityTypes.length === 0) {
+      dispatch(generateActivityTypeSuccess(defaultActivityTypes));
+      return defaultActivityTypes;
+    }
 
-  //     dispatch(generateActivityTypeSuccess(mockActivityTypes));
-  //     return mockActivityTypes;
-  //   } catch (err) {
-  //     console.error("Mock error generating activity types:", err);
-  //     dispatch(generateActivityTypeError());
-  //     throw err;
-  //   }
-  // };
+    dispatch(generateActivityTypeSuccess(activityTypes));
+    return activityTypes;
+  } catch (err) {
+    console.error("Error generating activity types:", err);
+    dispatch(generateActivityTypeSuccess(defaultActivityTypes));
+    return defaultActivityTypes;
+  }
+};
+
+  
 
   const getActivityType = async (id: string): Promise<IActivityType> => {
     const endpoint = `/api/services/app/ActivityType/GetActivityTypeById?Id=${id}`;

@@ -12,7 +12,7 @@ export interface IActivityType {
 export interface IActivity {
   id: string;
   category: string;
-  calries: number;
+  calories: number;
   duration:string;
   description: string;
 }
