@@ -17,6 +17,7 @@ namespace LifeQuest.Services.FitnessService.Activity.Dtos
         public string BodyType { get; set; }
         [Required]
         public string FitnessLevel { get; set; }
+        public int CurrentWeight { get; set; }
         public string Limitations { get; set; }
         public string PreferredExerciseTypes { get; set; }
         public string[] AvailableEquipment { get; set; }
