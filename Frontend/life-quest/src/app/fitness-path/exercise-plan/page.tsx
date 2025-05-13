@@ -14,6 +14,7 @@ import {
   Badge,
   Tag,
   Divider,
+  App,
 } from "antd";
 import {
   FireOutlined,
@@ -206,7 +207,7 @@ export default function WorkoutPlanPage() {
     }
   };
 
-  return (
+  return (<App>
     <div
       className="workout-plan-container"
       style={{ padding: "2rem", backgroundColor: "#f5f7fa" }}
@@ -225,7 +226,7 @@ export default function WorkoutPlanPage() {
       {/* Progress indicator */}
       <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
         <Col span={24}>
-          <Card bordered={false} style={{ borderRadius: 8 }}>
+          <Card variant="outlined" style={{ borderRadius: 8 }}>
             <Title level={4}>Your Progress</Title>
             <Progress
               percent={
@@ -275,7 +276,7 @@ export default function WorkoutPlanPage() {
             height: "60vh",
           }}
         >
-          <Spin tip="Loading your workout plan..." size="large" />
+          <Spin size="large" />
         </div>
       ) : (
         <Row gutter={[16, 16]}>
@@ -283,7 +284,7 @@ export default function WorkoutPlanPage() {
             <Col xs={24} sm={12} md={8} lg={6} key={day.id}>
               <Badge.Ribbon
                 text={day.isComplete ? "Completed" : `Day ${index + 1}`}
-                color={day.isComplete ? "green" : "blue"}
+                color={day.isComplete ? "green" : "#eb2f57"}
               >
                 <Card
                   hoverable
@@ -454,7 +455,7 @@ export default function WorkoutPlanPage() {
           </div>
         ) : (
           <div style={{ textAlign: "center", padding: "20px 0" }}>
-            <Spin tip="Loading workout details..." />
+            <Spin />
           </div>
         )}
       </Modal>
@@ -469,6 +470,6 @@ export default function WorkoutPlanPage() {
           }
         }
       `}</style>
-    </div>
+    </div></App>
   );
 }
