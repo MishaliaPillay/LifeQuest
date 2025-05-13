@@ -134,45 +134,50 @@ namespace LifeQuest.Services.Health.Meal
             await _mealManager.DeleteMealAsync(id);
         }
 
-        public async Task<MealDto> GenerateAIMealAsync()
+        public async Task<MealDto> GenerateAIMealAsync(GenerateAIMealInputDto input)
         {
             try
             {
                 var httpClient = new HttpClient();
-                var apiKey = Environment.GetEnvironmentVariable("OPENROUTER_API_KEY");
+                var apiKey = "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";
+                    //Environment.GetEnvironmentVariable("OPENROUTER_API_KEY");
 
                 if (string.IsNullOrWhiteSpace(apiKey))
                 {
                     throw new Exception("OpenRouter API key is not configured. Please set OPENROUTER_API_KEY.");
                 }
 
-                var prompt = @"Generate a healthy meal in JSON format. 
-                    Respond only with JSON inside a code block. 
-                    Format:
-                    {
-                      ""name"": ""Grilled Chicken Salad"",
-                      ""description"": ""A healthy mix of grilled chicken and fresh vegetables."",
-                      ""calories"": 450,
-                      ""ingredients"": [
-                        {
-                          ""name"": ""Grilled Chicken Breast"",
-                          ""servingSize"": 150,
-                          ""calories"": 250,
-                          ""protein"": 30,
-                          ""carbohydrates"": 0,
-                          ""fats"": 10
-                        },
-                        {
-                          ""name"": ""Lettuce"",
-                          ""servingSize"": 50,
-                          ""calories"": 15,
-                          ""protein"": 1,
-                          ""carbohydrates"": 2,
-                          ""fats"": 0
-                        }
-                      ]
-                    }";
+                var dietaryNote = !string.IsNullOrWhiteSpace(input.DietaryRequirement)
+                    ? $"Make sure the meal satisfies the following dietary requirement: {input.DietaryRequirement}."
+                    : "";
 
+                var prompt = $@"
+Generate a healthy meal in JSON format. {dietaryNote}
+Respond only with JSON inside a code block. 
+Format:
+{{
+  ""name"": ""Grilled Chicken Salad"",
+  ""description"": ""A healthy mix of grilled chicken and fresh vegetables."",
+  ""calories"": 450,
+  ""ingredients"": [
+    {{
+      ""name"": ""Grilled Chicken Breast"",
+      ""servingSize"": 150,
+      ""calories"": 250,
+      ""protein"": 30,
+      ""carbohydrates"": 0,
+      ""fats"": 10
+    }},
+    {{
+      ""name"": ""Lettuce"",
+      ""servingSize"": 50,
+      ""calories"": 15,
+      ""protein"": 1,
+      ""carbohydrates"": 2,
+      ""fats"": 0
+    }}
+  ]
+}}";
 
                 var requestBody = new
                 {
@@ -182,10 +187,7 @@ namespace LifeQuest.Services.Health.Meal
 
                 var request = new HttpRequestMessage(HttpMethod.Post, "https://openrouter.ai/api/v1/chat/completions")
                 {
-                    Content = new StringContent(
-                        JsonSerializer.Serialize(requestBody),
-                        Encoding.UTF8,
-                        "application/json")
+                    Content = new StringContent(JsonSerializer.Serialize(requestBody), Encoding.UTF8, "application/json")
                 };
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
 
@@ -208,59 +210,48 @@ namespace LifeQuest.Services.Health.Meal
                     WriteIndented = true
                 };
 
-                try
+                var mealWithIngredients = JsonSerializer.Deserialize<CreateMealWithIngredientsDto>(cleanedJson, jsonOptions)
+                    ?? throw new Exception("Failed to deserialize meal data - result was null");
+
+                if (mealWithIngredients.Ingredients == null || mealWithIngredients.Ingredients.Count == 0)
+                    throw new Exception("No ingredients found in the AI response");
+
+                var ingredientIds = new List<Guid>();
+
+                foreach (var ingredientDto in mealWithIngredients.Ingredients)
                 {
-                    var mealWithIngredients = JsonSerializer.Deserialize<CreateMealWithIngredientsDto>(cleanedJson, jsonOptions);
+                    var ingredient = await _ingredientManager.CreateIngredientAsync(
+                        ingredientDto.Name,
+                        ingredientDto.ServingSize,
+                        ingredientDto.Calories,
+                        ingredientDto.Protein,
+                        ingredientDto.Carbohydrates,
+                        ingredientDto.Fats
+                    );
 
-                    if (mealWithIngredients == null)
-                        throw new Exception("Failed to deserialize meal data - result was null");
-
-                    if (mealWithIngredients.Ingredients == null || mealWithIngredients.Ingredients.Count == 0)
-                        throw new Exception("No ingredients found in the AI response");
-
-                    var ingredientIds = new List<Guid>();
-
-                    foreach (var ingredientDto in mealWithIngredients.Ingredients)
-                    {
-                        var ingredient = await _ingredientManager.CreateIngredientAsync(
-                            ingredientDto.Name,
-                            ingredientDto.ServingSize,
-                            ingredientDto.Calories,
-                            ingredientDto.Protein,
-                            ingredientDto.Carbohydrates, // Fixed property name
-                            ingredientDto.Fats
-                        );
-
-                        ingredientIds.Add(ingredient.Id);
-                    }
-
-                    var newMeal = new Domain.Health.Meal.Meal
-                    {
-                        Name = mealWithIngredients.Name,
-                        Description = mealWithIngredients.Description,
-                        Calories = mealWithIngredients.Calories,
-                        MealIngredients = ingredientIds.Select(id => new MealIngredient { IngredientId = id }).ToList(),
-                        Score = 0
-                    };
-
-                    var createdMeal = await _mealManager.CreateMealAsync(newMeal);
-
-                    return new MealDto
-                    {
-                        Id = createdMeal.Id,
-                        Name = createdMeal.Name,
-                        Description = createdMeal.Description,
-                        Calories = createdMeal.Calories,
-                        IngredientIds = createdMeal.MealIngredients.Select(mi => mi.IngredientId).ToList(),
-                        Score = createdMeal.Score
-                    };
+                    ingredientIds.Add(ingredient.Id);
                 }
-                catch (JsonException jsonParseEx)
+
+                var newMeal = new Domain.Health.Meal.Meal
                 {
-                    Logger.Error($"JSON parsing error: {jsonParseEx.Message}, Path: {jsonParseEx.Path}", jsonParseEx);
-                    Logger.Error($"JSON content that failed to parse: {cleanedJson}");
-                    throw new UserFriendlyException("Failed to parse AI response: " + jsonParseEx.Message);
-                }
+                    Name = mealWithIngredients.Name,
+                    Description = mealWithIngredients.Description,
+                    Calories = mealWithIngredients.Calories,
+                    MealIngredients = ingredientIds.Select(id => new MealIngredient { IngredientId = id }).ToList(),
+                    Score = 0
+                };
+
+                var createdMeal = await _mealManager.CreateMealAsync(newMeal);
+
+                return new MealDto
+                {
+                    Id = createdMeal.Id,
+                    Name = createdMeal.Name,
+                    Description = createdMeal.Description,
+                    Calories = createdMeal.Calories,
+                    IngredientIds = createdMeal.MealIngredients.Select(mi => mi.IngredientId).ToList(),
+                    Score = createdMeal.Score
+                };
             }
             catch (JsonException jsonEx)
             {
@@ -278,5 +269,6 @@ namespace LifeQuest.Services.Health.Meal
                 throw new UserFriendlyException("Could not generate AI meal: " + ex.Message);
             }
         }
+
     }
 }

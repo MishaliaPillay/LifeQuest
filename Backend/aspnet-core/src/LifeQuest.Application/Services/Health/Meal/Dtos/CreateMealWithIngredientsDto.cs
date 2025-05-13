@@ -15,4 +15,5 @@ namespace LifeQuest.Services.Health.Meal.Dtos
         public List<CreateIngredientDto> Ingredients { get; set; }
     }
 
+
 }
