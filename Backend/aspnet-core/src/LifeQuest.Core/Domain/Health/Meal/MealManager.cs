@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Abp.Domain.Repositories;
 using Abp.Domain.Services;
 using Abp.UI;
+using LifeQuest.Domain.Health.MealPlan;
 using Microsoft.EntityFrameworkCore;
 
 namespace LifeQuest.Domain.Health.Meal
@@ -14,10 +15,14 @@ namespace LifeQuest.Domain.Health.Meal
     public class MealManager : DomainService
     {
         private readonly IRepository<Meal, Guid> _mealRepository;
+        private readonly IRepository<MealPlan.MealPlan, Guid> _mealPlanRepository;
 
-        public MealManager(IRepository<Meal, Guid> mealRepository)
+        public MealManager(
+            IRepository<Meal, Guid> mealRepository,
+            IRepository<MealPlan.MealPlan, Guid> mealPlanRepository)
         {
             _mealRepository = mealRepository;
+            _mealPlanRepository = mealPlanRepository;
         }
 
         public async Task<Meal> CreateMealAsync(Meal meal)
@@ -57,16 +62,28 @@ namespace LifeQuest.Domain.Health.Meal
             return await _mealRepository.InsertAsync(meal); // no autoSave here
         }
 
-
         public async Task<List<Meal>> GetByMealPlanIdAsync(Guid mealPlanId)
         {
-            var meals = await _mealRepository.GetAll()
-         .Where(m => m.MealPlanMeals.Any(mpm => mpm.MealPlanId == mealPlanId))
-         .Include(m => m.MealIngredients)
-         .ToListAsync();
+            // First, get the meal plan with all its related meals
+            var mealPlan = await _mealPlanRepository.GetAll()
+                .Include(mp => mp.MealPlanMeals)
+                .ThenInclude(mpm => mpm.Meal)
+                .ThenInclude(m => m.MealIngredients)
+                .FirstOrDefaultAsync(mp => mp.Id == mealPlanId);
+
+            if (mealPlan == null)
+            {
+                throw new UserFriendlyException($"MealPlan with ID {mealPlanId} not found.");
+            }
+
+            // Extract the meals from the meal plan
+            var meals = mealPlan.MealPlanMeals
+                .Select(mpm => mpm.Meal)
+                .ToList();
 
             return meals;
         }
+
         public async Task DeleteMealAsync(Guid id)
         {
             var meal = await _mealRepository.FirstOrDefaultAsync(id);

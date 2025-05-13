@@ -186,7 +186,7 @@ namespace LifeQuest.Services.Health.Meal
             try
             {
                 var httpClient = new HttpClient();
-                var apiKey = Environment.GetEnvironmentVariable("OPENROUTER_API_KEY");
+                var apiKey = Environment.GetEnvironmentVariable("OPENROUTER_API_KEY_new");
 
                 if (string.IsNullOrWhiteSpace(apiKey))
                 {
