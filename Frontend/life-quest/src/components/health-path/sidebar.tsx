@@ -1,10 +1,10 @@
-"use client"; 
-import React, { useState, useEffect, useRef } from "react";
+"use client";
+
+import React, { useState, useEffect } from "react";
 import { Layout, Menu, Avatar, Drawer, Button } from "antd";
 import {
   DashboardOutlined,
   TrophyOutlined,
-  FireOutlined,
   UserOutlined,
   BarChartOutlined,
   LogoutOutlined,
@@ -13,8 +13,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { MenuProps } from "antd";
-import { useUserActions, useUserState } from "@/providers/user-provider"; // Import the user context
-import styles from "./sidebar.module.css";
+import styles from "../fitness-path/sidebar.module.css";
 
 const { Sider } = Layout;
 
@@ -26,29 +25,25 @@ interface SidebarProps {
 
 const menuItems: MenuProps["items"] = [
   {
-    key: "/fitness-path",
+    key: "/health-path",
     icon: <DashboardOutlined />,
-    label: <Link href="/fitness-path">Dashboard</Link>,
+    label: <Link href="/health-path">Dashboard</Link>,
   },
   {
-    key: "/fitness-path/exercise-plan",
+    key: "/health-path/exercise-plan",
     icon: <BarChartOutlined />,
-    label: <Link href="/fitness-path/exercise-plan">Exercise Plan</Link>,
+    label: <Link href="/health-path/exercise-plan">Meal Plan</Link>,
   },
   {
-    key: "/fitness-path/weight",
+    key: "/health-path/weight",
     icon: <TrophyOutlined />,
-    label: <Link href="/fitness-path/weight">Weight</Link>,
+    label: <Link href="/health-path/weight">Weight</Link>,
   },
+
   {
-    key: "/fitness-path/steps",
-    icon: <FireOutlined />,
-    label: <Link href="/fitness-path/steps">Steps</Link>,
-  },
-  {
-    key: "/fitness-path/profile",
+    key: "/health-path/profile",
     icon: <UserOutlined />,
-    label: <Link href="/fitness-path/profile">Profile</Link>,
+    label: <Link href="/health-path/profile">Profile</Link>,
   },
   {
     key: "logout",
@@ -65,18 +60,6 @@ const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const pathname = usePathname();
   const [isMobile, setIsMobile] = useState(false);
-  const { currentUser } = useUserState();
-  const { getCurrentUser } = useUserActions(); // Hook to access the actions
-  const hasFetched = useRef(false); // Ref to track if data has been fetched
-
-  useEffect(() => {
-    const token = sessionStorage.getItem("jwt");
-
-    if (token && !currentUser && !hasFetched.current) {
-      hasFetched.current = true; // Mark as fetched
-      getCurrentUser(token); // We don't need to track loading here
-    }
-  }, [currentUser, getCurrentUser]);
 
   useEffect(() => {
     const checkIsMobile = () => {
@@ -107,8 +90,8 @@ const Sidebar: React.FC<SidebarProps> = ({
           styles={{ body: { padding: 0 } }}
         >
           <div className={styles.drawerHeader}>
-            <Avatar className={styles.avatar}>{currentUser?.name[0]}</Avatar>
-            <div className={styles.username}>{currentUser?.name}</div>
+            <Avatar className={styles.avatar}>A</Avatar>
+            <div className={styles.username}>Alex Chen</div>
           </div>
           <Menu
             mode="inline"
@@ -131,8 +114,8 @@ const Sidebar: React.FC<SidebarProps> = ({
       className={styles.sidebar}
     >
       <div className={styles.avatarContainer}>
-        <Avatar className={styles.avatar}>{currentUser?.name[0]}</Avatar>
-        {!collapsed && <div className={styles.username}>{currentUser?.name}</div>}
+        <Avatar className={styles.avatar}>A</Avatar>
+        {!collapsed && <div className={styles.username}>Alex Chen</div>}
       </div>
       <Menu
         mode="inline"

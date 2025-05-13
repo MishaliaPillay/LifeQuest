@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useEffect, ReactNode } from "react";
-import { App, Layout } from "antd";
-import Sidebar from "../../components/fitness-path/sidebar";
+import { Layout } from "antd";
+import Sidebar from "../../components/health-path/sidebar";
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import withAuth from "../../hoc/withAuth";
 const { Header, Content } = Layout;
@@ -27,7 +27,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     return () => window.removeEventListener("resize", checkIsMobile);
   }, []);
 
-  return (<App>
+  return (
     <Layout style={{ minHeight: "100vh" }}>
       <Sidebar
         collapsed={collapsed}
@@ -88,7 +88,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
           {children}
         </Content>
       </Layout>
-    </Layout></App>
+    </Layout>
   );
 };
 

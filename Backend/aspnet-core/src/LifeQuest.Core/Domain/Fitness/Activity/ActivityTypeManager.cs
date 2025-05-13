@@ -17,9 +17,9 @@ namespace LifeQuest.Domain.Fitness.Activity
             _activityTypeRepository = activityTypeRepository;
         }
 
-        public async Task<ActivityType> CreateActivityTypeAsync(string category, int intensityLevel, string description)
+        public async Task<ActivityType> CreateActivityTypeAsync(string category, int calories, string description, string duration)
         {
-            var activityType = new ActivityType(category, intensityLevel, description);
+            var activityType = new ActivityType(category, calories, description, duration);
             await _activityTypeRepository.InsertAsync(activityType);
             return activityType;
         }
@@ -29,16 +29,16 @@ namespace LifeQuest.Domain.Fitness.Activity
             return await _activityTypeRepository.GetAllListAsync();
         }
 
-        public async Task<ActivityType> UpdateActivityTypeAsync(Guid id, string category, int intensityLevel, string description)
+        public async Task<ActivityType> UpdateActivityTypeAsync(Guid id, string category, int calories, string description, string duration)
         {
             var activityType = await _activityTypeRepository.FirstOrDefaultAsync(id);
             if (activityType == null)
                 throw new UserFriendlyException("Activity Type not found.");
 
             activityType.Category = category;
-            activityType.IntensityLevel = intensityLevel;
+            activityType.Calories = calories;
             activityType.Description = description;
-
+            activityType.Duration = duration;
             await _activityTypeRepository.UpdateAsync(activityType);
             return activityType;
         }

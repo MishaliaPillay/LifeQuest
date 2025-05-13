@@ -56,8 +56,9 @@ namespace LifeQuest.Services.FitnessService.Activity
                 {
                     Id = aat.ActivityType.Id,
                     Category = aat.ActivityType.Category,
-                    IntensityLevel = aat.ActivityType.IntensityLevel,
-                    Description = aat.ActivityType.Description
+                    Calories = aat.ActivityType.Calories,
+                    Description = aat.ActivityType.Description,
+                    Duration = aat.ActivityType.Duration,
                 }).ToList()
             };
         }
@@ -81,13 +82,15 @@ namespace LifeQuest.Services.FitnessService.Activity
                 IsComplete = a.IsComplete,
                 Rating = a.Rating,
                 Description = a.Description,
+
                 // PersonId = a.PersonId,
                 Activities = a.ActivityActivityTypes.Select(aat => new ActivityTypeDto
                 {
                     Id = aat.ActivityType.Id,
                     Category = aat.ActivityType.Category,
-                    IntensityLevel = aat.ActivityType.IntensityLevel,
-                    Description = aat.ActivityType.Description
+                    Calories = aat.ActivityType.Calories,
+                    Description = aat.ActivityType.Description,
+                    Duration = aat.ActivityType.Duration,
                 }).ToList()
             }).ToList();
         }
@@ -139,7 +142,7 @@ namespace LifeQuest.Services.FitnessService.Activity
             var activities = await _activityManager.GetByExercisePlanIdAsync(exercisePlanId);
 
             return activities
-                .OrderBy(a => a.Order) 
+                .OrderBy(a => a.Order)
                 .Select(a => new ActivityResponseDto
                 {
                     Id = a.Id,
@@ -150,12 +153,12 @@ namespace LifeQuest.Services.FitnessService.Activity
                     IsComplete = a.IsComplete,
                     Rating = a.Rating,
                     Description = a.Description,
-                    Order = a.Order, 
+                    Order = a.Order,
                     Activities = a.ActivityActivityTypes.Select(aat => new ActivityTypeDto
                     {
                         Id = aat.ActivityType.Id,
                         Category = aat.ActivityType.Category,
-                        IntensityLevel = aat.ActivityType.IntensityLevel,
+                        Calories = aat.ActivityType.Calories,
                         Description = aat.ActivityType.Description
                     }).ToList()
                 }).ToList();
@@ -197,7 +200,7 @@ namespace LifeQuest.Services.FitnessService.Activity
                 {
                     Id = aat.ActivityType.Id,
                     Category = aat.ActivityType.Category,
-                    IntensityLevel = aat.ActivityType.IntensityLevel,
+                    Calories = aat.ActivityType.Calories,
                     Description = aat.ActivityType.Description
                 }).ToList()
             };
@@ -224,7 +227,7 @@ namespace LifeQuest.Services.FitnessService.Activity
                 {
                     Id = aat.ActivityType.Id,
                     Category = aat.ActivityType.Category,
-                    IntensityLevel = aat.ActivityType.IntensityLevel,
+                    Calories = aat.ActivityType.Calories,
                     Description = aat.ActivityType.Description
                 }).ToList()
             };

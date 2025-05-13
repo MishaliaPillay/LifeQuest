@@ -10,16 +10,18 @@ namespace LifeQuest.Services.FitnessService.Activity.Dtos
     public class ActivityTypeDto : EntityDto<Guid>
     {
         public string Category { get; set; }
-        public int IntensityLevel { get; set; }
+        public int Calories { get; set; }
         public string Description { get; set; }
 
         public ActivityTypeDto() { } // Required for model binding / deserialization
-
-        public ActivityTypeDto(string category, int intensityLevel, string description)
+        public string Duration { get; set; }
+        public ActivityTypeDto(string category, int calories, string description, string duration)
         {
             Category = category;
-            IntensityLevel = intensityLevel;
+            Calories = calories;
             Description = description;
+            Duration = duration;
+
         }
     }
 }

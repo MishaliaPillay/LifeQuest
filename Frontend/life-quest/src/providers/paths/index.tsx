@@ -3,7 +3,6 @@
 import { useContext, useReducer } from "react";
 import { getAxiosInstance } from "../../utils/axiosInstance";
 import {
-
   INITIAL_STATE,
   PathsActionContext,
   PathsStateContext,
@@ -38,20 +37,20 @@ export const PathsProvider = ({ children }: { children: React.ReactNode }) => {
       });
   };
 
-  // Fetch a single path by ID
   const getPath = async (id: string) => {
     dispatch(getPathPending());
     const endpoint = `/api/services/app/Path/Get?id=${id}`;
 
-    return instance
-      .get(endpoint)
-      .then((response) => {
-        dispatch(getPathSuccess(response.data?.result));
-      })
-      .catch((error) => {
-        console.error("Error fetching path:", error);
-        dispatch(getPathError());
-      });
+    try {
+      const response = await instance.get(endpoint);
+      const result = response.data?.result;
+      dispatch(getPathSuccess(result));
+      return result;
+    } catch (error) {
+      console.error("Error fetching path:", error);
+      dispatch(getPathError());
+      throw error;
+    }
   };
 
   return (

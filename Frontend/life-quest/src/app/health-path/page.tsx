@@ -13,7 +13,6 @@ import {
   Tag,
   Statistic,
   Tabs,
-  App,
 } from "antd";
 import {
   FireOutlined,
@@ -262,7 +261,7 @@ export default function FitnessDashboard() {
   // Custom tooltip for charts
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
-      return (<App>
+      return (
         <div
           style={{
             backgroundColor: "#fff",
@@ -281,13 +280,13 @@ export default function FitnessDashboard() {
               style={{ margin: "5px 0", color: "#ff7a45" }}
             >{`Calories: ${payload[1].value?.toLocaleString()}`}</p>
           )}
-        </div></App>
+        </div>
       );
     }
     return null;
   };
 
-  return (<App>
+  return (
     <div
       style={{
         padding: "24px",
@@ -308,100 +307,80 @@ export default function FitnessDashboard() {
             height: "60vh",
           }}
         >
-          <Spin size="large" />
+          <Spin size="large" tip="Loading your fitness data..." />
         </div>
       ) : (
         <>
           {/* Overview Cards */}
           <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
             <Col xs={24} sm={12} md={6}>
-      <Card
-  variant="outlined"
-  style={{
-    borderRadius: 8,
-    boxShadow: "0 2px 8px rgba(0,0,0,0.09)",
-    backgroundColor: "#ffffff", // white background
-  }}
->
-  <Statistic
-    title="Daily Step Average"
-    value={stepsStats.weeklyAverage}
-    suffix="steps"
-    valueStyle={{
-      background: "linear-gradient(135deg, #F23D5E, #D9328E, #BF3FB7, #F24141, #FB765C)",
-      WebkitBackgroundClip: "text",
-      WebkitTextFillColor: "transparent",
-      fontWeight: 600,
-    }}
-    prefix={<TrophyOutlined />}
-  />
-</Card>
-
+              <Card
+                bordered={false}
+                style={{
+                  borderRadius: 8,
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.09)",
+                  background: "linear-gradient(135deg, #ffd6e7, #ffc9c9)",
+                }}
+              >
+                <Statistic
+                  title="Daily Step Average"
+                  value={stepsStats.weeklyAverage}
+                  suffix="steps"
+                  valueStyle={{ color: "#eb2f96" }}
+                  prefix={<TrophyOutlined />}
+                />
+              </Card>
             </Col>
             <Col xs={24} sm={12} md={6}>
               <Card
-                variant="outlined"
+                bordered={false}
                 style={{
-    borderRadius: 8,
-    boxShadow: "0 2px 8px rgba(0,0,0,0.09)",
-    backgroundColor: "#ffffff", // white background
-  }}
+                  borderRadius: 8,
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.09)",
+                  background: "linear-gradient(135deg, #d3adf7, #b7daff)",
+                }}
               >
                 <Statistic
                   title="Today's Steps"
                   value={stepsStats.todaySteps}
                   suffix="steps"
-                  valueStyle={{
-      background: "linear-gradient(135deg, #F23D5E, #D9328E, #BF3FB7, #F24141, #FB765C)",
-      WebkitBackgroundClip: "text",
-      WebkitTextFillColor: "transparent",
-      fontWeight: 600,
-     }}
+                  valueStyle={{ color: "#722ed1" }}
                   prefix={<CalendarOutlined />}
                 />
               </Card>
             </Col>
             <Col xs={24} sm={12} md={6}>
               <Card
-               variant="outlined"
+                bordered={false}
                 style={{
-    borderRadius: 8,
-    boxShadow: "0 2px 8px rgba(0,0,0,0.09)",
-    backgroundColor: "#ffffff", // white background
-  }}
+                  borderRadius: 8,
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.09)",
+                  background: "linear-gradient(135deg, #fff1b8, #ffe58f)",
+                }}
               >
                 <Statistic
                   title="Calories Burned"
                   value={stepsStats.caloriesBurned}
-                  valueStyle={{
-      background: "linear-gradient(135deg, #F23D5E, #D9328E, #BF3FB7, #F24141, #FB765C)",
-      WebkitBackgroundClip: "text",
-      WebkitTextFillColor: "transparent",
-      fontWeight: 600,
-     }}
+                  valueStyle={{ color: "#fa8c16" }}
                   prefix={<FireOutlined />}
                 />
               </Card>
             </Col>
             <Col xs={24} sm={12} md={6}>
               <Card
-                variant="outlined"
+                bordered={false}
                 style={{
-    borderRadius: 8,
-    boxShadow: "0 2px 8px rgba(0,0,0,0.09)",
-    backgroundColor: "#ffffff", // white background
-  }}
+                  borderRadius: 8,
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.09)",
+                  background:
+                    "linear-gradient(135deg,rgb(235, 143, 143),rgb(222, 135, 232))",
+                }}
               >
                 <Statistic
                   title="Workout Completion"
                   value={workoutProgress}
                   suffix="%"
-                  valueStyle={{
-      background: "linear-gradient(135deg, #F23D5E, #D9328E, #BF3FB7, #F24141, #FB765C)",
-      WebkitBackgroundClip: "text",
-      WebkitTextFillColor: "transparent",
-      fontWeight: 600,
-     }}
+                  valueStyle={{ color: "#52c41a" }}
                   prefix={<CheckCircleOutlined />}
                 />
               </Card>
@@ -409,13 +388,13 @@ export default function FitnessDashboard() {
           </Row>
 
           {/* Main Content Tabs */}
-          <Card variant="outlined" style={{ borderRadius: 12 }}>
+          <Card bordered={false} style={{ borderRadius: 12 }}>
             <Tabs defaultActiveKey="1">
               {/* Activity Overview Tab */}
               <TabPane tab="Activity Overview" key="1">
                 <Row gutter={[16, 16]}>
                   <Col xs={24} md={12}>
-                    <Card title="Steps Progress" variant="outlined">
+                    <Card title="Steps Progress" bordered={false}>
                       <Progress
                         percent={stepsStats.weeklyProgress}
                         status={
@@ -499,7 +478,7 @@ export default function FitnessDashboard() {
                   </Col>
 
                   <Col xs={24} md={12}>
-                    <Card title="Workout Plan Progress" variant="outlined">
+                    <Card title="Workout Plan Progress" bordered={false}>
                       <Progress
                         percent={workoutProgress}
                         status={workoutProgress >= 100 ? "success" : "active"}
@@ -597,7 +576,7 @@ export default function FitnessDashboard() {
               <TabPane tab="Recent Activity" key="2">
                 <Row gutter={[16, 16]}>
                   <Col xs={24}>
-                    <Card title="Recent Workouts" variant="outlined">
+                    <Card title="Recent Workouts" bordered={false}>
                       {loadingWorkouts ? (
                         <div style={{ textAlign: "center", padding: 40 }}>
                           <Spin />
@@ -711,7 +690,7 @@ export default function FitnessDashboard() {
               <TabPane tab="Stats & Trends" key="3">
                 <Row gutter={[16, 16]}>
                   <Col xs={24}>
-                    <Card title="Step Tracking" variant="outlined">
+                    <Card title="Step Tracking" bordered={false}>
                       {loadingSteps ? (
                         <div style={{ textAlign: "center", padding: 40 }}>
                           <Spin />
@@ -798,6 +777,6 @@ export default function FitnessDashboard() {
           </Card>
         </>
       )}
-    </div></App>
+    </div>
   );
 }

@@ -25,7 +25,8 @@ namespace LifeQuest.Services.FitnessService.Activity
         {
             var created = await _activityTypeManager.CreateActivityTypeAsync(
                 input.Category,
-                input.IntensityLevel,
+                input.Calories,
+                input.Duration,
                 input.Description
             );
 
@@ -33,8 +34,9 @@ namespace LifeQuest.Services.FitnessService.Activity
             {
                 Id = created.Id,
                 Category = created.Category,
-                IntensityLevel = created.IntensityLevel,
-                Description = created.Description
+                Calories = created.Calories,
+                Description = created.Description,
+                Duration = created.Duration
             };
         }
 
@@ -46,8 +48,9 @@ namespace LifeQuest.Services.FitnessService.Activity
             {
                 Id = a.Id,
                 Category = a.Category,
-                IntensityLevel = a.IntensityLevel,
-                Description = a.Description
+                Calories = a.Calories,
+                Description = a.Description,
+                Duration = a.Duration
             }).ToList();
         }
 
@@ -56,16 +59,19 @@ namespace LifeQuest.Services.FitnessService.Activity
             var updated = await _activityTypeManager.UpdateActivityTypeAsync(
                 input.Id,
                 input.Category,
-                input.IntensityLevel,
-                input.Description
+                input.Calories,
+                input.Description,
+                input.Duration
+
             );
 
             return new ActivityTypeResponseDto
             {
                 Id = updated.Id,
                 Category = updated.Category,
-                IntensityLevel = updated.IntensityLevel,
-                Description = updated.Description
+                Calories = updated.Calories,
+                Description = updated.Description,
+                Duration = updated.Duration
             };
         }
 
@@ -80,7 +86,8 @@ namespace LifeQuest.Services.FitnessService.Activity
             {
                 var httpClient = new HttpClient();
                 var prompt = BuildPromptFromDto(input);
-                var apiKey = Environment.GetEnvironmentVariable("OPENROUTER_API_KEY");
+                var apiKey = "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";
+                //Environment.GetEnvironmentVariable("OPENROUTER_API_KEY");
 
                 if (string.IsNullOrWhiteSpace(apiKey))
                 {
@@ -134,16 +141,18 @@ namespace LifeQuest.Services.FitnessService.Activity
 
                     var created = await _activityTypeManager.CreateActivityTypeAsync(
                         activityType.Category,
-                        activityType.IntensityLevel,
-                        activityType.Description
+                        activityType.Calories,
+                        activityType.Description,
+                        activityType.Duration
                     );
 
                     return new ActivityTypeResponseDto
                     {
                         Id = created.Id,
                         Category = created.Category,
-                        IntensityLevel = created.IntensityLevel,
-                        Description = created.Description
+                        Calories = created.Calories,
+                        Description = created.Description,
+                        Duration =created.Duration
                     };
                 }
             }
@@ -166,36 +175,48 @@ namespace LifeQuest.Services.FitnessService.Activity
 
         private string BuildPromptFromDto(ExerciseGenerationRequestDto input)
         {
-            var sb = new StringBuilder("Suggest one exercise.Generate a unique exercise suggestion that is different from previous ones. Avoid repeating any previously mentioned exercise.\r\n");
+            var sb = new StringBuilder("Generate one personalized exercise for a fitness app. Avoid repeating previous exercises. Use the following user profile:\n");
 
             if (input.Age > 0)
-                sb.Append($" for a {input.Age}-year-old");
+                sb.Append($"- Age: {input.Age}\n");
 
             if (!string.IsNullOrWhiteSpace(input.BodyType))
-                sb.Append($" {input.BodyType.ToLower()}");
+                sb.Append($"- Body Type: {input.BodyType}\n");
 
             if (!string.IsNullOrWhiteSpace(input.Gender))
-                sb.Append($" {input.Gender.ToLower()}");
+                sb.Append($"- Gender: {input.Gender}\n");
 
             if (!string.IsNullOrWhiteSpace(input.FitnessLevel))
-                sb.Append($", who is {input.FitnessLevel.ToLower()} fitness level");
+                sb.Append($"- Fitness Level: {input.FitnessLevel}\n");
+
+            if (input.CurrentWeight > 0)
+                sb.Append($"- Current Weight (kg): {input.CurrentWeight}\n");
 
             if (!string.IsNullOrWhiteSpace(input.Limitations))
-                sb.Append($", with the following limitations: {input.Limitations}");
+                sb.Append($"- Limitations: {input.Limitations}\n");
 
             if (!string.IsNullOrWhiteSpace(input.PreferredExerciseTypes))
-                sb.Append($", preferring {input.PreferredExerciseTypes}");
+                sb.Append($"- Preferred Exercise Types: {input.PreferredExerciseTypes}\n");
 
             if (input.AvailableEquipment?.Any() == true)
-                sb.Append($", with access to equipment: {string.Join(", ", input.AvailableEquipment)}");
+                sb.Append($"- Available Equipment: {string.Join(", ", input.AvailableEquipment)}\n");
+            else
+                sb.Append($"- Available Equipment: none\n");
 
-            sb.Append(". ");
-            sb.Append("Return only a raw JSON object with no markdown formatting, code blocks, or explanation. ");
-            sb.Append("The JSON should follow this format: {\"category\": \"string\", \"intensityLevel\": number, \"description\": \"string\"}. ");
-            sb.Append("Your response should start with { and end with } and nothing else.");
+            sb.Append("\nPlease return a **raw JSON object** with the following structure:\n");
+            sb.Append("{\n");
+            sb.Append("  \"category\": \"string\",                // e.g., 'Cardio', 'Strength', 'Flexibility'\n");
+            sb.Append("  \"description\": \"string\",             // Short description of the exercise\n");
+            sb.Append("  \"duration\": \"string\",                // Duration (e.g., '15 minutes', '3 sets of 10 reps')\n");
+            sb.Append("  \"calories\": number                    // Estimated calories burned by this user for this activity\n");
+            sb.Append("}\n");
+
+            sb.Append("Estimate calorie burn based on user's weight, age, gender, and fitness level. ");
+            sb.Append("Do not include markdown, code blocks, or extra text — only valid JSON starting with '{' and ending with '}'.");
 
             return sb.ToString();
         }
+
 
 
         private string ExtractJsonFromMarkdown(string content)
