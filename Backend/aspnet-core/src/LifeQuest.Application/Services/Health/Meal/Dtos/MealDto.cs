@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LifeQuest.Services.Health.Ingredient.Dtos;
 
 namespace LifeQuest.Services.Health.Meal.Dtos
 {
@@ -13,6 +14,8 @@ namespace LifeQuest.Services.Health.Meal.Dtos
         public string Description { get; set; }
         public int Calories { get; set; }
         public List<Guid> IngredientIds { get; set; }
+
+        public List<IngredientDto> Ingredients { get; set; } = new List<IngredientDto>();
         public int Score { get; set; }
     }
 }
