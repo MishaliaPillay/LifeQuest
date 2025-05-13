@@ -20,7 +20,7 @@ export interface IPathsStateContext {
 // Action context interface
 export interface IPathsActionContext {
   getPaths: () => void; // Fetch all path records
-  getPath: (id: string) => void; // Fetch a single path record
+  getPath: (id: string) => Promise<IPath>; // Fetch a single path record
 }
 
 // Initial state

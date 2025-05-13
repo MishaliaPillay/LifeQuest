@@ -9,6 +9,7 @@ import { WeightProvider } from "@/providers/fitnesspath/weight-provider";
 import { FitnessPathProvider } from "@/providers/fitnesspath/fitness-provider";
 import { ActivityTypeProvider } from "@/providers/fitnesspath/activity-provider";
 import { ExercisePlanProvider } from "@/providers/fitnesspath/exercise-plan";
+import { PathsProvider } from "@/providers/paths";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -46,15 +47,19 @@ export default function RootLayout({
           <AntdApp>
             <AuthProvider>
               <UserProvider>
-                <FitnessPathProvider>
-                  <StepsProvider>
-                    <WeightProvider>
-                      <ActivityTypeProvider>
-                        <ExercisePlanProvider>{children}</ExercisePlanProvider>
-                      </ActivityTypeProvider>
-                    </WeightProvider>
-                  </StepsProvider>
-                </FitnessPathProvider>
+                <PathsProvider>
+                  <FitnessPathProvider>
+                    <StepsProvider>
+                      <WeightProvider>
+                        <ActivityTypeProvider>
+                          <ExercisePlanProvider>
+                            {children}
+                          </ExercisePlanProvider>
+                        </ActivityTypeProvider>
+                      </WeightProvider>
+                    </StepsProvider>
+                  </FitnessPathProvider>
+                </PathsProvider>
               </UserProvider>
             </AuthProvider>
           </AntdApp>
