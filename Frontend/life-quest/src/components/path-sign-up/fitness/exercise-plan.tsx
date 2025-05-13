@@ -29,7 +29,8 @@ const ActivityItem = ({
   onRemove,
   description,
   category,
-  intensityLevel,
+ calories,
+  duration
 }) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id });
@@ -64,10 +65,17 @@ const ActivityItem = ({
               {description}
             </Text>
           )}
-          {intensityLevel !== undefined && (
+          {calories !== undefined && (
             <div style={{ fontSize: 12, color: "#999", marginTop: 4 }}>
-              Intensity: {intensityLevel} {category && `• ${category}`}
+              calories: {calories} {category && `• ${category}`}
             </div>
+          )}     {duration && (
+            <Text
+              type="secondary"
+              style={{ display: "block", fontSize: "12px" }}
+            >
+              {duration}
+            </Text>
           )}
         </div>
 
@@ -122,7 +130,8 @@ const DayContainer = ({ day, items, onRemoveActivity }) => {
                 onRemove={onRemoveActivity}
                 description={item.description}
                 category={item.category}
-                intensityLevel={item.intensityLevel}
+                calories={item.calories}
+                duration={item.duration}
               />
             ))}
           </SortableContext>
@@ -244,6 +253,7 @@ const ExercisePlanBuilder = ({
 
     try {
       await createPlan(plan);
+      console.log("dddd",plan)
       // Close loading message
       setTimeout(loadingMessage, 0);
       message.success({
@@ -300,7 +310,8 @@ const ExercisePlanBuilder = ({
                       content={activity.content}
                       description={activity.description}
                       category={activity.category}
-                      intensityLevel={activity.intensityLevel}
+                      calories={activity.calories}
+                      duration={activity.duration}
                       onRemove={undefined}
                     />
                   </div>

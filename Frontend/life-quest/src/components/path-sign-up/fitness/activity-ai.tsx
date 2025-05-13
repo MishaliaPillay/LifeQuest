@@ -53,6 +53,7 @@ const ActivityTypes: React.FC<{
         bodyType: values.bodyType,
         fitnessLevel: values.fitnessLevel,
         limitations: values.limitations,
+        currentWeight:values.currentWeight,
         preferredExerciseTypes: values.preferredExerciseTypes,
         availableEquipment: values.availableEquipment,
       };
@@ -248,21 +249,22 @@ const ActivityTypes: React.FC<{
                     extra={
                       <Tag
                         color={
-                          item.intensityLevel === 1
+                          item.calories === 100
                             ? "green"
-                            : item.intensityLevel === 2
+                            : item.calories === 200
                             ? "blue"
-                            : item.intensityLevel === 3
+                            : item.calories === 300
                             ? "orange"
                             : "red"
                         }
                       >
-                        Intensity: {item.intensityLevel}
+                        Calories: {item.calories}
                       </Tag>
                     }
                     size="small"
                   >
                     <p>{item.description}</p>
+                      <p>{item.duration}</p>
                   </Card>
                 </List.Item>
               )}

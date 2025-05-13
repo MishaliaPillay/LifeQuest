@@ -14,7 +14,8 @@ export interface IFitnessPath {
 export interface IActivity {
   id: string;
   category: string;
-  intensityLevel: number;
+  calories: number;
+  duration:string;
   description: string;
 }
 export interface IExercisePlan {
