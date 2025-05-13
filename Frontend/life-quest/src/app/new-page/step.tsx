@@ -237,6 +237,7 @@ const StepBasedFitnessPlanner: React.FC<{
 
   // Handle exercise plan submission
   const handleExercisePlanSubmit = () => {
+    
     message.success("Exercise plan created!");
     setCurrent(3);
   };
