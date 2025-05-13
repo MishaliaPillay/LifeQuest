@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Intrinsics.X86;
-using System.Text;
 using System.Threading.Tasks;
 using Abp.Domain.Repositories;
 using Abp.Domain.Services;
 using Abp.UI;
-using LifeQuest.Domain.Health.MealPlan;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace LifeQuest.Domain.Health.Meal
@@ -66,9 +64,10 @@ namespace LifeQuest.Domain.Health.Meal
         {
             // First, get the meal plan with all its related meals
             var mealPlan = await _mealPlanRepository.GetAll()
-                .Include(mp => mp.MealPlanMeals)
-                .ThenInclude(mpm => mpm.Meal)
-                .ThenInclude(m => m.MealIngredients)
+                .Include(mp => mp.MealPlanDays)
+                    .ThenInclude(day => day.MealPlanDayMeals)
+                        .ThenInclude(dayMeal => dayMeal.Meal)
+                            .ThenInclude(meal => meal.MealIngredients)
                 .FirstOrDefaultAsync(mp => mp.Id == mealPlanId);
 
             if (mealPlan == null)
@@ -77,8 +76,9 @@ namespace LifeQuest.Domain.Health.Meal
             }
 
             // Extract the meals from the meal plan
-            var meals = mealPlan.MealPlanMeals
-                .Select(mpm => mpm.Meal)
+            var meals = mealPlan.MealPlanDays
+                .SelectMany(day => day.MealPlanDayMeals)
+                .Select(dayMeal => dayMeal.Meal)
                 .ToList();
 
             return meals;
