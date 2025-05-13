@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Abp.Domain.Entities;
+using LifeQuest.Domain.Fitness.Activity;
+using LifeQuest.Domain.Health.MealPlan;
 
 namespace LifeQuest.Domain.Health.Ingredient
 {
@@ -15,6 +17,7 @@ namespace LifeQuest.Domain.Health.Ingredient
         public int Protein { get; set; }
         public int Carbohhydrates { get; set; }
         public int Fats { get; set; }
+
 
         public Ingredient() { }
         public Ingredient(string name, int servingSize, int calories, int protein, int carbohhydrates, int fats)

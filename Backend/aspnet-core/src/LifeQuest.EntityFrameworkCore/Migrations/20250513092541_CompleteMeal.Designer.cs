@@ -3,6 +3,7 @@ using System;
 using LifeQuest.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LifeQuest.Migrations
 {
     [DbContext(typeof(LifeQuestDbContext))]
-    partial class LifeQuestDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250513092541_CompleteMeal")]
+    partial class CompleteMeal
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1822,14 +1825,9 @@ namespace LifeQuest.Migrations
                     b.Property<Guid>("MealId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("MealId1")
-                        .HasColumnType("uuid");
-
                     b.HasKey("MealPlanId", "MealId");
 
                     b.HasIndex("MealId");
-
-                    b.HasIndex("MealId1");
 
                     b.ToTable("MealPlanMeals");
                 });
@@ -2399,10 +2397,6 @@ namespace LifeQuest.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("LifeQuest.Domain.Health.Meal.Meal", null)
-                        .WithMany("MealPlanMeals")
-                        .HasForeignKey("MealId1");
-
                     b.HasOne("LifeQuest.Domain.Health.MealPlan.MealPlan", "MealPlan")
                         .WithMany("MealPlanMeals")
                         .HasForeignKey("MealPlanId")
@@ -2593,8 +2587,6 @@ namespace LifeQuest.Migrations
             modelBuilder.Entity("LifeQuest.Domain.Health.Meal.Meal", b =>
                 {
                     b.Navigation("MealIngredients");
-
-                    b.Navigation("MealPlanMeals");
                 });
 
             modelBuilder.Entity("LifeQuest.Domain.Health.MealPlan.MealPlan", b =>

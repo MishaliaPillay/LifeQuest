@@ -43,7 +43,19 @@ namespace LifeQuest.Domain.Health.MealPlan
                 HealthPathId = healthPathId,
                 Name = name,
                 Status = MealPlanStatus.Active,
+                // Initialize the collection properly
+                MealPlanMeals = new List<MealPlanMeal>()
             };
+
+            // Create join entries for each meal in the MealPlanMeal table
+            foreach (var meal in meals)
+            {
+                plan.MealPlanMeals.Add(new MealPlanMeal
+                {
+                    MealPlanId = plan.Id,
+                    MealId = meal.Id
+                });
+            }
 
             await _planRepo.InsertAsync(plan);
             return plan;

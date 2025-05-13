@@ -13,6 +13,10 @@ using LifeQuest.Domain.Health.Ingredient;
 using System.Net.Http.Headers;
 using System.Net.Http;
 using System.Text.Json;
+using System.Formats.Asn1;
+using System.Xml.Linq;
+using LifeQuest.Services.Health.Ingredient.Dtos;
+using Microsoft.EntityFrameworkCore;
 
 namespace LifeQuest.Services.Health.Meal
 {
@@ -21,14 +25,16 @@ namespace LifeQuest.Services.Health.Meal
         private readonly MealManager _mealManager;
         private readonly IngredientManager _ingredientManager;
         private readonly IRepository<Domain.Health.Ingredient.Ingredient, Guid> _ingredientRepository;
+        private readonly IRepository<Domain.Health.Meal.Meal, Guid> _mealRepository;
 
-        public MealAppService(
+        public MealAppService(IRepository<Domain.Health.Meal.Meal, Guid> mealRepository,
             MealManager mealManager,
             IRepository<Domain.Health.Ingredient.Ingredient, Guid> ingredientRepository,
             IngredientManager ingredientManager)
         {
             _mealManager = mealManager;
             _ingredientRepository = ingredientRepository;
+            _mealRepository = mealRepository;
             _ingredientManager = ingredientManager;
         }
 
@@ -46,16 +52,41 @@ namespace LifeQuest.Services.Health.Meal
 
             var created = await _mealManager.CreateMealAsync(meal);
 
+            // 👇 Add this to ensure the DB has committed the entity
+            await CurrentUnitOfWork.SaveChangesAsync();
+
+            var loaded = await _mealRepository
+                .GetAll()
+                .Include(m => m.MealIngredients)
+                .ThenInclude(mi => mi.Ingredient)
+                .FirstOrDefaultAsync(m => m.Id == created.Id);
+
+            if (loaded == null)
+            {
+                throw new UserFriendlyException($"Meal with ID {created.Id} not found after creation.");
+            }
+
             return new MealDto
             {
-                Id = created.Id,
-                Name = created.Name,
-                Description = created.Description,
-                Calories = created.Calories,
-                IngredientIds = created.MealIngredients.Select(mi => mi.IngredientId).ToList(),
-                Score = created.Score,
+                Id = loaded.Id,
+                Name = loaded.Name,
+                Description = loaded.Description,
+                Calories = loaded.Calories,
+                Ingredients = loaded.MealIngredients.Select(mi => new IngredientDto
+                {
+                    Id = mi.IngredientId,
+                    Name = mi.Ingredient?.Name ?? "Unknown",
+                    ServingSize = mi.Ingredient?.ServingSize ?? 0,
+                    Calories = mi.Ingredient?.Calories ?? 0,
+                    Protein = mi.Ingredient?.Protein ?? 0,
+                    Carbohhydrates = mi.Ingredient?.Carbohhydrates ?? 0,
+                    Fats = mi.Ingredient?.Fats ?? 0
+                }).ToList(),
+                Score = loaded.Score,
             };
         }
+
+
 
         public async Task<List<MealDto>> GetAllMealsAsync()
         {
@@ -71,7 +102,23 @@ namespace LifeQuest.Services.Health.Meal
                 Score = m.Score,
             }).ToList();
         }
+        public async Task<List<MealDto>> GetByMealPlanIdAsync(Guid mealPlanId)
+        {
+            var meals = await _mealManager.GetByMealPlanIdAsync(mealPlanId);
 
+            return meals
+                .Select(m => new MealDto
+                {
+                    Id = m.Id,
+                    Name = m.Name,
+                    Description = m.Description,
+                    Calories = m.Calories,
+                    IngredientIds = m.MealIngredients.Select(mi => mi.IngredientId).ToList(),
+                    Score = m.Score,
+
+
+                }).ToList();
+        }
         public async Task<MealDto> UpdateMealAsync(UpdateMealDto input)
         {
             var meal = await _mealManager.GetAllMealsAsync()
@@ -139,8 +186,7 @@ namespace LifeQuest.Services.Health.Meal
             try
             {
                 var httpClient = new HttpClient();
-                var apiKey = "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";
-                    //Environment.GetEnvironmentVariable("OPENROUTER_API_KEY");
+                var apiKey = Environment.GetEnvironmentVariable("OPENROUTER_API_KEY");
 
                 if (string.IsNullOrWhiteSpace(apiKey))
                 {
@@ -152,8 +198,12 @@ namespace LifeQuest.Services.Health.Meal
                     : "";
 
                 var prompt = $@"
-Generate a healthy meal in JSON format. {dietaryNote}
-Respond only with JSON inside a code block. 
+Generate a healthy {input.MealType} meal in JSON format. 
+Include no more than 3 ingredients.
+{(input.MaxCalories > 0 ? $"Max {input.MaxCalories} calories." : "")}
+{(!string.IsNullOrWhiteSpace(input.DietaryRequirement) ? $"Meet dietary requirement: {input.DietaryRequirement}." : "")}
+{(!string.IsNullOrWhiteSpace(input.PreferredCuisine) ? $"Use {input.PreferredCuisine} style." : "")}
+Respond only with JSON inside a code block.
 Format:
 {{
   ""name"": ""Grilled Chicken Salad"",

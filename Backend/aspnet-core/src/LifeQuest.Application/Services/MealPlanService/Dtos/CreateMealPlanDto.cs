@@ -11,5 +11,6 @@ namespace LifeQuest.Services.MealPlanService.Dtos
         public Guid HealthPathId { get; set; }
         public string Name { get; set; }
         public List<Guid> MealIds { get; set; }
+
     }
 }

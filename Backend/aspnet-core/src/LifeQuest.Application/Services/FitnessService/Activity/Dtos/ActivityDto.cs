@@ -14,7 +14,7 @@ namespace LifeQuest.Services.FitnessService.Activity.Dtos
         public int Duration { get; set; }
         public int Xp { get; set; }
         public int Level { get; set; }
-        public List<ActivityTypeDto> Activities { get; set; }  // Updated to hold ActivityTypeDto
+        public List<ActivityTypeDto> Activities { get; set; }
         public bool IsComplete { get; set; }
         public ActivityRating Rating { get; set; }
         public string Description { get; set; }

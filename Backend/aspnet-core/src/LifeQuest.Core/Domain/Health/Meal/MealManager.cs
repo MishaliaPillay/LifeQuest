@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Intrinsics.X86;
 using System.Text;
 using System.Threading.Tasks;
 using Abp.Domain.Repositories;
@@ -57,7 +58,15 @@ namespace LifeQuest.Domain.Health.Meal
         }
 
 
+        public async Task<List<Meal>> GetByMealPlanIdAsync(Guid mealPlanId)
+        {
+            var meals = await _mealRepository.GetAll()
+         .Where(m => m.MealPlanMeals.Any(mpm => mpm.MealPlanId == mealPlanId))
+         .Include(m => m.MealIngredients)
+         .ToListAsync();
 
+            return meals;
+        }
         public async Task DeleteMealAsync(Guid id)
         {
             var meal = await _mealRepository.FirstOrDefaultAsync(id);

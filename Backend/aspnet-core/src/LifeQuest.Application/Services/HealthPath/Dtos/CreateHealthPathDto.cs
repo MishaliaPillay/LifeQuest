@@ -11,8 +11,7 @@ namespace LifeQuest.Services.HealthPath.Dtos
         public string Title { get; set; }
         public string Description { get; set; }
         public Guid PersonId { get; set; }
-        public List<Guid> MealPlanIds { get; set; }
-        public List<Guid> WeightEntryIds { get; set; }
+
     }
 
 }
