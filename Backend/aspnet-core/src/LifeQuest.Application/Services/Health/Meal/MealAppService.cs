@@ -7,7 +7,6 @@ using Abp.Application.Services;
 using Abp.Domain.Repositories;
 using Abp.UI;
 using LifeQuest.Domain.Health.Meal;
-using LifeQuest.Domain.Health;
 using LifeQuest.Services.Health.Meal.Dtos;
 using LifeQuest.Domain.Health.Ingredient;
 using System.Net.Http.Headers;
@@ -46,7 +45,7 @@ namespace LifeQuest.Services.Health.Meal
                 Name = input.Name,
                 Description = input.Description,
                 Calories = input.Calories,
-                MealIngredients = input.IngredientIds.Select(id => new MealIngredient { IngredientId = id }).ToList(),
+                MealIngredients = input.IngredientIds.Select(id => new Domain.Health.MealIngredient { IngredientId = id }).ToList(),
                 Score = 0
             };
 
@@ -132,7 +131,7 @@ namespace LifeQuest.Services.Health.Meal
             meal.Calories = input.Calories;
             meal.Score = input.Score;
 
-            meal.MealIngredients = input.IngredientIds.Select(id => new MealIngredient { IngredientId = id, MealId = meal.Id }).ToList();
+            meal.MealIngredients = input.IngredientIds.Select(id => new Domain.Health.MealIngredient { IngredientId = id, MealId = meal.Id }).ToList();
 
             var updated = await _mealManager.UpdateMealAsync(meal);
 
@@ -287,7 +286,7 @@ Format:
                     Name = mealWithIngredients.Name,
                     Description = mealWithIngredients.Description,
                     Calories = mealWithIngredients.Calories,
-                    MealIngredients = ingredientIds.Select(id => new MealIngredient { IngredientId = id }).ToList(),
+                    MealIngredients = ingredientIds.Select(id => new Domain.Health.MealIngredient { IngredientId = id }).ToList(),
                     Score = 0
                 };
 

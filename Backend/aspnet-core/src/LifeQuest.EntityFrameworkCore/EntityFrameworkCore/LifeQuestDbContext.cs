@@ -37,8 +37,11 @@ namespace LifeQuest.EntityFrameworkCore
 
         // ➕ Add these for MealPlan and HealthPath
         public DbSet<MealPlan> MealPlans { get; set; }
+        public DbSet<MealPlanDay> MealPlanDays { get; set; }
         public DbSet<MealPlanMeal> MealPlanMeals { get; set; }
         public DbSet<HealthPath> HealthPaths { get; set; }
+        public DbSet<MealPlanDayMeal> MealPlanDayMeals { get; set; }
+
 
         public LifeQuestDbContext(DbContextOptions<LifeQuestDbContext> options)
             : base(options)
@@ -62,7 +65,7 @@ namespace LifeQuest.EntityFrameworkCore
                 }
             }
 
-            // 🍽 Meal ↔ Ingredient many-to-many
+
             modelBuilder.Entity<MealIngredient>()
                 .HasKey(mi => new { mi.MealId, mi.IngredientId });
 
@@ -70,6 +73,10 @@ namespace LifeQuest.EntityFrameworkCore
                 .HasOne(mi => mi.Meal)
                 .WithMany(m => m.MealIngredients)
                 .HasForeignKey(mi => mi.MealId);
+
+            modelBuilder.Entity<MealPlanDayMeal>().HasKey(m => new { m.MealPlanDayId, m.Id });
+
+
 
             modelBuilder.Entity<MealIngredient>()
                 .HasOne(mi => mi.Ingredient)
