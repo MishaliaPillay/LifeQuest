@@ -11,7 +11,7 @@ export default function HealthPathPage() {
   const [healthPath, setHealthPath] = useState(null);
   const [messageApi] = message.useMessage();
   const { getCurrentPerson } = useAuthActions();
-  const { getHealthPath } = useHealthPathActions();
+  const { getHealthPath ,getHealthPaths} = useHealthPathActions();
   const router = useRouter();
 
   useEffect(() => {
@@ -29,16 +29,16 @@ export default function HealthPathPage() {
           message.warning("Person not found for this user.");
           return;
         }
-console.log(person.id)
+
         const healthPath = await getHealthPath(person.id);
 
-        console.log("ss",healthPath)
+      const healthpathfound=await getHealthPaths(healthPath.id)
         if (!healthPath?.id) {
-          message.warning("Fitness path not found.");
+          message.warning("health path not found.");
           return;
         }
-
-        setHealthPath(healthPath);
+console.log("too",healthpathfound)
+        setHealthPath(healthpathfound);
       } catch (error) {
         console.error("Error fetching data:", error);
         message.error("Failed to load health path.");

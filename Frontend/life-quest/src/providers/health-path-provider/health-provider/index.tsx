@@ -35,11 +35,9 @@ export const HealthPathProvider = ({
   const [state, dispatch] = useReducer(HealthPathReducer, INITIAL_STATE);
   const instance = getAxiosInstance();
 
-  const getHealthPaths = async (
-    personId: string
-  ): Promise<IHealthPath[] | null> => {
+  const getHealthPaths = async (id: string): Promise<IHealthPath> => {
     dispatch(getHealthPathsPending());
-    const endpoint = `/api/services/app/HealthPath/GetByPersonId?personId=${personId}`;
+    const endpoint = `/api/services/app/HealthPath/Get?id=${id}`;
 
     try {
       const response = await instance.get(endpoint);
@@ -61,6 +59,7 @@ const getHealthPath = async (id: string): Promise<IHealthPath> => {
     const response = await instance.get(endpoint);
     const healthPath = response.data?.result;
     dispatch(getHealthPathSuccess(healthPath));
+    console.log(healthPath)
     return healthPath; // <-- This line fixes the error
   } catch (error) {
     console.error("Error fetching health path:", error);
