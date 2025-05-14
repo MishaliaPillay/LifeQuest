@@ -17,6 +17,7 @@ using LifeQuest.Domain.Health.Ingredient;
 using LifeQuest.Domain.Health.Meal;
 using LifeQuest.Domain.Health.MealPlan;
 using LifeQuest.Domain.Health;
+using LifeQuest.Domain.Level;
 
 namespace LifeQuest.EntityFrameworkCore
 {
@@ -35,14 +36,13 @@ namespace LifeQuest.EntityFrameworkCore
         public DbSet<Meal> Meals { get; set; }
         public DbSet<MealIngredient> MealIngredients { get; set; }
 
-        // ➕ Add these for MealPlan and HealthPath
         public DbSet<MealPlan> MealPlans { get; set; }
         public DbSet<MealPlanDay> MealPlanDays { get; set; }
         public DbSet<MealPlanMeal> MealPlanMeals { get; set; }
         public DbSet<HealthPath> HealthPaths { get; set; }
         public DbSet<MealPlanDayMeal> MealPlanDayMeals { get; set; }
 
-
+        public DbSet<LevelDefinition> LevelDefinitions { get; set; }
         public LifeQuestDbContext(DbContextOptions<LifeQuestDbContext> options)
             : base(options)
         {

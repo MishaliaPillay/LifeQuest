@@ -17,7 +17,7 @@ public class LifeQuestEntityFrameworkModule : AbpModule
     public bool SkipDbSeed { get; set; }
 
     public override void PreInitialize()
-    {
+    { //IocManager.Register<ISeedContributor, LevelDefinitionSeeder>();
         if (!SkipDbContextRegistration)
         {
             Configuration.Modules.AbpEfCore().AddDbContext<LifeQuestDbContext>(options =>
@@ -32,6 +32,7 @@ public class LifeQuestEntityFrameworkModule : AbpModule
                 }
             });
         }
+
     }
 
     public override void Initialize()
