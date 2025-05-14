@@ -15,18 +15,18 @@ namespace LifeQuest.Domain.Health.Ingredient
         public int ServingSize { get; set; }
         public int Calories { get; set; }
         public int Protein { get; set; }
-        public int Carbohhydrates { get; set; }
+        public int Carbohydrates { get; set; }
         public int Fats { get; set; }
 
 
         public Ingredient() { }
-        public Ingredient(string name, int servingSize, int calories, int protein, int carbohhydrates, int fats)
+        public Ingredient(string name, int servingSize, int calories, int protein, int carbohydrates, int fats)
         {
             Name = name;
             ServingSize = servingSize;
             Calories = calories;
             Protein = protein;
-            Carbohhydrates = carbohhydrates;
+            Carbohydrates = carbohydrates;
             Fats = fats;
         }
     }

@@ -31,7 +31,7 @@ namespace LifeQuest.Domain.Health.Ingredient
         }
 
         // Update an existing ingredient
-        public async Task<Ingredient> UpdateIngredientAsync(Guid id, string name, int servingSize, int calories, int protein, int carbohhydrates, int fats)
+        public async Task<Ingredient> UpdateIngredientAsync(Guid id, string name, int servingSize, int calories, int protein, int carbohydrates, int fats)
         {
             var ingredient = await _ingredientRepository.FirstOrDefaultAsync(id);
             if (ingredient == null)
@@ -41,7 +41,7 @@ namespace LifeQuest.Domain.Health.Ingredient
             ingredient.ServingSize = servingSize;
             ingredient.Calories = calories;
             ingredient.Protein = protein;
-            ingredient.Carbohhydrates = carbohhydrates;
+            ingredient.Carbohydrates = carbohydrates;
             ingredient.Fats = fats;
 
             await _ingredientRepository.UpdateAsync(ingredient);

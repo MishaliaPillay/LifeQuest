@@ -38,7 +38,7 @@ namespace LifeQuest.Services.HealthService.Ingredient
                 ServingSize = created.ServingSize,
                 Calories = created.Calories,
                 Protein = created.Protein,
-                Carbohhydrates = created.Carbohhydrates,
+                Carbohydrates = created.Carbohydrates,
                 Fats = created.Fats
             };
         }
@@ -55,7 +55,7 @@ namespace LifeQuest.Services.HealthService.Ingredient
                 ServingSize = i.ServingSize,
                 Calories = i.Calories,
                 Protein = i.Protein,
-                Carbohhydrates = i.Carbohhydrates,
+                Carbohydrates = i.Carbohydrates,
                 Fats = i.Fats
             }).ToList();
         }
@@ -69,7 +69,7 @@ namespace LifeQuest.Services.HealthService.Ingredient
                 input.ServingSize,
                 input.Calories,
                 input.Protein,
-                input.Carbohhydrates,
+                input.Carbohydrates,
                 input.Fats
             );
 
@@ -80,7 +80,7 @@ namespace LifeQuest.Services.HealthService.Ingredient
                 ServingSize = updated.ServingSize,
                 Calories = updated.Calories,
                 Protein = updated.Protein,
-                Carbohhydrates = updated.Carbohhydrates,
+                Carbohydrates = updated.Carbohydrates,
                 Fats = updated.Fats
             };
         }

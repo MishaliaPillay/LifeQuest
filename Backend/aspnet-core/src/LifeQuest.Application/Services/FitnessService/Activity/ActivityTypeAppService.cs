@@ -86,7 +86,8 @@ namespace LifeQuest.Services.FitnessService.Activity
             {
                 var httpClient = new HttpClient();
                 var prompt = BuildPromptFromDto(input);
-                var apiKey = Environment.GetEnvironmentVariable("OPENROUTER_API_KEY");
+                var apiKey = "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";
+                // Environment.GetEnvironmentVariable("OPENROUTER_API_KEY");
                 //
 
                 if (string.IsNullOrWhiteSpace(apiKey))
@@ -152,7 +153,7 @@ namespace LifeQuest.Services.FitnessService.Activity
                         Category = created.Category,
                         Calories = created.Calories,
                         Description = created.Description,
-                        Duration =created.Duration
+                        Duration = created.Duration
                     };
                 }
             }
