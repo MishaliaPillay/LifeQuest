@@ -44,6 +44,7 @@ import {
   useStepsState,
 } from "@/providers/fitnesspath/step-provider";
 
+import { IAuth } from "@/providers/auth-provider/context";
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
 
@@ -60,7 +61,7 @@ export default function FitnessDashboard() {
   const [loadingWorkouts, setLoadingWorkouts] = useState(true);
   const [loadingSteps, setLoadingSteps] = useState(true);
 
-const [person, setPerson] = useState<any>(null); // ideally, type this properly if you have the model
+const [person, setPerson] = useState<IAuth>(null); // ideally, type this properly if you have the model
 
   const [exercisePlan, setExercisePlan] = useState([]);
 

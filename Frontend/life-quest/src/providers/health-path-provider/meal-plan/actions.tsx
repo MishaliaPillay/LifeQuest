@@ -1,7 +1,7 @@
 "use client";
 
 import { createAction } from "redux-actions";
-import { IMealPlan, IMealPlanStateContext } from "./context";
+import { IMealPlan, IMealPlanDay, IMealPlanStateContext } from "./context";
 
 // Define action enums
 export enum MealPlanActionEnums {

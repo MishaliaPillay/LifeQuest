@@ -252,7 +252,7 @@ const plan: IMealPlan = {
       if (onPlanSubmit) onPlanSubmit();
     } catch (error) {
       setTimeout(loadingMessage, 0);
-      message.error("Failed to create Meal Plan");
+      message.error("Failed to create Meal Plan",error);
     } finally {
       setIsSubmitting(false);
     }
