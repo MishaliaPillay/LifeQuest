@@ -13,7 +13,7 @@ namespace LifeQuest.Services.Health.Ingredient.Dtos
         public int ServingSize { get; set; }
         public int Calories { get; set; }
         public int Protein { get; set; }
-        public int Carbohhydrates { get; set; }
+        public int Carbohydrates { get; set; }
         public int Fats { get; set; }
     }
 }

@@ -78,7 +78,7 @@ namespace LifeQuest.Services.Health.Meal
                     ServingSize = mi.Ingredient?.ServingSize ?? 0,
                     Calories = mi.Ingredient?.Calories ?? 0,
                     Protein = mi.Ingredient?.Protein ?? 0,
-                    Carbohhydrates = mi.Ingredient?.Carbohhydrates ?? 0,
+                    Carbohydrates = mi.Ingredient?.Carbohydrates ?? 0,
                     Fats = mi.Ingredient?.Fats ?? 0
                 }).ToList(),
                 Score = loaded.Score,
@@ -185,7 +185,7 @@ namespace LifeQuest.Services.Health.Meal
             try
             {
                 var httpClient = new HttpClient();
-                var apiKey = Environment.GetEnvironmentVariable("OPENROUTER_API_KEY_new");
+                var apiKey = "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"; //Environment.GetEnvironmentVariable("OPENROUTER_API_KEY_new");
 
                 if (string.IsNullOrWhiteSpace(apiKey))
                 {
@@ -197,7 +197,7 @@ namespace LifeQuest.Services.Health.Meal
                     : "";
 
                 var prompt = $@"
-Generate a healthy {input.MealType} meal in JSON format. 
+Generate a healthy {input.MealType} meal in JSON format. Include atleast 2 ingredients.
 Include no more than 3 ingredients.
 {(input.MaxCalories > 0 ? $"Max {input.MaxCalories} calories." : "")}
 {(!string.IsNullOrWhiteSpace(input.DietaryRequirement) ? $"Meet dietary requirement: {input.DietaryRequirement}." : "")}
@@ -318,6 +318,54 @@ Format:
                 throw new UserFriendlyException("Could not generate AI meal: " + ex.Message);
             }
         }
+        public async Task<GeneratedMealBatchResultDto> GenerateAIMealBatchAsync(GenerateAIMealBatchInputDto input)
+        {
+            if (input.Count <= 0)
+            {
+                throw new UserFriendlyException("Meal count must be greater than 0.");
+            }
+
+            var meals = new List<MealDto>();
+            var seenNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            int attempts = 0;
+            int maxAttempts = input.Count * 3; // To avoid infinite loop if AI keeps duplicating
+
+            while (meals.Count < input.Count && attempts < maxAttempts)
+            {
+                attempts++;
+
+                try
+                {
+                    var meal = await GenerateAIMealAsync(input.BaseRequest);
+
+                    if (!seenNames.Contains(meal.Name.Trim()))
+                    {
+                        meals.Add(meal);
+                        seenNames.Add(meal.Name.Trim());
+                    }
+                    else
+                    {
+                        Logger.Debug($"Duplicate meal skipped: {meal.Name}");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.Warn($"Meal generation failed (attempt {attempts}): {ex.Message}");
+                }
+            }
+
+            if (meals.Count < input.Count)
+            {
+                Logger.Warn($"Only {meals.Count} unique meals generated out of requested {input.Count}.");
+            }
+
+            return new GeneratedMealBatchResultDto
+            {
+                Items = meals
+            };
+        }
+
 
     }
 }
