@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LifeQuest.Services.Health.Meal.Dtos;
+using LifeQuest.Services.MealPlanService.Dtos;
 
 namespace LifeQuest.Services.Health.Meal
 {
@@ -13,6 +14,8 @@ namespace LifeQuest.Services.Health.Meal
         Task<List<MealDto>> GetAllMealsAsync();
         Task<MealDto> UpdateMealAsync(UpdateMealDto input);
         Task DeleteMealAsync(Guid id);
+        Task<MealDto> UpdateMealScoreAsync(UpdateMealScoreDto input);
+
         Task<MealDto> GenerateAIMealAsync(GenerateAIMealInputDto input);
         Task<List<MealDto>> GetByMealPlanIdAsync(Guid mealPlanId);
         Task<GeneratedMealBatchResultDto> GenerateAIMealBatchAsync(GenerateAIMealBatchInputDto input);
