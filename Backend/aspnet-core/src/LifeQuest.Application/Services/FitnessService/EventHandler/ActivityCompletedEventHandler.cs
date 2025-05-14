@@ -33,7 +33,7 @@ namespace LifeQuest.Services.FitnessService.EventHandler
             IRepository<Person, Guid> personRepo)
         {
             _exercisePlanRepo = exercisePlanRepo;
-            _fitnessPathRepo = fitnessPathRepo;
+            _fitnessPathRepo = fitnessPathRepo; 
             _personRepo = personRepo;
         }
 
