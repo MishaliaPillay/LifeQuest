@@ -8,6 +8,7 @@ using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.UI;
 using AutoMapper;
+using LifeQuest.Domain.Level;
 using LifeQuest.Domain.Person;
 using LifeQuest.Services.PersonService.Dtos;
 using LifeQuest.Services.PersonService.Dtos.LifeQuest.Services.PersonService.Dtos;
@@ -22,18 +23,42 @@ namespace LifeQuest.Services.PersonService
     {
         private readonly PersonManager _personManager;
         private readonly IRepository<Person, Guid> _repository;
+        private readonly IRepository<LevelDefinition> _levelDefinitionRepository; // Reference to level definitions
         private readonly IMapper _mapper;
 
         public PersonAppService(
             IRepository<Person, Guid> repository,
             PersonManager personManager,
+            IRepository<LevelDefinition> levelDefinitionRepository,
             IMapper mapper
         ) : base(repository)
         {
             _repository = repository;
             _personManager = personManager;
+            _levelDefinitionRepository = levelDefinitionRepository;
             _mapper = mapper;
         }
+
+        // Method to Add XP to the Person
+        public async Task<PersonResponseDto> AddXpToPersonAsync(Guid personId, int xpAmount)
+        {
+            // Retrieve the person
+            var person = await _repository.GetAsync(personId);
+            if (person == null)
+                throw new UserFriendlyException("Person not found");
+
+            // Get level definitions (e.g., XP thresholds for each level)
+            var levelDefinitions = await _levelDefinitionRepository.GetAllListAsync();
+
+            // Add XP and handle level-up logic
+            person.AddXp(xpAmount, levelDefinitions);
+
+            // Update the person's record
+            await _repository.UpdateAsync(person);
+
+            return _mapper.Map<PersonResponseDto>(person);
+        }
+
 
         public override async Task<PersonResponseDto> CreateAsync(PersonRequestDto input)
         {

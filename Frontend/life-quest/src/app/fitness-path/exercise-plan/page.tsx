@@ -1,5 +1,5 @@
 "use client";
-
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import {
   Card,
@@ -65,7 +65,7 @@ export default function WorkoutPlanPage() {
   const { getFitnessPaths } = useFitnessPathActions();
   const [planId, setPlanId] = useState<string | null>(null);
   const [completingPlan, setCompletingPlan] = useState(false);
-
+const router=useRouter();
   const { completePlan } = useExercisePlanActions();
 
   useEffect(() => {
@@ -244,27 +244,7 @@ export default function WorkoutPlanPage() {
           </Card>
         </Col>
       </Row>
-      {planId && (
-        <Button
-          type="primary"
-          icon={<CheckCircleOutlined />}
-          disabled={completedCount < exercisePlan.length}
-          loading={completingPlan}
-          onClick={async () => {
-            setCompletingPlan(true);
-            try {
-              await completePlan(planId);
-              message.success("Plan marked as complete!");
-            } catch {
-              message.error("Failed to complete plan.");
-            } finally {
-              setCompletingPlan(false);
-            }
-          }}
-        >
-          Complete Plan
-        </Button>
-      )}
+
 
       {loading ? (
         <div
@@ -352,7 +332,35 @@ export default function WorkoutPlanPage() {
           ))}
         </Row>
       )}
+      {planId && (
+        <Button
+  type="primary"
+  icon={<CheckCircleOutlined />}
+  loading={completingPlan}
+  onClick={async () => {
+    setCompletingPlan(true);
+    try {
+      await completePlan(planId);
+        sessionStorage.setItem("cameFromExercisePlan", "true");
+ 
+      router.push("/new-page");
+      message.success("Plan marked as complete!");
+    } catch {
+      message.error("Failed to complete plan.");
+    } finally {
+      setCompletingPlan(false);
+    }
+  }}
+  style={{
+    display: completedCount === exercisePlan.length ? 'block' : 'none', // Hide button if not all are completed
+    marginTop: '20px', // Add bottom margin
+  }}
+>
+  Complete Plan
+</Button>
 
+      
+      )}
       <Modal
         title={
           <div style={{ display: "flex", alignItems: "center" }}>

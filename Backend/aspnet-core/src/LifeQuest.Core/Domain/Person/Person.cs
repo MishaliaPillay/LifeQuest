@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 using Abp.Domain.Entities.Auditing;
 using LifeQuest.Authorization.Users;
 using LifeQuest.Domain.Paths;
 using LifeQuest.Domain.Paths.FitnessPath;
-
 namespace LifeQuest.Domain.Person
 {
     public class Person : FullAuditedEntity<Guid>
@@ -25,10 +25,23 @@ namespace LifeQuest.Domain.Person
 
         public virtual ICollection<Path> Paths { get; set; } = new List<Path>();
 
-        // Reference to a specific path (either Fitness or Health)
         public Guid? PathId { get; set; }
         [ForeignKey(nameof(PathId))]
         public virtual Path SelectedPath { get; set; }
-    }
 
+        // AddXp method should be here
+        public void AddXp(int amount, List<Level.LevelDefinition> levelDefinitions)
+        {
+            Xp += amount;
+
+            var newLevel = levelDefinitions
+                .OrderByDescending(ld => ld.RequiredXp)
+                .FirstOrDefault(ld => Xp >= ld.RequiredXp)?.Level ?? 1;
+
+            if (newLevel > Level)
+            {
+                Level = newLevel;
+            }
+        }
+    }
 }

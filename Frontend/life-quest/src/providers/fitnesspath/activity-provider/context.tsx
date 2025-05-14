@@ -5,13 +5,15 @@ import { createContext } from "react";
 export interface IActivityType {
   id?: string;
   category: string;
-  intensityLevel: number;
+  calories: number;
+  duration:string;
   description: string;
 }
 export interface IActivity {
   id: string;
   category: string;
-  intensityLevel: number;
+  calories: number;
+  duration:string;
   description: string;
 }
 
@@ -34,6 +36,7 @@ export interface IBaseActivityTypeRequest {
   gender: string;
   bodyType: string;
   fitnessLevel: string;
+  currentWeight:number;
   limitations: string;
   preferredExerciseTypes: string;
   availableEquipment: string[];

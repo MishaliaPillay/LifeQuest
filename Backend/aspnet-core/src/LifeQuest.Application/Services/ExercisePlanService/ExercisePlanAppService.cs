@@ -59,6 +59,8 @@ namespace LifeQuest.Services.ExercisePlanService
 
                     var activityActivityTypes = new List<ActivityActivityType>();
 
+                    int totalCalories = 0;
+
                     foreach (var activityTypeId in day.ActivityTypeIds)
                     {
                         var activityType = await _activityTypeRepo.FirstOrDefaultAsync(activityTypeId);
@@ -67,24 +69,30 @@ namespace LifeQuest.Services.ExercisePlanService
                             throw new UserFriendlyException($"ActivityType with ID {activityTypeId} not found.");
                         }
 
+                        totalCalories += activityType.Calories;
+
                         activityActivityTypes.Add(new ActivityActivityType
                         {
                             ActivityTypeId = activityType.Id
                         });
                     }
 
-                    // Now create ONE Activity per day
+                    // XP formula: e.g. 1 XP per calorie + 5 XP per activity type
+                    int xp = totalCalories + (day.ActivityTypeIds.Count * 5);
+
+
                     var activity = new Activity(
-                        calories: day.Calories,
-                        duration: day.Duration,
-                        xp: 0,
-                        level: 1,
-                        activityActivityTypes: activityActivityTypes,
-                        isComplete: false,
-                        rating: ActivityRating.Neutral,
-                        description: day.Description,
-                        order: dayIndex
-                    );
+        calories: totalCalories,
+        duration: day.Duration,
+        xp: xp,
+        level: 1,
+        activityActivityTypes: activityActivityTypes,
+        isComplete: false,
+        rating: ActivityRating.Neutral,
+        description: day.Description,
+        order: dayIndex
+    );
+                    ;
 
                     mappedActivities.Add(activity);
 

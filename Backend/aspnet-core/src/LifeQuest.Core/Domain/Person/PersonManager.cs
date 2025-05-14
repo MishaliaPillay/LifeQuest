@@ -5,6 +5,7 @@ using Abp.Domain.Repositories;
 using Abp.Domain.Services;
 using Abp.UI;
 using LifeQuest.Authorization.Users;
+using LifeQuest.Domain.Level;
 using Microsoft.EntityFrameworkCore;
 
 namespace LifeQuest.Domain.Person
@@ -13,13 +14,33 @@ namespace LifeQuest.Domain.Person
     {
         private readonly UserManager _userManager;
         private readonly IRepository<Person, Guid> _personRepository;
-
+        private readonly IRepository<LevelDefinition> _levelDefinitionRepository;
         public PersonManager(
             UserManager userManager,
-            IRepository<Person, Guid> personRepository)
+            IRepository<Person, Guid> personRepository,
+            IRepository<LevelDefinition> levelDefinitionRepository
+        )
         {
             _userManager = userManager;
             _personRepository = personRepository;
+            _levelDefinitionRepository = levelDefinitionRepository;
+        }
+
+        // Method to add XP and update level for a person
+        public async Task AddXpToPersonAsync(Guid personId, int xpAmount)
+        {
+            var person = await _personRepository.GetAsync(personId);
+            if (person == null)
+                throw new UserFriendlyException("Person not found");
+
+            // Get all level definitions from the database
+            var levelDefinitions = await _levelDefinitionRepository.GetAllListAsync();
+
+            // Add XP and calculate level-up if applicable
+            person.AddXp(xpAmount, levelDefinitions);
+
+            // Update the person's record
+            await _personRepository.UpdateAsync(person);
         }
 
         public async Task<Person> CreatePersonAsync(
