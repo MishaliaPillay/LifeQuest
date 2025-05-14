@@ -4,11 +4,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Abp.Application.Services;
+using Abp.Events.Bus;
 using Abp.UI;
 using LifeQuest.Domain.Fitness.Activity;
+using LifeQuest.Domain.Fitness.Events;
 using LifeQuest.Services.FitnessService.Activity.Dtos;
 using Microsoft.EntityFrameworkCore;
+using LifeQuest.Domain.Fitness.ExercisePlan;
+using Abp.Domain.Repositories;
+using Abp.Events.Bus;
+
 using static LifeQuest.Services.FitnessService.Activity.Dtos.ActivityResponseDto;
+using ExercisePlanEntity = LifeQuest.Domain.Fitness.ExercisePlan.ExercisePlan;
 
 namespace LifeQuest.Services.FitnessService.Activity
 {
@@ -16,12 +23,19 @@ namespace LifeQuest.Services.FitnessService.Activity
     {
         private readonly ActivityManager _activityManager;
         private readonly ActivityTypeManager _activityTypeManager;
-
-        public ActivityAppService(ActivityManager activityManager, ActivityTypeManager activityTypeManager)
+        private readonly IRepository<ExercisePlanEntity, Guid> _exercisePlanRepo;
+        private readonly IEventBus _eventBus;
+        public ActivityAppService(
+            ActivityManager activityManager,
+            ActivityTypeManager activityTypeManager,
+            IRepository<ExercisePlanEntity, Guid> exercisePlanRepo, IEventBus eventBus)
         {
             _activityManager = activityManager;
             _activityTypeManager = activityTypeManager;
+            _exercisePlanRepo = exercisePlanRepo;
+            _eventBus = eventBus;
         }
+
 
         public async Task<ActivityResponseDto> CreateActivityAsync(CreateActivityDto input)
         {
@@ -211,6 +225,20 @@ namespace LifeQuest.Services.FitnessService.Activity
         public async Task<ActivityResponseDto> MarkActivityAsCompleteAsync(Guid activityId)
         {
             var activity = await _activityManager.MarkAsCompleteAsync(activityId);
+
+            // Find the related ExercisePlan and FitnessPath
+            var exercisePlan = await _exercisePlanRepo.FirstOrDefaultAsync(ep => ep.Activities.Any(a => a.Id == activityId));
+            if (exercisePlan != null)
+            {
+                _eventBus.Trigger(new ActivityCompletedEvent
+                {
+                    ActivityId = activityId,
+                    XpGained = activity.Xp,
+                    ExercisePlanId = exercisePlan.Id
+                });
+
+
+            }
 
             return new ActivityResponseDto
             {
