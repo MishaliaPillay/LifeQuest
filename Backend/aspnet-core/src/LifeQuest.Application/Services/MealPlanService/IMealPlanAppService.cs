@@ -13,5 +13,7 @@ namespace LifeQuest.Services.MealPlanService
         Task<MealPlanDto> GetAsync(Guid id);
         Task<List<MealPlanDto>> GetHistoryAsync(Guid healthPathId);
         Task CompletePlanAsync(Guid planId);
+        Task<List<MealPlanDayWithMealsDto>> GetMealPlanDaysWithMealsByPlanIdAsync(Guid mealPlanId);
+
     }
 }
