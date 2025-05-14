@@ -6,14 +6,14 @@ export interface IActivityType {
   id?: string;
   category: string;
   calories: number;
-  duration:string;
+  duration: string;
   description: string;
 }
 export interface IActivity {
   id: string;
   category: string;
   calories: number;
-  duration:string;
+  duration: string;
   description: string;
 }
 
@@ -36,7 +36,7 @@ export interface IBaseActivityTypeRequest {
   gender: string;
   bodyType: string;
   fitnessLevel: string;
-  currentWeight:number;
+  currentWeight: number;
   limitations: string;
   preferredExerciseTypes: string;
   availableEquipment: string[];

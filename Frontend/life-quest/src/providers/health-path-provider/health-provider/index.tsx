@@ -75,6 +75,7 @@ export const HealthPathProvider = ({
     try {
       const response = await instance.post(endpoint, healthPath);
       const result = response.data?.result;
+      console.log("created path", result);
       dispatch(createHealthPathSuccess(result));
       return result;
     } catch (error) {

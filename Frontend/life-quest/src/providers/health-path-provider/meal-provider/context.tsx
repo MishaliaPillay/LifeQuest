@@ -3,24 +3,24 @@ import { createContext } from "react";
 
 // Meal model
 export interface IIngredient {
-  id: string;
+  id?: string;
   name: string;
   servingSize: number;
   calories: number;
-  protein: number;
+  c: number;
   carbohydrates: number;
   fats: number;
 }
 
 export interface IMeal {
-  id: string;
+  id?: string;
   name: string;
   description: string;
   calories: number;
   ingredientIds: string[];
-  isComplete: boolean;
-  ingredients: IIngredient[];
-  score: number;
+  isComplete?: boolean;
+  ingredients?: IIngredient[];
+  score?: number;
 }
 
 // Request model for generating meals
@@ -29,6 +29,10 @@ export interface IGenerateMealRequest {
   preferredCuisine: string;
   mealType: string;
   maxCalories: number;
+}
+export interface IGenerateBaseTypeRequest {
+  count?: number;
+  baseRequest: IGenerateMealRequest;
 }
 
 // State context interface for meals
