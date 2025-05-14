@@ -17,6 +17,8 @@ using System.Xml.Linq;
 using LifeQuest.Services.Health.Ingredient.Dtos;
 using Microsoft.EntityFrameworkCore;
 using LifeQuest.Services.MealPlanService.Dtos;
+using Abp.Events.Bus;
+using LifeQuest.Domain.Health.Events;
 
 namespace LifeQuest.Services.Health.Meal
 {
@@ -26,16 +28,19 @@ namespace LifeQuest.Services.Health.Meal
         private readonly IngredientManager _ingredientManager;
         private readonly IRepository<Domain.Health.Ingredient.Ingredient, Guid> _ingredientRepository;
         private readonly IRepository<Domain.Health.Meal.Meal, Guid> _mealRepository;
+        private readonly IEventBus _eventBus;
 
         public MealAppService(IRepository<Domain.Health.Meal.Meal, Guid> mealRepository,
             MealManager mealManager,
             IRepository<Domain.Health.Ingredient.Ingredient, Guid> ingredientRepository,
-            IngredientManager ingredientManager)
+            IngredientManager ingredientManager,
+            IEventBus eventBus)
         {
             _mealManager = mealManager;
             _ingredientRepository = ingredientRepository;
             _mealRepository = mealRepository;
             _ingredientManager = ingredientManager;
+            _eventBus = eventBus;
         }
 
 
@@ -86,7 +91,61 @@ namespace LifeQuest.Services.Health.Meal
             };
         }
 
+        public async Task<int> CalculateMealXpAsync(Guid mealId)
+        {
+            var meal = await _mealRepository
+                .GetAllIncluding(m => m.MealIngredients)
+                .FirstOrDefaultAsync(m => m.Id == mealId);
 
+            if (meal == null)
+            {
+                throw new UserFriendlyException("Meal not found.");
+            }
+
+            var ingredientIds = meal.MealIngredients.Select(mi => mi.IngredientId).ToList();
+            var ingredients = await _ingredientRepository
+                .GetAll()
+                .Where(i => ingredientIds.Contains(i.Id))
+                .ToListAsync();
+
+            // Count the number of ingredients in the meal
+            int totalIngredientsCount = meal.MealIngredients.Count();
+
+            // Sum the calories based on each MealIngredient
+            float totalCalories = meal.MealIngredients.Sum(mi =>
+            {
+                var ingredient = ingredients.FirstOrDefault(i => i.Id == mi.IngredientId);
+                return ingredient != null ? ingredient.Calories : 0;
+            });
+
+            // XP is the sum of the number of ingredients and total calories
+            int xpGained = (int)(totalIngredientsCount + totalCalories);
+            return xpGained;
+        }
+
+        public async Task CompleteMealAsync(Guid mealId, Guid personId)
+        {
+            var meal = await _mealRepository
+                .GetAllIncluding(m => m.MealIngredients)
+                .FirstOrDefaultAsync(m => m.Id == mealId);
+
+            if (meal == null)
+                throw new UserFriendlyException("Meal not found.");
+
+            if (meal.IsComplete)
+                throw new UserFriendlyException("Meal already completed.");
+
+            meal.IsComplete = true;
+
+            int xpGained = await CalculateMealXpAsync(mealId);
+
+            await _mealRepository.UpdateAsync(meal);
+            await CurrentUnitOfWork.SaveChangesAsync(); // <-- Important: triggers won't fire without this
+
+            await _eventBus.TriggerAsync(
+                new MealCompletedEvent(mealId, personId, xpGained)
+            );
+        }
 
         public async Task<List<MealDto>> GetAllMealsAsync()
         {
@@ -100,6 +159,7 @@ namespace LifeQuest.Services.Health.Meal
                 Calories = m.Calories,
                 IngredientIds = m.MealIngredients.Select(mi => mi.IngredientId).ToList(),
                 Score = m.Score,
+                IsComplete = m.IsComplete
             }).ToList();
         }
 
