@@ -189,7 +189,7 @@ const StepBasedFitnessPlanner: React.FC<{
       category: activity.category,
       calories: activity.calories,
       description: activity.description,
-      duration:activity.duration
+      duration: activity.duration,
     }));
 
     setActivityTypes(formatted);
@@ -237,7 +237,6 @@ const StepBasedFitnessPlanner: React.FC<{
 
   // Handle exercise plan submission
   const handleExercisePlanSubmit = () => {
-    
     message.success("Exercise plan created!");
     setCurrent(3);
   };

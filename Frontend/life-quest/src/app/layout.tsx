@@ -12,6 +12,7 @@ import { ExercisePlanProvider } from "@/providers/fitnesspath/exercise-plan";
 import { PathsProvider } from "@/providers/paths";
 import { HealthPathProvider } from "@/providers/health-path-provider/health-provider";
 import { MealPlanProvider } from "@/providers/health-path-provider/meal-plan";
+import { MealProvider } from "@/providers/health-path-provider/meal-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -53,15 +54,17 @@ export default function RootLayout({
                   <FitnessPathProvider>
                     <HealthPathProvider>
                       <MealPlanProvider>
-                        <StepsProvider>
-                          <WeightProvider>
-                            <ActivityTypeProvider>
-                              <ExercisePlanProvider>
-                                {children}
-                              </ExercisePlanProvider>
-                            </ActivityTypeProvider>
-                          </WeightProvider>
-                        </StepsProvider>
+                        <MealProvider>
+                          <StepsProvider>
+                            <WeightProvider>
+                              <ActivityTypeProvider>
+                                <ExercisePlanProvider>
+                                  {children}
+                                </ExercisePlanProvider>
+                              </ActivityTypeProvider>
+                            </WeightProvider>
+                          </StepsProvider>
+                        </MealProvider>
                       </MealPlanProvider>
                     </HealthPathProvider>
                   </FitnessPathProvider>
