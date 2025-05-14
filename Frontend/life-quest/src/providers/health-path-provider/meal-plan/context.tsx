@@ -27,7 +27,7 @@ export interface IMeal {
 // Meal Plan interface
 export interface IMealPlan {
   id?: string;
-  fitnessPathId: string;
+  healthPathId: string;
   name: string;
   status: number;
   meals: IMeal[];

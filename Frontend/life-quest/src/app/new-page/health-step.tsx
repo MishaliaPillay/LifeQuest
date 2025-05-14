@@ -30,6 +30,7 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import Meals from "@/components/path-sign-up/health/meals-ai";
+import MealPlanBuilder from "@/components/path-sign-up/health/meal-plan";
 
 const { Title, Paragraph, Text } = Typography;
 const { Content } = Layout;
@@ -231,13 +232,10 @@ const StepBasedHealthPlanner: React.FC<{
     }
   };
 
-  // Handle exercise plan submission
-  //   const handleExercisePlanSubmit = () => {
-  //     message.success("Exercise plan created!");
-  //     setCurrent(3);
-  //   };
-
-  // Define the steps with enhanced UI
+  const handleMealPlanSubmit = () => {
+    message.success("Exercise plan created!");
+    setCurrent(3);
+  };
   const steps = [
     {
       title: "Basic Info",
@@ -343,6 +341,12 @@ const StepBasedHealthPlanner: React.FC<{
             Create Your Custom Workout Plan
           </Title>
           {/*exercise builder went here */}
+          <MealPlanBuilder
+            availableMeals={meals}
+            onPlanSubmit={handleMealPlanSubmit}
+            healthPathId={healthPathId}
+          />
+
           <div style={{ marginTop: "24px", textAlign: "right" }}>
             <Button
               onClick={() => setCurrent(1)}

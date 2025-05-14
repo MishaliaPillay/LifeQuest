@@ -72,6 +72,8 @@ export const MealPlanProvider = ({
     return instance
       .post(endpoint, plan)
       .then((res) => {
+        console.log("plan", plan);
+        console.log("response", res);
         dispatch(createPlanSuccess(res.data?.result));
       })
       .catch((err) => {
