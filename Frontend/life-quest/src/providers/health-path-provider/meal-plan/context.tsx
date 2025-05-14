@@ -58,7 +58,9 @@ export interface IMealPlanActionContext {
   createPlan: (plan: IMealPlan) => Promise<void>;
   updatePlan: (plan: IMealPlan) => void;
   completePlan: (id: string) => void;
-    getMealPlanDaysByPlanId: (mealPlanId: string) => Promise<void>;
+ 
+  getMealPlanDaysByPlanId: (mealPlanId: string) => Promise<{ result: IMealPlanDay[] }>;
+
 }
 
 // Initial state
