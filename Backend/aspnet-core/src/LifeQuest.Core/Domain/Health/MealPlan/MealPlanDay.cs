@@ -11,6 +11,7 @@ namespace LifeQuest.Domain.Health.MealPlan
         public Guid Id { get; set; }
         public int Order { get; set; }
         public string Description { get; set; }
+        public Guid MealPlanId { get; set; }
         public List<MealPlanDayMeal> MealPlanDayMeals { get; set; }
     }
 }

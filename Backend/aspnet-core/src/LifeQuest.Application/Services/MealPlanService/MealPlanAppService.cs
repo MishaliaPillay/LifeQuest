@@ -40,13 +40,19 @@ namespace LifeQuest.Services.MealPlanService
         {
             _logger.LogInformation("Creating MealPlan for HealthPath: {HealthPathId}", input.HealthPathId);
 
-            // Fetch meals based on meal IDs (this is valid with the current DTO)
+            // Gather all unique meal IDs from the meal plan days
+            var allMealIds = input.MealPlanDays?
+                .SelectMany(d => d.Meals)
+                .Distinct()
+                .ToList() ?? new List<Guid>();
+
+            // Fetch all required meals
             var meals = await _mealRepo.GetAll()
-                .Where(m => input.MealIds.Contains(m.Id))
+                .Where(m => allMealIds.Contains(m.Id))
                 .ToListAsync();
 
-            if (meals.Count != input.MealIds.Count)
-                throw new UserFriendlyException("Some meals not found.");
+            if (meals.Count != allMealIds.Count)
+                throw new UserFriendlyException("Some meals in meal plan days were not found.");
 
             // Fetch HealthPath
             var path = await _pathRepo.GetAll()
@@ -67,51 +73,45 @@ namespace LifeQuest.Services.MealPlanService
                 HealthPathId = input.HealthPathId,
                 Name = input.Name,
                 Status = MealPlanStatus.Active,
-                MealPlanDays = new List<MealPlanDay>() // Initialize the list
+                MealPlanDays = new List<MealPlanDay>()
             };
 
             // Meal Plan Days
             if (input.MealPlanDays != null)
             {
-                foreach (var day in input.MealPlanDays.OrderBy(d => d.Order))  // Order meal plan days by 'Order'
+                foreach (var day in input.MealPlanDays.OrderBy(d => d.Order))
                 {
                     var mealPlanDay = new MealPlanDay
                     {
                         Id = Guid.NewGuid(),
                         Order = day.Order,
                         Description = day.Description,
+                        MealPlanId = plan.Id,
                         MealPlanDayMeals = new List<MealPlanDayMeal>()
                     };
 
-                    // Map meals to this day (we assume meals are assigned based on the day structure)
-                    // Assuming day.Meals contains only meal IDs (Guid)
                     foreach (var mealId in day.Meals)
                     {
-                        var meal = meals.FirstOrDefault(m => m.Id == mealId); // Get the full Meal entity
-
+                        var meal = meals.FirstOrDefault(m => m.Id == mealId);
                         if (meal == null)
                             throw new UserFriendlyException($"Meal with ID {mealId} not found.");
 
-                        var mealPlanDayMeal = new MealPlanDayMeal
+                        mealPlanDay.MealPlanDayMeals.Add(new MealPlanDayMeal
                         {
                             Id = Guid.NewGuid(),
                             MealPlanDayId = mealPlanDay.Id,
                             MealId = meal.Id
-                        };
-
-                        mealPlanDay.MealPlanDayMeals.Add(mealPlanDayMeal);
+                        });
                     }
-
 
                     plan.MealPlanDays.Add(mealPlanDay);
                 }
             }
 
-            // Save the plan to the repository
             await _planRepo.InsertAsync(plan);
-
             return ObjectMapper.Map<MealPlanDto>(plan);
         }
+
 
 
         public async Task<MealPlanDto> GetAsync(Guid id)
