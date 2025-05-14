@@ -15,5 +15,7 @@ namespace LifeQuest.Services.Health.Meal
         Task DeleteMealAsync(Guid id);
         Task<MealDto> GenerateAIMealAsync(GenerateAIMealInputDto input);
         Task<List<MealDto>> GetByMealPlanIdAsync(Guid mealPlanId);
+        Task<GeneratedMealBatchResultDto> GenerateAIMealBatchAsync(GenerateAIMealBatchInputDto input);
+
     }
 }
