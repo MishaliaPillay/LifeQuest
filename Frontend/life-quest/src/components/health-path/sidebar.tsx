@@ -11,7 +11,7 @@ import {
   MenuOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import type { MenuProps } from "antd";
 import styles from "../fitness-path/sidebar.module.css";
 
@@ -23,42 +23,13 @@ interface SidebarProps {
   setDrawerOpen: (open: boolean) => void;
 }
 
-const menuItems: MenuProps["items"] = [
-  {
-    key: "/health-path",
-    icon: <DashboardOutlined />,
-    label: <Link href="/health-path">Dashboard</Link>,
-  },
-  {
-    key: "/health-path/exercise-plan",
-    icon: <BarChartOutlined />,
-    label: <Link href="/health-path/exercise-plan">Meal Plan</Link>,
-  },
-  {
-    key: "/health-path/weight",
-    icon: <TrophyOutlined />,
-    label: <Link href="/health-path/weight">Weight</Link>,
-  },
-
-  {
-    key: "/health-path/profile",
-    icon: <UserOutlined />,
-    label: <Link href="/health-path/profile">Profile</Link>,
-  },
-  {
-    key: "logout",
-    icon: <LogoutOutlined />,
-    label: "Logout",
-    onClick: () => {},
-  },
-];
-
 const Sidebar: React.FC<SidebarProps> = ({
   collapsed,
   drawerOpen,
   setDrawerOpen,
 }) => {
   const pathname = usePathname();
+  const router = useRouter();
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -70,7 +41,42 @@ const Sidebar: React.FC<SidebarProps> = ({
     return () => window.removeEventListener("resize", checkIsMobile);
   }, []);
 
-  const getSelectedKey = () => pathname || "/dashboard";
+  const handleLogout = () => {
+    sessionStorage.removeItem("jwt");
+    sessionStorage.removeItem("cameFromExercisePlan"); // optional
+    router.push("/auth-page");
+  };
+
+  const getSelectedKey = () => pathname || "/health-path";
+
+  const menuItems: MenuProps["items"] = [
+    {
+      key: "/health-path",
+      icon: <DashboardOutlined />,
+      label: <Link href="/health-path">Dashboard</Link>,
+    },
+    {
+      key: "/health-path/exercise-plan",
+      icon: <BarChartOutlined />,
+      label: <Link href="/health-path/exercise-plan">Meal Plan</Link>,
+    },
+    {
+      key: "/health-path/weight",
+      icon: <TrophyOutlined />,
+      label: <Link href="/health-path/weight">Weight</Link>,
+    },
+    {
+      key: "/health-path/profile",
+      icon: <UserOutlined />,
+      label: <Link href="/health-path/profile">Profile</Link>,
+    },
+    {
+      key: "logout",
+      icon: <LogoutOutlined />,
+      label: "Logout",
+      onClick: handleLogout,
+    },
+  ];
 
   if (isMobile) {
     return (
