@@ -33,13 +33,13 @@ export const getHealthPathsPending = createAction<IHealthPathStateContext>(
 );
 
 export const getHealthPathsSuccess = createAction<
-  IHealthPathStateContext,
-  IHealthPath[]
->(HealthPathActionEnums.getHealthPathsSuccess, (healthPaths) => ({
+  IHealthPathStateContext
+ 
+>(HealthPathActionEnums.getHealthPathsSuccess, () => ({
   isPending: false,
   isSuccess: true,
   isError: false,
-  healthPaths,
+  
 }));
 
 export const getHealthPathsError = createAction<IHealthPathStateContext>(
@@ -54,13 +54,12 @@ export const getHealthPathPending = createAction<IHealthPathStateContext>(
 );
 
 export const getHealthPathSuccess = createAction<
-  IHealthPathStateContext,
-  IHealthPath
->(HealthPathActionEnums.getHealthPathSuccess, (currentPath) => ({
+  IHealthPathStateContext
+>(HealthPathActionEnums.getHealthPathSuccess, () => ({
   isPending: false,
   isSuccess: true,
   isError: false,
-  currentPath,
+
 }));
 
 export const getHealthPathError = createAction<IHealthPathStateContext>(

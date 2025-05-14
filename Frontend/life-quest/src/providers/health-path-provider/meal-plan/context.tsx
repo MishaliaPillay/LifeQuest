@@ -8,8 +8,14 @@ export interface IIngredient {
   servingSize: number;
   calories: number;
   protein: number;
-  carbohhydrates: number;
+  carbohydrates: number;
   fats: number;
+}
+export interface IMealPlanDay {
+  order: number;
+  description: string;
+  meals: IMeal[]; // assuming these are meal IDs
+  score: number;
 }
 
 // Meal interface
@@ -27,12 +33,14 @@ export interface IMeal {
 // Meal Plan interface
 export interface IMealPlan {
   id?: string;
-  fitnessPathId: string;
+  healthPathId: string;
   name: string;
   status: number;
   meals: IMeal[];
   isCompleted?: boolean;
+  mealPlanDays?: IMealPlanDay[];
 }
+
 
 // State context interface
 export interface IMealPlanStateContext {
@@ -50,6 +58,9 @@ export interface IMealPlanActionContext {
   createPlan: (plan: IMealPlan) => Promise<void>;
   updatePlan: (plan: IMealPlan) => void;
   completePlan: (id: string) => void;
+ 
+  getMealPlanDaysByPlanId: (mealPlanId: string) => Promise<{ result: IMealPlanDay[] }>;
+
 }
 
 // Initial state

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using LifeQuest.Services.Health.Meal.Dtos;
@@ -15,6 +16,7 @@ namespace LifeQuest.Services.Health.Meal
         Task<MealDto> UpdateMealAsync(UpdateMealDto input);
         Task DeleteMealAsync(Guid id);
         Task<MealDto> UpdateMealScoreAsync(UpdateMealScoreDto input);
+        Task CompleteMealAsync(Guid mealId, Guid personId);
 
         Task<MealDto> GenerateAIMealAsync(GenerateAIMealInputDto input);
         Task<List<MealDto>> GetByMealPlanIdAsync(Guid mealPlanId);

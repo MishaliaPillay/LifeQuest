@@ -72,7 +72,18 @@ export const MealPlanReducer = handleActions<
     [MealPlanActionEnums.completePlanError]: (state, action) => ({
       ...state,
       ...(action.payload ?? {}),
+    }),       [MealPlanActionEnums.getMealPlanDaysError]: (state, action) => ({
+      ...state,
+      ...(action.payload ?? {}),
     }),
+    [MealPlanActionEnums.getMealPlanDaysPending]: (state, action) => ({
+      ...state,
+      ...(action.payload ?? {}),
+    }),
+    [MealPlanActionEnums.getMealPlanDaysSuccess]: (state, action) => ({
+      ...state,
+      ...(action.payload ?? {}),
+    })
   },
   INITIAL_STATE
 );

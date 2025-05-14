@@ -7,7 +7,7 @@ export interface IIngredient {
   name: string;
   servingSize: number;
   calories: number;
-  c: number;
+  protein: number;
   carbohydrates: number;
   fats: number;
 }
