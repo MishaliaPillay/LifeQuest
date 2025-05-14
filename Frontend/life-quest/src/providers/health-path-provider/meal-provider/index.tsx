@@ -8,6 +8,7 @@ import {
   IGenerateMealRequest,
   MealActionContext,
   IIngredient,
+  IGenerateBaseTypeRequest,
 } from "./context";
 import { MealReducer } from "./reducer";
 import { useReducer, useContext } from "react";
@@ -108,17 +109,25 @@ export const MealProvider = ({ children }: { children: React.ReactNode }) => {
       });
   };
 
-  const generateMeals = async (requestData: IGenerateMealRequest) => {
+  const generateMeals = async (
+    requestData: IGenerateMealRequest,
+    count = 2
+  ) => {
     dispatch(generateMealsPending());
 
     const endpoint = `/api/services/app/Meal/GenerateAIMealBatch`;
 
-    try {
-      const res = await instance.post(endpoint, requestData);
-      const meals = res.data?.result;
+    const formattedRequest: IGenerateBaseTypeRequest = {
+      count,
+      baseRequest: requestData,
+    };
 
+    try {
+      const res = await instance.post(endpoint, formattedRequest);
+      const meals = res.data?.result?.items ?? res.data?.result ?? [];
+      console.log("Formatted Request:", formattedRequest);
+      console.log("Generated Meals:", meals);
       dispatch(generateMealsSuccess(meals));
-      console.log("meal made", meals);
       return meals;
     } catch (err) {
       console.error("Error generating meals:", err);
@@ -126,6 +135,7 @@ export const MealProvider = ({ children }: { children: React.ReactNode }) => {
       return [];
     }
   };
+
   const getMealPlan = async (id: string): Promise<IMeal[]> => {
     dispatch(getMealPlanPending());
     const endpoint = `/api/services/app/Meal/GetByMealPlanId?mealPlanId=${id}`;

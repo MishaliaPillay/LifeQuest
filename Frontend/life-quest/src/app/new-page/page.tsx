@@ -15,7 +15,7 @@ import { useAuthActions } from "@/providers/auth-provider";
 import { getId } from "@/utils/decoder";
 import withAuth from "../../hoc/withAuth";
 import StepBasedFitnessPlanner from "./step";
-//import StepBasedHealthPlanner from "./health-step";
+import StepBasedHealthPlanner from "./health-step";
 
 const { Content } = Layout;
 const { Title, Text, Paragraph } = Typography;
@@ -207,7 +207,7 @@ const UserDashboard: React.FC = () => {
         ) : selectedPlan === "fitness" ? (
           <StepBasedFitnessPlanner personId={personId} />
         ) : (
-          <StepBasedFitnessPlanner personId={personId} />
+          <StepBasedHealthPlanner personId={personId} />
         )}
       </Content>
     </Layout>
