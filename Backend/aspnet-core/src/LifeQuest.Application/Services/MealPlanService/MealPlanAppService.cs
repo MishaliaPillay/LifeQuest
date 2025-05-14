@@ -8,6 +8,8 @@ using Abp.UI;
 using LifeQuest.Domain.Health.Meal;
 using LifeQuest.Domain.Health.MealPlan;
 using LifeQuest.Domain.Paths.HealthPath;
+using LifeQuest.Services.Health.Ingredient.Dtos;
+using LifeQuest.Services.Health.Meal.Dtos;
 using LifeQuest.Services.MealPlanService.Dtos;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -133,6 +135,54 @@ namespace LifeQuest.Services.MealPlanService
         {
             await _mealPlanManager.CompletePlanAsync(planId);
         }
+
+        public async Task<List<MealPlanDayWithMealsDto>> GetMealPlanDaysWithMealsByPlanIdAsync(Guid mealPlanId)
+        {
+            var plan = await _planRepo
+                .GetAll()
+                .Include(p => p.MealPlanDays)
+                    .ThenInclude(d => d.MealPlanDayMeals)
+                        .ThenInclude(dm => dm.Meal)
+                            .ThenInclude(m => m.MealIngredients)
+                                .ThenInclude(mi => mi.Ingredient)
+                .FirstOrDefaultAsync(p => p.Id == mealPlanId);
+
+            if (plan == null)
+                throw new UserFriendlyException("MealPlan not found.");
+
+            var dayDtos = plan.MealPlanDays
+                .OrderBy(d => d.Order)
+                .Select(d => new MealPlanDayWithMealsDto
+                {
+                    Order = d.Order,
+                    Description = d.Description,
+                    Score = d.MealPlanDayMeals.Sum(dm => dm.Meal?.Score ?? 0),
+                    Meals = d.MealPlanDayMeals
+                        .Select(dm => new MealDto
+                        {
+                            Id = dm.Meal.Id,
+                            Name = dm.Meal.Name,
+                            Description = dm.Meal.Description,
+                            Calories = dm.Meal.Calories,
+                            IsComplete = dm.Meal.IsComplete,
+                            Score = dm.Meal.Score,
+                            IngredientIds = dm.Meal.MealIngredients.Select(mi => mi.Ingredient.Id).ToList(),
+                            Ingredients = dm.Meal.MealIngredients.Select(mi => new IngredientDto
+                            {
+                                Id = mi.Ingredient.Id,
+                                Name = mi.Ingredient.Name,
+                                ServingSize = mi.Ingredient.ServingSize,
+                                Calories = mi.Ingredient.Calories,
+                                Protein = mi.Ingredient.Protein,
+                                Carbohydrates = mi.Ingredient.Carbohydrates,
+                                Fats = mi.Ingredient.Fats
+                            }).ToList()
+                        }).ToList()
+                }).ToList();
+
+            return dayDtos;
+        }
+
 
         public async Task<List<MealPlanDto>> GetHistoryAsync(Guid healthPathId)
         {
