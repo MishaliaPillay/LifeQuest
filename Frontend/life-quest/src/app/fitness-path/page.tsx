@@ -13,7 +13,8 @@ import {
   Tag,
   Statistic,
   Tabs,
-  App,
+  App,Modal,
+  Button
 } from "antd";
 import {
   FireOutlined,
@@ -45,6 +46,7 @@ import {
 } from "@/providers/fitnesspath/step-provider";
 
 import { IAuth } from "@/providers/auth-provider/context";
+import AvatarAnlysiss from "@/components/avatar/avatar-scan";
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
 
@@ -60,7 +62,7 @@ export default function FitnessDashboard() {
   const [loading, setLoading] = useState(true);
   const [loadingWorkouts, setLoadingWorkouts] = useState(true);
   const [loadingSteps, setLoadingSteps] = useState(true);
-
+  const [isModalOpen, setIsModalOpen] = useState(false); 
 const [person, setPerson] = useState<IAuth>(null); // ideally, type this properly if you have the model
 
   const [exercisePlan, setExercisePlan] = useState([]);
@@ -341,6 +343,13 @@ const [person, setPerson] = useState<IAuth>(null); // ideally, type this properl
     </Text>
   </Card>
 )}
+      <Button
+        type="primary"
+        onClick={() => setIsModalOpen(true)}
+        style={{ marginBottom: 24 }}
+      >
+        Open Avatar Description Generator
+      </Button>
 
 
 
@@ -829,7 +838,16 @@ const [person, setPerson] = useState<IAuth>(null); // ideally, type this properl
             </Tabs>
           </Card>
         </>
-      )}
+      )}      <Modal
+        title="Avatar Description Generator"
+        visible={isModalOpen}
+        onCancel={() => setIsModalOpen(false)}
+        footer={null}
+        width={700} // adjust size as needed
+        destroyOnClose={true} // optional: reset component state when closing
+      >
+        <AvatarAnlysiss />
+      </Modal>
     </div></App>
   );
 }

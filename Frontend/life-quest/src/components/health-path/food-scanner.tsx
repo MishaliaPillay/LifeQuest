@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { analyzeFoodImage } from "../../utils/gemini-service";
-import { useStyles } from "./styles";
+
 import jsPDF from "jspdf";
 import {
   Button,
@@ -15,10 +15,11 @@ import {
 } from "antd";
 import {
   DownloadOutlined,
-  SoundOutlined,
   InboxOutlined,
-} from "@ant-design/icons";
+  SoundOutlined,
 
+} from "@ant-design/icons";
+import styles from "./HealthAnalysisComponent.module.css";
 const { Title, Text, Paragraph } = Typography;
 const { Dragger } = Upload;
 
@@ -75,7 +76,7 @@ const downloadReportAsPDF = (
 };
 
 export default function HealthAnalysisComponent() {
-  const { styles } = useStyles();
+
   const [selectedImage, setSelectedImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [prompt, setPrompt] = useState("");
@@ -149,55 +150,22 @@ export default function HealthAnalysisComponent() {
         Nutrition Image Analyzer
       </Title>
       <Divider />
+<Dragger {...uploadProps} className={styles.upload}>
+  <p className="ant-upload-drag-icon">
+    <InboxOutlined />
+  </p>
+  <p className="ant-upload-text">Click or drag file to this area to upload</p>
+  <p className="ant-upload-hint">Support for a single image upload only</p>
+</Dragger>
 
       <div className={styles.form}>
-        <div>
-          <Title level={4} className={styles.label}>
-            Upload Food Image
-          </Title>
-          <Dragger {...uploadProps}>
-            <p className="ant-upload-drag-icon">
-              <InboxOutlined />
-            </p>
-            <p className="ant-upload-text">
-              Click or drag image to this area to upload
-            </p>
-            <p className="ant-upload-hint">
-              Support for a single image upload. Only image files are allowed.
-            </p>
-          </Dragger>
-        </div>
-
-        {imagePreview && (
-          <div>
-            <Title level={5} className={styles.previewContainer}>
-              Image Preview
-            </Title>
-            <Card
-              variant="borderless"
-              style={{ marginBottom: "20px" }}
-              bodyStyle={{ display: "flex", justifyContent: "center" }}
-            >
-              <img
-                src={imagePreview}
-                alt="Preview"
-                className={styles.previewImage}
-              />
-            </Card>
-          </div>
-        )}
-
-        <div>
-          <Title level={4} className={styles.label}>
-            Additional Context (Optional)
-          </Title>
-          <textarea
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            className={styles.textarea}
-            placeholder="Provide additional context about the food image (e.g., meal type, dietary restrictions)"
-          />
-        </div>
+        {/* ... */}
+        <textarea
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          className={styles.textarea}
+          placeholder="Provide additional context about the food image (e.g., meal type, dietary restrictions)"
+        />
 
         <Button
           type="primary"
@@ -210,12 +178,27 @@ export default function HealthAnalysisComponent() {
         </Button>
       </div>
 
-      {isLoading && (
-        <div style={{ textAlign: "center", marginTop: "20px" }}>
-          <Spin size="large"  />
+      {/* image preview */}
+      {imagePreview && (
+        <div>
+          <Title level={5} className={styles.previewContainer}>
+            Image Preview
+          </Title>
+          <Card
+            variant="borderless"
+            style={{ marginBottom: "20px" }}
+            bodyStyle={{ display: "flex", justifyContent: "center" }}
+          >
+            <img
+              src={imagePreview}
+              alt="Preview"
+              className={styles.previewImage}
+            />
+          </Card>
         </div>
       )}
 
+      {/* analysis */}
       {analysis && (
         <Card className={styles.analysisContainer}>
           <Title level={3} className={styles.analysisTitle}>
@@ -257,6 +240,8 @@ export default function HealthAnalysisComponent() {
           </Space>
         </Card>
       )}
+
+      {/* structured data */}
       {structuredData && (
         <Card className={styles.analysisContainer}>
           <Title level={4}>AI Summary</Title>
@@ -269,7 +254,11 @@ export default function HealthAnalysisComponent() {
           <Paragraph>
             <strong>Food Items:</strong> {structuredData.foodItems.join(", ")}
           </Paragraph>
-          <Button onClick={() => console.log(structuredData)} type="default">
+          <Button
+            onClick={() => console.log(structuredData)}
+            type="default"
+            className={styles.button}
+          >
             Log JSON to Console
           </Button>
         </Card>
