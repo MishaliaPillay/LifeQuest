@@ -22,6 +22,7 @@ import {
   TrophyOutlined,
   CalendarOutlined,
   ArrowUpOutlined,
+  StarFilled,
 } from "@ant-design/icons";
 import {
   LineChart,
@@ -43,6 +44,7 @@ import {
   useStepsState,
 } from "@/providers/fitnesspath/step-provider";
 
+import { IAuth } from "@/providers/auth-provider/context";
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
 
@@ -59,7 +61,8 @@ export default function FitnessDashboard() {
   const [loadingWorkouts, setLoadingWorkouts] = useState(true);
   const [loadingSteps, setLoadingSteps] = useState(true);
 
-  // State for workout plan data
+const [person, setPerson] = useState<IAuth>(null); // ideally, type this properly if you have the model
+
   const [exercisePlan, setExercisePlan] = useState([]);
 
   // Get provider hooks
@@ -68,6 +71,7 @@ export default function FitnessDashboard() {
   const { getFitnessPaths } = useFitnessPathActions();
   const { getSteps } = useStepsActions();
   const { steps } = useStepsState();
+
 
   useEffect(() => {
     const initializeDashboard = async () => {
@@ -82,6 +86,12 @@ export default function FitnessDashboard() {
 
         const id = getId(token);
         const person = await getCurrentPerson(parseInt(id));
+      if (person?.xp !== undefined) {
+
+  setPerson(person);
+}
+
+        console.log("eron",person)
 
         if (!person?.id) {
           message.warning("Person not found for this user.");
@@ -311,10 +321,32 @@ export default function FitnessDashboard() {
           <Spin size="large" />
         </div>
       ) : (
-        <>
+        <>{person && (
+  <Card variant="outlined" style={{ borderRadius: 8, marginBottom: 24 }}>
+    <Title level={4}>Level {person.level}</Title>
+
+    <Progress
+      percent={(person.xp / 5000) * 100}
+      format={() => {
+        const level = person.level;
+     
+        return level >= 10
+          ? `Level ${level} (Max Level)`
+          : `Level ${level} `;
+      }}
+    />
+
+    <Text>
+    <StarFilled style={{ color: "#ff4d4f", marginRight: 8,  }}/>  XP: {person.xp} / 5000
+    </Text>
+  </Card>
+)}
+
+
+
           {/* Overview Cards */}
-          <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
-            <Col xs={24} sm={12} md={6}>
+          <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>  
+            <Col xs={24} sm={12} md={6}>   
       <Card
   variant="outlined"
   style={{
@@ -504,8 +536,8 @@ export default function FitnessDashboard() {
                         percent={workoutProgress}
                         status={workoutProgress >= 100 ? "success" : "active"}
                         strokeColor={{
-                          "0%": "#1890ff",
-                          "100%": "#52c41a",
+                          "0%": "#d0bdf4",
+                          "100%": "#fb003a",
                         }}
                         style={{ marginBottom: 16 }}
                       />

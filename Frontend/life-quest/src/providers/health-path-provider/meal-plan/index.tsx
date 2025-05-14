@@ -6,6 +6,7 @@ import {
   INITIAL_STATE,
   MealPlanStateContext,
   MealPlanActionContext,
+  IMealPlanDay,
 } from "./context";
 import { MealPlanReducer } from "./reducer";
 import { useReducer, useContext } from "react";
@@ -25,6 +26,9 @@ import {
   completePlanPending,
   completePlanSuccess,
   completePlanError,
+  getMealPlanDaysError,
+  getMealPlanDaysPending,
+  getMealPlanDaysSuccess,
 } from "./actions";
 
 export const MealPlanProvider = ({
@@ -49,6 +53,22 @@ export const MealPlanProvider = ({
         dispatch(getPlanError());
       });
   };
+const getMealPlanDaysByPlanId = async (mealPlanId: string): Promise<{ result: IMealPlanDay[] }> => {
+  dispatch(getMealPlanDaysPending());
+  const endpoint = `/api/services/app/MealPlan/GetMealPlanDaysWithMealsByPlanId?mealPlanId=${mealPlanId}`;
+
+  try {
+    const res = await instance.get(endpoint);
+    console.log("res:", res);
+    dispatch(getMealPlanDaysSuccess(res.data?.result));
+    return { result: res.data?.result }; // return it so consumer can use it
+  } catch (err) {
+    console.error("Error fetching meal plan days:", err);
+    dispatch(getMealPlanDaysError());
+    return { result: [] }; // fallback to match the return type
+  }
+};
+
 
   const getPlanHistory = async (personId: string) => {
     dispatch(getPlanHistoryPending());
@@ -72,6 +92,8 @@ export const MealPlanProvider = ({
     return instance
       .post(endpoint, plan)
       .then((res) => {
+        console.log("plan", plan);
+        console.log("response", res);
         dispatch(createPlanSuccess(res.data?.result));
       })
       .catch((err) => {
@@ -119,6 +141,7 @@ export const MealPlanProvider = ({
           createPlan,
           updatePlan,
           completePlan,
+          getMealPlanDaysByPlanId
         }}
       >
         {children}

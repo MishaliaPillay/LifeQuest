@@ -20,6 +20,7 @@ import {
   FireOutlined,
   CheckCircleOutlined,
   ClockCircleOutlined,
+  StarFilled,
 } from "@ant-design/icons";
 import { getId } from "../../../utils/decoder";
 import { useAuthActions } from "../../../providers/auth-provider";
@@ -166,7 +167,7 @@ const router=useRouter();
       const fitnessPaths = await getFitnessPaths(person.id);
       const exercisePlanId = fitnessPaths.exercisePlans[0]?.id;
       const planResponse = await getExercisePlan(exercisePlanId);
-
+console.log("person",person)
       const updatedPlan = planResponse.map((day: IExercisePlanDay) => {
         let difficulty = "easy";
         if (day.calories > 400) difficulty = "medium";
@@ -293,6 +294,9 @@ const router=useRouter();
                     </Tag>
                     <Tag icon={<ClockCircleOutlined />}>
                       {day.estimatedDuration} min
+                    </Tag>
+                    <Tag style={{  backgroundColor:"#FAFA96" }} icon={<StarFilled style={{ color: "#ff4d4f", marginRight: 8,  }}/>}>
+                    Xp: {day.xp}
                     </Tag>
                   </div>
 
