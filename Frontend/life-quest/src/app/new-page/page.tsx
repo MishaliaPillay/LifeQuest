@@ -15,7 +15,7 @@ import { useAuthActions } from "@/providers/auth-provider";
 import { getId } from "@/utils/decoder";
 import withAuth from "../../hoc/withAuth";
 import StepBasedFitnessPlanner from "./step";
-import StepBasedHealthPlanner from "./health-step";
+//import StepBasedHealthPlanner from "./health-step";
 
 const { Content } = Layout;
 const { Title, Text, Paragraph } = Typography;
@@ -108,6 +108,7 @@ const UserDashboard: React.FC = () => {
       try {
         const personData = await getCurrentPerson(userIdNum);
         if (personData?.id) {
+          console.log("person", personData.id);
           setPersonId(personData.id);
         } else {
           message.warning("Person ID not found.");
@@ -206,7 +207,7 @@ const UserDashboard: React.FC = () => {
         ) : selectedPlan === "fitness" ? (
           <StepBasedFitnessPlanner personId={personId} />
         ) : (
-          <StepBasedHealthPlanner personId={personId} />
+          <StepBasedFitnessPlanner personId={personId} />
         )}
       </Content>
     </Layout>

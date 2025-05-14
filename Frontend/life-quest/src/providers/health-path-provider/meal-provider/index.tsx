@@ -111,13 +111,14 @@ export const MealProvider = ({ children }: { children: React.ReactNode }) => {
   const generateMeals = async (requestData: IGenerateMealRequest) => {
     dispatch(generateMealsPending());
 
-    const endpoint = `/api/services/app/Meal/GenerateMeals`;
+    const endpoint = `/api/services/app/Meal/GenerateAIMealBatch`;
 
     try {
       const res = await instance.post(endpoint, requestData);
       const meals = res.data?.result;
 
       dispatch(generateMealsSuccess(meals));
+      console.log("meal made", meals);
       return meals;
     } catch (err) {
       console.error("Error generating meals:", err);
