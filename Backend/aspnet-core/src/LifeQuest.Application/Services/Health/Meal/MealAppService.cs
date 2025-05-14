@@ -16,6 +16,7 @@ using System.Formats.Asn1;
 using System.Xml.Linq;
 using LifeQuest.Services.Health.Ingredient.Dtos;
 using Microsoft.EntityFrameworkCore;
+using LifeQuest.Services.MealPlanService.Dtos;
 
 namespace LifeQuest.Services.Health.Meal
 {
@@ -101,6 +102,33 @@ namespace LifeQuest.Services.Health.Meal
                 Score = m.Score,
             }).ToList();
         }
+
+        public async Task<MealDto> UpdateMealScoreAsync(UpdateMealScoreDto input)
+        {
+            var meal = await _mealRepository
+                .GetAllIncluding(m => m.MealIngredients)
+                .FirstOrDefaultAsync(m => m.Id == input.MealId);
+
+            if (meal == null)
+            {
+                throw new UserFriendlyException("Meal not found.");
+            }
+
+            meal.Score = input.Score;
+
+            var updated = await _mealManager.UpdateMealAsync(meal);
+
+            return new MealDto
+            {
+                Id = updated.Id,
+                Name = updated.Name,
+                Description = updated.Description,
+                Calories = updated.Calories,
+                IngredientIds = updated.MealIngredients.Select(mi => mi.IngredientId).ToList(),
+                Score = updated.Score
+            };
+        }
+
         public async Task<List<MealDto>> GetByMealPlanIdAsync(Guid mealPlanId)
         {
             var meals = await _mealManager.GetByMealPlanIdAsync(mealPlanId);
