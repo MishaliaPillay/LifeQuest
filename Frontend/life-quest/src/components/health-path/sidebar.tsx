@@ -1,18 +1,20 @@
 "use client";
-
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Layout, Menu, Avatar, Drawer, Button } from "antd";
 import {
   DashboardOutlined,
   TrophyOutlined,
+
   UserOutlined,
   BarChartOutlined,
   LogoutOutlined,
   MenuOutlined,
+  MessageOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import type { MenuProps } from "antd";
+import { useUserActions, useUserState } from "@/providers/user-provider";
 import styles from "../fitness-path/sidebar.module.css";
 
 const { Sider } = Layout;
@@ -31,6 +33,17 @@ const Sidebar: React.FC<SidebarProps> = ({
   const pathname = usePathname();
   const router = useRouter();
   const [isMobile, setIsMobile] = useState(false);
+  const { currentUser } = useUserState();
+  const { getCurrentUser } = useUserActions();
+  const hasFetched = useRef(false);
+
+  useEffect(() => {
+    const token = sessionStorage.getItem("jwt");
+    if (token && !currentUser && !hasFetched.current) {
+      hasFetched.current = true;
+      getCurrentUser(token);
+    }
+  }, [currentUser, getCurrentUser]);
 
   useEffect(() => {
     const checkIsMobile = () => {
@@ -41,13 +54,13 @@ const Sidebar: React.FC<SidebarProps> = ({
     return () => window.removeEventListener("resize", checkIsMobile);
   }, []);
 
+  const getSelectedKey = () => pathname || "/health-path";
+
   const handleLogout = () => {
     sessionStorage.removeItem("jwt");
-    sessionStorage.removeItem("cameFromExercisePlan"); // optional
+    sessionStorage.removeItem("cameFromExercisePlan");
     router.push("/auth-page");
   };
-
-  const getSelectedKey = () => pathname || "/health-path";
 
   const menuItems: MenuProps["items"] = [
     {
@@ -56,14 +69,20 @@ const Sidebar: React.FC<SidebarProps> = ({
       label: <Link href="/health-path">Dashboard</Link>,
     },
     {
-      key: "/health-path/exercise-plan",
+      key: "/health-path/meal-plan",
       icon: <BarChartOutlined />,
-      label: <Link href="/health-path/exercise-plan">Meal Plan</Link>,
+      label: <Link href="/health-path/meal-plan">Meal Plan</Link>,
     },
     {
       key: "/health-path/weight",
       icon: <TrophyOutlined />,
       label: <Link href="/health-path/weight">Weight</Link>,
+    },
+
+    {
+      key: "/health-path/chat-fit",
+      icon: <MessageOutlined/>,
+      label: <Link href="/health-path/chat-fit">Chat</Link>,
     },
     {
       key: "/health-path/profile",
@@ -96,8 +115,10 @@ const Sidebar: React.FC<SidebarProps> = ({
           styles={{ body: { padding: 0 } }}
         >
           <div className={styles.drawerHeader}>
-            <Avatar className={styles.avatar}>A</Avatar>
-            <div className={styles.username}>Alex Chen</div>
+            <Avatar className={styles.avatar}>
+              {currentUser?.name?.[0] || "U"}
+            </Avatar>
+            <div className={styles.username}>{currentUser?.name}</div>
           </div>
           <Menu
             mode="inline"
@@ -120,8 +141,12 @@ const Sidebar: React.FC<SidebarProps> = ({
       className={styles.sidebar}
     >
       <div className={styles.avatarContainer}>
-        <Avatar className={styles.avatar}>A</Avatar>
-        {!collapsed && <div className={styles.username}>Alex Chen</div>}
+        <Avatar className={styles.avatar}>
+          {currentUser?.name?.[0] || "U"}
+        </Avatar>
+        {!collapsed && (
+          <div className={styles.username}>{currentUser?.name}</div>
+        )}
       </div>
       <Menu
         mode="inline"

@@ -70,7 +70,7 @@ const [person, setPerson] = useState<any>(null); // ideally, type this properly 
   const { getFitnessPaths } = useFitnessPathActions();
   const { getSteps } = useStepsActions();
   const { steps } = useStepsState();
-const [xp, setXp] = useState(0);
+
 
   useEffect(() => {
     const initializeDashboard = async () => {
@@ -86,7 +86,7 @@ const [xp, setXp] = useState(0);
         const id = getId(token);
         const person = await getCurrentPerson(parseInt(id));
       if (person?.xp !== undefined) {
-  setXp(person.xp);
+
   setPerson(person);
 }
 

@@ -24,6 +24,11 @@ export enum MealPlanActionEnums {
   completePlanPending = "COMPLETE_MEAL_PLAN_PENDING",
   completePlanSuccess = "COMPLETE_MEAL_PLAN_SUCCESS",
   completePlanError = "COMPLETE_MEAL_PLAN_ERROR",
+
+  getMealPlanDaysPending = "GET_MEAL_PLAN_DAYS_PENDING",
+getMealPlanDaysSuccess = "GET_MEAL_PLAN_DAYS_SUCCESS",
+getMealPlanDaysError = "GET_MEAL_PLAN_DAYS_ERROR",
+
 }
 
 // Get a single meal plan
@@ -129,4 +134,32 @@ export const completePlanSuccess = createAction<
 export const completePlanError = createAction<IMealPlanStateContext>(
   MealPlanActionEnums.completePlanError,
   () => ({ isPending: false, isSuccess: false, isError: true })
+);
+// Get meal plan days
+export const getMealPlanDaysPending = createAction<IMealPlanStateContext>(
+  MealPlanActionEnums.getMealPlanDaysPending,
+  () => ({
+    isPending: true,
+    isSuccess: false,
+    isError: false,
+  })
+);
+
+export const getMealPlanDaysSuccess = createAction<
+  IMealPlanStateContext,
+  IMealPlanDay[]
+>(MealPlanActionEnums.getMealPlanDaysSuccess, (mealPlanDays) => ({
+  isPending: false,
+  isSuccess: true,
+  isError: false,
+  mealPlanDays,
+}));
+
+export const getMealPlanDaysError = createAction<IMealPlanStateContext>(
+  MealPlanActionEnums.getMealPlanDaysError,
+  () => ({
+    isPending: false,
+    isSuccess: false,
+    isError: true,
+  })
 );

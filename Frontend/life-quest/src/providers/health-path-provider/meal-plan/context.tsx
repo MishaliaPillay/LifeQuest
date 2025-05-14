@@ -8,13 +8,13 @@ export interface IIngredient {
   servingSize: number;
   calories: number;
   protein: number;
-  carbohhydrates: number;
+  carbohydrates: number;
   fats: number;
 }
 export interface IMealPlanDay {
   order: number;
   description: string;
-  meals: string[]; // assuming these are meal IDs
+  meals: IMeal[]; // assuming these are meal IDs
   score: number;
 }
 
@@ -58,6 +58,7 @@ export interface IMealPlanActionContext {
   createPlan: (plan: IMealPlan) => Promise<void>;
   updatePlan: (plan: IMealPlan) => void;
   completePlan: (id: string) => void;
+    getMealPlanDaysByPlanId: (mealPlanId: string) => Promise<void>;
 }
 
 // Initial state

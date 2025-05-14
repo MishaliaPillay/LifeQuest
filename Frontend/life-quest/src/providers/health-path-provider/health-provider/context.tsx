@@ -63,7 +63,7 @@ export interface IHealthPathStateContext {
 // Action Context
 export interface IHealthPathActionContext {
   getHealthPaths: (personId: string) => Promise<IHealthPath[]>;
-  getHealthPath: (id: string) => void;
+  getHealthPath: (id: string) => Promise<IHealthPath>;
   createHealthPath: (path: IHealthPath) => Promise<IHealthPath>;
   updateHealthPath: (path: IHealthPath) => void;
   deleteHealthPath: (id: string) => void;

@@ -18,7 +18,7 @@ import {
 } from "antd";
 import { useUserState } from "@/providers/user-provider";
 import { useHealthPathActions } from "@/providers/health-path-provider/health-provider";
-import ExercisePlanBuilder from "../../components/path-sign-up/fitness/exercise-plan";
+
 import { useRouter } from "next/navigation";
 import {
   RocketOutlined,

@@ -25,6 +25,9 @@ import {
   completePlanPending,
   completePlanSuccess,
   completePlanError,
+  getMealPlanDaysError,
+  getMealPlanDaysPending,
+  getMealPlanDaysSuccess,
 } from "./actions";
 
 export const MealPlanProvider = ({
@@ -49,6 +52,21 @@ export const MealPlanProvider = ({
         dispatch(getPlanError());
       });
   };
+const getMealPlanDaysByPlanId = async (mealPlanId: string) => {
+  dispatch(getMealPlanDaysPending());
+  const endpoint = `/api/services/app/MealPlan/GetMealPlanDaysWithMealsByPlanId?mealPlanId=${mealPlanId}`;
+
+  return instance
+    .get(endpoint)
+    .then((res) => {
+      console.log("resss",res)
+      dispatch(getMealPlanDaysSuccess(res.data?.result));
+    })
+    .catch((err) => {
+      console.error("Error fetching meal plan days:", err);
+      dispatch(getMealPlanDaysError());
+    });
+};
 
   const getPlanHistory = async (personId: string) => {
     dispatch(getPlanHistoryPending());
@@ -121,6 +139,7 @@ export const MealPlanProvider = ({
           createPlan,
           updatePlan,
           completePlan,
+          getMealPlanDaysByPlanId
         }}
       >
         {children}

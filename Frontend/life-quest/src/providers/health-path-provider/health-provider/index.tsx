@@ -53,18 +53,22 @@ export const HealthPathProvider = ({
     }
   };
 
-  const getHealthPath = async (id: string) => {
-    dispatch(getHealthPathPending());
-    const endpoint = `/api/services/app/HealthPath/Get?input=${id}`;
+const getHealthPath = async (id: string): Promise<IHealthPath> => {
+  dispatch(getHealthPathPending());
+  const endpoint = `/api/services/app/HealthPath/GetByPersonId?personId=${id}`;
 
-    try {
-      const response = await instance.get(endpoint);
-      dispatch(getHealthPathSuccess(response.data?.result));
-    } catch (error) {
-      console.error("Error fetching health path:", error);
-      dispatch(getHealthPathError());
-    }
-  };
+  try {
+    const response = await instance.get(endpoint);
+    const healthPath = response.data?.result;
+    dispatch(getHealthPathSuccess(healthPath));
+    return healthPath; // <-- This line fixes the error
+  } catch (error) {
+    console.error("Error fetching health path:", error);
+    dispatch(getHealthPathError());
+    throw error; // optional: rethrow so caller can handle the error
+  }
+};
+
 
   const createHealthPath = async (
     healthPath: IHealthPath
