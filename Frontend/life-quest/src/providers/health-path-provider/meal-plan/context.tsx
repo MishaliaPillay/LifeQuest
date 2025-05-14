@@ -11,6 +11,12 @@ export interface IIngredient {
   carbohhydrates: number;
   fats: number;
 }
+export interface IMealPlanDay {
+  order: number;
+  description: string;
+  meals: string[]; // assuming these are meal IDs
+  score: number;
+}
 
 // Meal interface
 export interface IMeal {
@@ -32,7 +38,9 @@ export interface IMealPlan {
   status: number;
   meals: IMeal[];
   isCompleted?: boolean;
+  mealPlanDays?: IMealPlanDay[];
 }
+
 
 // State context interface
 export interface IMealPlanStateContext {

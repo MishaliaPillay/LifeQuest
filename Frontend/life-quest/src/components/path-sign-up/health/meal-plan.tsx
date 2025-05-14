@@ -27,6 +27,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { useMealPlanActions } from "@/providers/health-path-provider/meal-plan";
+import { IMealPlan } from "@/providers/health-path-provider/meal-plan/context";
 
 const { Title, Text } = Typography;
 const { TabPane } = Tabs;
@@ -229,17 +230,20 @@ const MealPlanBuilder = ({ availableMeals, healthPathId, onPlanSubmit }) => {
     const loadingMessage = message.loading("Creating your Meal Plan...", 0);
     setIsSubmitting(true);
 
-    const plan = {
-      healthPathId,
-      name: "My Meal Plan",
-      status: 0,
-      meals: [],
-      days: dayMeals.map((d) => ({
-        description: `Day ${d.day}`,
-        mealIds: d.meals.map((m) => m.mealId),
-        calories: 0,
-      })),
-    };
+const plan: IMealPlan = {
+  healthPathId,
+  name: "My Meal Plan",
+  status: 0, // or "Active" or any appropriate enum/value
+  meals: dayMeals.flatMap((d) => d.meals.map((m) => m.mealId)),
+  mealPlanDays: dayMeals.map((d, index) => ({
+    order: index,
+    description: `Day ${d.day}`,
+    meals: d.meals.map((m) => m.mealId),
+    score: 0,
+  })),
+};
+
+
 
     try {
       await createPlan(plan);
