@@ -1,0 +1,68 @@
+"use client";
+import { createContext } from "react";
+
+// Ingredient interface
+export interface IIngredient {
+  id: string;
+  name: string;
+  servingSize: number;
+  calories: number;
+  protein: number;
+  carbohhydrates: number;
+  fats: number;
+}
+
+// Meal interface
+export interface IMeal {
+  id: string;
+  name: string;
+  description: string;
+  calories: number;
+  ingredientIds: string[];
+  isComplete: boolean;
+  ingredients: IIngredient[];
+  score: number;
+}
+
+// Meal Plan interface
+export interface IMealPlan {
+  id?: string;
+  fitnessPathId: string;
+  name: string;
+  status: number;
+  meals: IMeal[];
+  isCompleted?: boolean;
+}
+
+// State context interface
+export interface IMealPlanStateContext {
+  isPending: boolean;
+  isSuccess: boolean;
+  isError: boolean;
+  currentPlan?: IMealPlan;
+  planHistory?: IMealPlan[];
+}
+
+// Action context interface
+export interface IMealPlanActionContext {
+  getPlan: (id: string) => void;
+  getPlanHistory: (personId: string) => void;
+  createPlan: (plan: IMealPlan) => Promise<void>;
+  updatePlan: (plan: IMealPlan) => void;
+  completePlan: (id: string) => void;
+}
+
+// Initial state
+export const INITIAL_STATE: IMealPlanStateContext = {
+  isPending: false,
+  isSuccess: false,
+  isError: false,
+  planHistory: [],
+};
+
+// Create contexts
+export const MealPlanStateContext =
+  createContext<IMealPlanStateContext>(INITIAL_STATE);
+export const MealPlanActionContext = createContext<
+  IMealPlanActionContext | undefined
+>(undefined);
