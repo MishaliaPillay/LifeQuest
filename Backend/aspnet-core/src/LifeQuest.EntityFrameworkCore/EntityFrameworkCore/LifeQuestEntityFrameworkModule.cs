@@ -1,4 +1,5 @@
-﻿using Abp.EntityFrameworkCore.Configuration;
+﻿using Abp.Dependency;
+using Abp.EntityFrameworkCore.Configuration;
 using Abp.Modules;
 using Abp.Reflection.Extensions;
 using Abp.Zero.EntityFrameworkCore;
@@ -17,7 +18,11 @@ public class LifeQuestEntityFrameworkModule : AbpModule
     public bool SkipDbSeed { get; set; }
 
     public override void PreInitialize()
+
     {
+        //IocManager.RegisterIfNot<ITransientDependency, LifeQuestDbSeedContributor>();
+
+        //IocManager.Register<ISeedContributor, LevelDefinitionSeeder>();
         if (!SkipDbContextRegistration)
         {
             Configuration.Modules.AbpEfCore().AddDbContext<LifeQuestDbContext>(options =>
@@ -32,6 +37,7 @@ public class LifeQuestEntityFrameworkModule : AbpModule
                 }
             });
         }
+
     }
 
     public override void Initialize()
@@ -41,6 +47,8 @@ public class LifeQuestEntityFrameworkModule : AbpModule
 
     public override void PostInitialize()
     {
+        //var seedContributor = IocManager.Resolve<LifeQuestDbSeedContributor>();
+        //seedContributor.SeedAsync().Wait();
         if (!SkipDbSeed)
         {
             SeedHelper.SeedHostDb(IocManager);
