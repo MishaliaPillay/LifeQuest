@@ -84,9 +84,9 @@ const Sidebar: React.FC<SidebarProps> = ({
       label: <Link href="/health-path/food-scan">Scan Meal</Link>,
     },
     {
-      key: "/fitness-path/chat-fit",
+      key: "/health-path/chat-fit",
       icon: <MessageOutlined />,
-      label: <Link href="/fitness-path/chat-fit">Chat</Link>,
+      label: <Link href="/health-path/chat-fit">Chat</Link>,
     },
     {
       key: "/health-path/profile",
