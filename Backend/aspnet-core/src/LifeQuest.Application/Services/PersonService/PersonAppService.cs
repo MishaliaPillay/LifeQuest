@@ -157,7 +157,8 @@ namespace LifeQuest.Services.PersonService
             {
                 key = apiKey,
                 prompt = fullPrompt,
-                negative_prompt = "...",
+                negative_prompt = "(worst quality:2), (low quality:2), (normal quality:2), (jpeg artifacts), (blurry), (duplicate), (morbid), (mutilated), (out of frame), (extra limbs), (bad anatomy), (disfigured), (deformed), (cross-eye), (glitch), (oversaturated), (overexposed), (underexposed), (bad proportions), (bad hands), (bad feet), (cloned face), (long neck), (missing arms), (missing legs), (extra fingers), (fused fingers), (poorly drawn hands), (poorly drawn face), (mutation), (deformed eyes), watermark, text, logo, signature, grainy, tiling, censored, nsfw, ugly, blurry eyes, noisy image, bad lighting, unnatural skin, asymmetry",
+
                 samples = "1",
                 height = "1024",
                 width = "1024",
@@ -168,20 +169,7 @@ namespace LifeQuest.Services.PersonService
                 track_id = (string?)null
             };
 
-            var requestBody = new
-            {
-                key = "NkF3yJlvyfwJ6wUM359xLBE6O4VF0t33Bn4i0KTnGclxb0hSejb6ktSIQb1F",
-                prompt = fullPrompt,
-                negative_prompt = "(worst quality:2), (low quality:2), (normal quality:2), (jpeg artifacts), (blurry), (duplicate), (morbid), (mutilated), (out of frame), (extra limbs), (bad anatomy), (disfigured), (deformed), (cross-eye), (glitch), (oversaturated), (overexposed), (underexposed), (bad proportions), (bad hands), (bad feet), (cloned face), (long neck), (missing arms), (missing legs), (extra fingers), (fused fingers), (poorly drawn hands), (poorly drawn face), (mutation), (deformed eyes), watermark, text, logo, signature, grainy, tiling, censored, nsfw, ugly, blurry eyes, noisy image, bad lighting, unnatural skin, asymmetry",
-                samples = "1",
-                height = "1024",
-                width = "1024",
-                safety_checker = false,
-                seed = (string?)null,
-                base64 = false,
-                webhook = (string?)null,
-                track_id = (string?)null
-            };
+
 
             var jsonRequest = JsonSerializer.Serialize(requestBody);
             var httpContent = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
