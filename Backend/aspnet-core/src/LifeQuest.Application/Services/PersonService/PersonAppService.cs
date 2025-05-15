@@ -277,5 +277,22 @@ namespace LifeQuest.Services.PersonService
             // Use AutoMapper to map Person to PersonResponseDto with PathId
             return _mapper.Map<PersonResponseDto>(updatedPerson);
         }
+
+
+        public async Task<PersonResponseDto> UpdateAvatarDescriptionAsync(UpdateAvatarDescriptionDto input)
+        {
+            var person = await _repository.FirstOrDefaultAsync(input.PersonId);
+            if (person == null)
+            {
+                throw new UserFriendlyException("Person not found.");
+            }
+
+            person.AvatarDescription = input.AvatarDescription;
+
+            await _repository.UpdateAsync(person);
+
+            return _mapper.Map<PersonResponseDto>(person);
+        }
+
     }
 }
