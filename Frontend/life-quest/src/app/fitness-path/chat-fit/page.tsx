@@ -12,7 +12,9 @@ const { Title, Paragraph } = Typography;
 
 const ChatPage = () => {
   const [userMessage, setUserMessage] = useState("");
-  const [chatLog, setChatLog] = useState<{ role: string; content: string }[]>([]);
+  const [chatLog, setChatLog] = useState<{ role: string; content: string }[]>(
+    []
+  );
   const [loading, setLoading] = useState(false);
 
   const handleSend = async () => {
@@ -29,16 +31,22 @@ const ChatPage = () => {
       const aiReply = await fetchAIResponse(updatedMessages);
 
       if (aiReply) {
-        setChatLog([...updatedMessages, { role: "assistant", content: aiReply }]);
+        setChatLog([
+          ...updatedMessages,
+          { role: "assistant", content: aiReply },
+        ]);
       } else {
         antdMessage.error("No valid response from AI.");
         setChatLog([
           ...updatedMessages,
-          { role: "assistant", content: "Sorry, I couldn't generate a reply. Please try again." },
+          {
+            role: "assistant",
+            content: "Sorry, I couldn't generate a reply. Please try again.",
+          },
         ]);
       }
     } catch (error) {
-      antdMessage.error("Failed to fetch AI response.",error);
+      antdMessage.error("Failed to fetch AI response.", error);
     } finally {
       setLoading(false);
     }
@@ -48,7 +56,8 @@ const ChatPage = () => {
     <div className={styles.container}>
       <Title level={2}>🧭 Life Quest & Fitness Path Guide</Title>
       <Paragraph type="secondary">
-        Ask personalized questions about your goals, health, and mission — and get insightful, AI-powered guidance.
+        Ask personalized questions about your goals, health, and mission — and
+        get insightful, AI-powered guidance.
       </Paragraph>
 
       <ChatWindow messages={chatLog} />

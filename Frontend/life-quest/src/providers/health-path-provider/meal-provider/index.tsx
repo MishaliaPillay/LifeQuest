@@ -249,16 +249,19 @@ export const MealProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const completeMeal = async (activityId: string): Promise<void> => {
+  const completeMeal = async (
+    mealId: string,
+    personId: string
+  ): Promise<void> => {
     dispatch(markCompletePlanPending());
 
-    const endpoint = `/api/services/app/Activity/MarkActivityAsComplete?activityId=${activityId}`;
+    const endpoint = `/api/services/app/Meal/CompleteMeal?mealId=${mealId}&personId=${personId}`;
 
     try {
       const response = await instance.post(endpoint);
       dispatch(markCompletePlanSuccess(response.data?.result));
     } catch (err) {
-      console.error("Error marking activity as complete:", err);
+      console.error("Error marking meal as complete:", err);
       dispatch(markCompletePlanError());
     }
   };

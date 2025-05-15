@@ -53,7 +53,7 @@ export interface IMealActionContext {
   deleteMeal: (id: string) => void;
   generateMeals: (requestData: IGenerateMealRequest) => void;
   getMealPlan: (id: string) => Promise<IMeal[]>;
-  completeMeal: (id: string) => void;
+  completeMeal: (mealId: string, personId: string) => void;
 }
 
 // Initial state for meals
