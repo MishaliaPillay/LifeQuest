@@ -72,7 +72,7 @@ export const MealProvider = ({ children }: { children: React.ReactNode }) => {
       const res = await instance.post(endpoint, meal);
 
       dispatch(createMealSuccess(res.data?.result));
-      console.log("yayy");
+  
       return res.data?.result; // return the created meal object
     } catch (err) {
       console.error("Error creating meal:", err);
