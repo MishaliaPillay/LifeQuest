@@ -80,7 +80,7 @@ export default function MealPlanPage() {
         const mealsResponse = await getMealPlanDaysByPlanId(planId);
         setMealPlanDays(mealsResponse?.result ?? []);
       } catch (err) {
-        message.error("Failed to load health path.");
+        message.error("Failed to load health path.", err);
       } finally {
         setLoading(false);
       }
@@ -124,7 +124,7 @@ export default function MealPlanPage() {
         setSelectedMeal(null);
       }
     } catch (err) {
-      message.error("Failed to mark meal as complete.");
+      message.error("Failed to mark meal as complete.", err);
     } finally {
       if (closeModal) {
         setModalLoading(false);
@@ -148,7 +148,7 @@ export default function MealPlanPage() {
       sessionStorage.setItem("cameFromExercisePlan", "true");
       router.push("/new-page");
     } catch (err) {
-      message.error("Failed to complete meal plan.");
+      message.error("Failed to complete meal plan.", err);
     } finally {
       setCompleting(false);
     }
