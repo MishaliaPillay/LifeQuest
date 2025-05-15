@@ -18,9 +18,9 @@ export enum AuthActionEnums {
   signOutSuccess = "SIGN_OUT_SUCCESS",
   signOutError = "SIGN_OUT_ERROR",
 
-  getCurrentPersonPending = "GET_CURRENT_PERSON_PENDING", // New action for pending state
-  getCurrentPersonSuccess = "GET_CURRENT_PERSON_SUCCESS", // New action for success state
-  getCurrentPersonError = "GET_CURRENT_PERSON_ERROR", // New action for error state
+  getCurrentPersonPending = "GET_CURRENT_PERSON_PENDING",
+  getCurrentPersonSuccess = "GET_CURRENT_PERSON_SUCCESS",
+  getCurrentPersonError = "GET_CURRENT_PERSON_ERROR",
 }
 
 // SIGN UP ACTIONS

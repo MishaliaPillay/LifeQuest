@@ -94,7 +94,7 @@ export default function WorkoutPlanPage() {
         }
 
         const planResponse = await getExercisePlan(exercisePlanId);
-        console.log(planResponse);
+
         const enhancedPlan = planResponse.map((day: IExercisePlanDay) => {
           let difficulty = "easy";
           if (day.calories > 400) difficulty = "medium";
@@ -167,7 +167,7 @@ export default function WorkoutPlanPage() {
       const fitnessPaths = await getFitnessPaths(person.id);
       const exercisePlanId = fitnessPaths.exercisePlans[0]?.id;
       const planResponse = await getExercisePlan(exercisePlanId);
-      console.log("person", person);
+     
       const updatedPlan = planResponse.map((day: IExercisePlanDay) => {
         let difficulty = "easy";
         if (day.calories > 400) difficulty = "medium";

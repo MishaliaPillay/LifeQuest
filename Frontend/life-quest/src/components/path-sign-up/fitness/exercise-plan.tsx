@@ -253,7 +253,7 @@ const ExercisePlanBuilder = ({
 
     try {
       await createPlan(plan);
-      console.log("dddd",plan)
+
       // Close loading message
       setTimeout(loadingMessage, 0);
       message.success({
