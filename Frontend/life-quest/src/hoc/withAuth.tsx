@@ -54,7 +54,14 @@ export const useAuthRouting = () => {
                 }
                 break;
               case "healthpath":
-                router.push("/health-path");
+                if (cameFromExercisePlan === "true") {
+                  router.push("/new-page");
+                  sessionStorage.removeItem("cameFromExercisePlan"); // Clear flag after routing
+                } else {
+                  // Otherwise, route to fitness path
+                  router.push("/health-path");
+                }
+
                 break;
               default:
                 router.push("/new-page");
@@ -87,7 +94,7 @@ export const useAuthRouting = () => {
 const withAuth = (WrappedLayout: React.ComponentType<LayoutProps>) => {
   const WithAuthWrapper: React.FC<LayoutProps> = ({ children, ...props }) => {
     const { routeUserAfterAuth } = useAuthRouting();
-const router =useRouter()
+    const router = useRouter();
     useEffect(() => {
       // Get JWT token from session storage
       const token = sessionStorage.getItem("jwt");

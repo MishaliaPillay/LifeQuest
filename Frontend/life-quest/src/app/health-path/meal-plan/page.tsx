@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useEffect, useState } from "react";
 import { message, Spin, Card, Modal, Button, Progress } from "antd";
 import { useAuthActions } from "../../../providers/auth-provider";
@@ -83,7 +83,9 @@ export default function HealthPathPage() {
   const renderIngredients = (ingredients: IIngredient[]) => {
     return ingredients.map((ingredient, index) => (
       <div key={index}>
-        <p><strong>{ingredient.name}</strong> ({ingredient.calories} cal)</p>
+        <p>
+          <strong>{ingredient.name}</strong> ({ingredient.calories} cal)
+        </p>
         <ul>
           <li>Protein: {ingredient.protein}g</li>
           <li>Carbs: {ingredient.carbohydrates}g</li>
@@ -103,12 +105,14 @@ export default function HealthPathPage() {
 
     try {
       await completePlan(mealPlanId);
-      message.success("Meal plan completed!");
+
       sessionStorage.setItem("cameFromExercisePlan", "true");
+      router.push("/new-page");
+      message.success("Meal plan completed!");
       launchConfetti(); // Trigger confetti after completing the plan
-      router.push("/new-page"); // Replace with actual next page
+      // Replace with actual next page
     } catch (error) {
-      message.error("Failed to complete meal plan.",error);
+      message.error("Failed to complete meal plan.", error);
     } finally {
       setCompleting(false);
     }
@@ -121,9 +125,12 @@ export default function HealthPathPage() {
 
   // Calculate meal plan completion progress
   const completedMeals = mealPlanDays.reduce((acc, day) => {
-    return acc + day.meals.filter(meal => meal.isComplete).length;
+    return acc + day.meals.filter((meal) => meal.isComplete).length;
   }, 0);
-  const totalMeals = mealPlanDays.reduce((acc, day) => acc + day.meals.length, 0);
+  const totalMeals = mealPlanDays.reduce(
+    (acc, day) => acc + day.meals.length,
+    0
+  );
   const progress = totalMeals ? (completedMeals / totalMeals) * 100 : 0;
 
   return (
@@ -163,13 +170,23 @@ export default function HealthPathPage() {
                 bordered
                 onClick={() => handleCardClick(day.meals[0])}
               >
-                <p><strong>Score:</strong> {day.score}</p>
-                <p><strong>Meals:</strong></p>
+                <p>
+                  <strong>Score:</strong> {day.score}
+                </p>
+                <p>
+                  <strong>Meals:</strong>
+                </p>
                 {day.meals?.map((meal, mealIdx) => (
                   <div key={mealIdx} style={{ marginBottom: "0.5rem" }}>
-                    <p><strong>{meal.name || "Meal"}</strong>: {meal.description}</p>
-                    <p><strong>Calories:</strong> {meal.calories}</p>
-                    <Button onClick={() => handleCompleteMeal(meal.id)}>Complete Meal</Button>
+                    <p>
+                      <strong>{meal.name || "Meal"}</strong>: {meal.description}
+                    </p>
+                    <p>
+                      <strong>Calories:</strong> {meal.calories}
+                    </p>
+                    <Button onClick={() => handleCompleteMeal(meal.id)}>
+                      Complete Meal
+                    </Button>
                   </div>
                 ))}
               </Card>
@@ -198,14 +215,18 @@ export default function HealthPathPage() {
                 onClick={() => handleCompleteMeal(selectedMeal?.id || "")}
               >
                 Complete Meal
-              </Button>
+              </Button>,
             ]}
             width={600}
           >
             {selectedMeal && (
               <div>
-                <p><strong>Description:</strong> {selectedMeal.description}</p>
-                <p><strong>Calories:</strong> {selectedMeal.calories}</p>
+                <p>
+                  <strong>Description:</strong> {selectedMeal.description}
+                </p>
+                <p>
+                  <strong>Calories:</strong> {selectedMeal.calories}
+                </p>
                 <h4>Ingredients:</h4>
                 {renderIngredients(selectedMeal.ingredients)}
               </div>
