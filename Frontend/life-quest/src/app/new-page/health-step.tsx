@@ -194,7 +194,7 @@ const StepBasedHealthPlanner: React.FC<{
     setMeals(formatted);
   };
   const goDashboard = () => {
-    router.push("/fitness-path");
+    router.push("/health-path");
   };
 
   // Handle basic info form submission

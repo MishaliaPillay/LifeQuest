@@ -10,7 +10,7 @@ import { IMeal } from "@/providers/health-path-provider/meal-plan/context";
 import { useRouter } from "next/navigation";
 import { IHealthPath } from "@/providers/health-path-provider/health-provider/context";
 import { launchConfetti } from "../../../utils/confetti"; // Import your confetti utility
-
+import { useMealActions } from "@/providers/health-path-provider/meal-provider";
 interface IMealPlanDay {
   order: number;
   description?: string;
@@ -29,7 +29,7 @@ export default function HealthPathPage() {
   const { getHealthPath, getHealthPaths } = useHealthPathActions();
   const { getMealPlanDaysByPlanId, completePlan } = useMealPlanActions();
   const router = useRouter();
-
+  const { completeMeal } = useMealActions();
   useEffect(() => {
     const fetchHealthPath = async () => {
       try {
@@ -118,9 +118,34 @@ export default function HealthPathPage() {
     }
   };
 
-  const handleCompleteMeal = (mealId: string) => {
-    console.log("Meal completed, ID:", mealId);
-    launchConfetti(); // Trigger confetti when a meal is completed
+  const handleCompleteMeal = async (mealId: string) => {
+    if (!mealId) return;
+
+    setCompleting(true);
+
+    try {
+      const token = sessionStorage.getItem("jwt");
+      if (!token) throw new Error("JWT not found");
+
+      const id = getId(token);
+      const person = await getCurrentPerson(parseInt(id));
+
+      await completeMeal(mealId, person.id); // 🔥 Actually call API to complete the meal
+      console.log("meal is", mealId);
+      // Refresh meal plan days
+      if (mealPlanId) {
+        const mealsResponse = await getMealPlanDaysByPlanId(mealPlanId);
+        setMealPlanDays(mealsResponse?.result ?? []);
+      }
+
+      launchConfetti();
+      message.success("Meal marked as complete!");
+    } catch (err) {
+      console.error("Failed to mark meal as complete:", err);
+      message.error("Failed to mark meal as complete.");
+    } finally {
+      setCompleting(false);
+    }
   };
 
   // Calculate meal plan completion progress
