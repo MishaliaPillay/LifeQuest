@@ -64,19 +64,21 @@ export const MealProvider = ({ children }: { children: React.ReactNode }) => {
       throw err;
     }
   };
-  const createMeal = async (meal: IMeal) => {
+  const createMeal = async (meal: Partial<IMeal>): Promise<IMeal> => {
     dispatch(createMealPending());
     const endpoint = `/api/services/app/Meal/CreateMeal`;
 
-    return instance
-      .post(endpoint, meal)
-      .then((res) => {
-        dispatch(createMealSuccess(res.data?.result));
-      })
-      .catch((err) => {
-        console.error("Error creating meal:", err);
-        dispatch(createMealError());
-      });
+    try {
+      const res = await instance.post(endpoint, meal);
+
+      dispatch(createMealSuccess(res.data?.result));
+      console.log("yayy", res.data?.result);
+      return res.data?.result; // return the created meal object
+    } catch (err) {
+      console.error("Error creating meal:", err);
+      dispatch(createMealError());
+      throw err; // rethrow to handle in caller
+    }
   };
 
   const updateMeal = async (meal: IMeal) => {

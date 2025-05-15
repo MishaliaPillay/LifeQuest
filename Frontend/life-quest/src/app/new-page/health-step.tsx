@@ -186,6 +186,10 @@ const StepBasedHealthPlanner: React.FC<{
     const formatted = generatedMeals.map((meal) => ({
       id: meal.id,
       name: `${meal.name} (Calories: ${meal.calories})`,
+      description: meal.description || "",
+      calories: meal.calories || 0,
+      ingredientIds: meal.ingredientIds || [],
+      ingredients: meal.ingredients || [],
       servingSize: meal.servingSize,
       protein: meal.protein,
       carbohydrates: meal.carbohydrates,
@@ -193,6 +197,7 @@ const StepBasedHealthPlanner: React.FC<{
     }));
     setMeals(formatted);
   };
+
   const goDashboard = () => {
     router.push("/health-path");
   };
