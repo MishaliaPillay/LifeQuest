@@ -49,6 +49,7 @@ import {
 
 import { IAuth } from "@/providers/auth-provider/context";
 import AvatarAnalysis from "@/components/avatar/avatar-scan";
+import { useRouter } from "next/navigation";
 
 const { Title, Text } = Typography;
 const { TabPane } = Tabs;
@@ -70,7 +71,7 @@ export default function FitnessDashboard() {
   const [mealPlan, setMealPlan] = useState([]);
   const { getMealPlanDaysByPlanId } = useMealPlanActions();
   const { getCurrentPerson, createAvatar } = useAuthActions();
-
+  const router = useRouter();
   const { getHealthPath, getHealthPaths } = useHealthPathActions();
   const { getSteps } = useStepsActions();
   const { steps } = useStepsState();
@@ -358,6 +359,7 @@ export default function FitnessDashboard() {
         <Button
           type="primary"
           style={{ display: "block", margin: "20px auto" }}
+          loading={loading}
           onClick={() => {
             if (!person?.id) {
               message.error("Person ID is missing");
@@ -365,6 +367,7 @@ export default function FitnessDashboard() {
             }
             createAvatar(person?.id)
               .then(() => {
+                router.push("/health-path");
                 message.success("Avatar created successfully!");
               })
               .catch((error) => {
