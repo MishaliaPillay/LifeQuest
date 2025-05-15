@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Text.Json;
+using System.Text;
 using System.Threading.Tasks;
 using Abp.Application.Services;
 using Abp.Application.Services.Dto;
@@ -14,6 +17,7 @@ using LifeQuest.Services.PersonService.Dtos;
 using LifeQuest.Services.PersonService.Dtos.LifeQuest.Services.PersonService.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace LifeQuest.Services.PersonService
 {
@@ -23,20 +27,23 @@ namespace LifeQuest.Services.PersonService
     {
         private readonly PersonManager _personManager;
         private readonly IRepository<Person, Guid> _repository;
-        private readonly IRepository<LevelDefinition> _levelDefinitionRepository; // Reference to level definitions
+        private readonly IRepository<LevelDefinition> _levelDefinitionRepository;
         private readonly IMapper _mapper;
+        private readonly ILogger<PersonAppService> _logger; // Add this line
 
         public PersonAppService(
             IRepository<Person, Guid> repository,
             PersonManager personManager,
             IRepository<LevelDefinition> levelDefinitionRepository,
-            IMapper mapper
+            IMapper mapper,
+            ILogger<PersonAppService> logger // Add this parameter
         ) : base(repository)
         {
             _repository = repository;
             _personManager = personManager;
             _levelDefinitionRepository = levelDefinitionRepository;
             _mapper = mapper;
+            _logger = logger; // Assign it here
         }
 
         // Method to Add XP to the Person
@@ -125,6 +132,139 @@ namespace LifeQuest.Services.PersonService
             return _mapper.Map<PersonResponseDto>(updated);
         }
 
+        public async Task<PersonResponseDto> GenerateAndSaveAvatarAsync(Guid personId)
+        {
+            var person = await _repository.GetAsync(personId);
+            if (person == null)
+                throw new UserFriendlyException("Person not found");
+
+            var httpClient = new HttpClient();
+
+            // Default style and safety prompt
+            var defaultPrompt = "3D chibi style character, safe for work, high quality, colorful, big expressive eyes, small cute body, white background";
+
+            // Final prompt using AvatarDescription
+            var fullPrompt = string.IsNullOrWhiteSpace(person.AvatarDescription)
+                ? defaultPrompt
+                : $"{defaultPrompt}, {person.AvatarDescription}";
+            var apiKey = Environment.GetEnvironmentVariable("AVATAR_API_KEY");
+            if (string.IsNullOrWhiteSpace(apiKey))
+            {
+                throw new UserFriendlyException("API key is not configured.");
+            }
+
+            var requestBody = new
+            {
+                key = apiKey,
+                prompt = fullPrompt,
+                negative_prompt = "...",
+                samples = "1",
+                height = "1024",
+                width = "1024",
+                safety_checker = false,
+                seed = (string?)null,
+                base64 = false,
+                webhook = (string?)null,
+                track_id = (string?)null
+            };
+
+            var requestBody = new
+            {
+                key = "NkF3yJlvyfwJ6wUM359xLBE6O4VF0t33Bn4i0KTnGclxb0hSejb6ktSIQb1F",
+                prompt = fullPrompt,
+                negative_prompt = "(worst quality:2), (low quality:2), (normal quality:2), (jpeg artifacts), (blurry), (duplicate), (morbid), (mutilated), (out of frame), (extra limbs), (bad anatomy), (disfigured), (deformed), (cross-eye), (glitch), (oversaturated), (overexposed), (underexposed), (bad proportions), (bad hands), (bad feet), (cloned face), (long neck), (missing arms), (missing legs), (extra fingers), (fused fingers), (poorly drawn hands), (poorly drawn face), (mutation), (deformed eyes), watermark, text, logo, signature, grainy, tiling, censored, nsfw, ugly, blurry eyes, noisy image, bad lighting, unnatural skin, asymmetry",
+                samples = "1",
+                height = "1024",
+                width = "1024",
+                safety_checker = false,
+                seed = (string?)null,
+                base64 = false,
+                webhook = (string?)null,
+                track_id = (string?)null
+            };
+
+            var jsonRequest = JsonSerializer.Serialize(requestBody);
+            var httpContent = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+            try
+            {
+                var response = await httpClient.PostAsync("https://modelslab.com/api/v6/realtime/text2img", httpContent);
+                if (!response.IsSuccessStatusCode)
+                    throw new UserFriendlyException($"API request failed with status code: {response.StatusCode}");
+
+                var responseString = await response.Content.ReadAsStringAsync();
+                _logger.LogInformation($"Raw API Response: {responseString}");
+
+                if (string.IsNullOrWhiteSpace(responseString))
+                    throw new UserFriendlyException("Empty response received from API.");
+
+                using var outerJson = JsonDocument.Parse(responseString);
+                var root = outerJson.RootElement;
+
+                string? imageUrl = null;
+
+                if (root.TryGetProperty("result", out var resultElement))
+                {
+                    var resultString = resultElement.GetString();
+                    if (!string.IsNullOrEmpty(resultString))
+                    {
+                        try
+                        {
+                            var innerResult = JsonDocument.Parse(resultString);
+                            if (innerResult.RootElement.TryGetProperty("output", out var outputElement) && outputElement.GetArrayLength() > 0)
+                            {
+                                imageUrl = outputElement[0].GetString();
+                            }
+                        }
+                        catch (JsonException ex)
+                        {
+                            _logger.LogError(ex, "Failed to parse inner JSON result");
+                        }
+                    }
+                }
+
+                if (string.IsNullOrEmpty(imageUrl) && root.TryGetProperty("output", out var directOutputElement))
+                {
+                    if (directOutputElement.ValueKind == JsonValueKind.Array && directOutputElement.GetArrayLength() > 0)
+                    {
+                        imageUrl = directOutputElement[0].GetString();
+                    }
+                }
+
+                if (string.IsNullOrEmpty(imageUrl) && root.TryGetProperty("images", out var imagesElement))
+                {
+                    if (imagesElement.ValueKind == JsonValueKind.Array && imagesElement.GetArrayLength() > 0)
+                    {
+                        imageUrl = imagesElement[0].GetString();
+                    }
+                }
+
+                if (string.IsNullOrEmpty(imageUrl))
+                {
+                    throw new UserFriendlyException("Failed to extract image URL from API response. Response format may have changed.");
+                }
+
+                person.Avatar = imageUrl;
+                await _repository.UpdateAsync(person);
+                return _mapper.Map<PersonResponseDto>(person);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogError(ex, "HTTP request failed while generating avatar");
+                throw new UserFriendlyException($"Failed to connect to avatar generation service: {ex.Message}");
+            }
+            catch (JsonException ex)
+            {
+                _logger.LogError(ex, "JSON parsing error while processing API response");
+                throw new UserFriendlyException($"Failed to process API response: {ex.Message}");
+            }
+            catch (Exception ex) when (!(ex is UserFriendlyException))
+            {
+                _logger.LogError(ex, "Unexpected error while generating avatar");
+                throw new UserFriendlyException("An unexpected error occurred while generating the avatar.");
+            }
+        }
+
         public async Task<PersonResponseDto> SelectPath([FromBody] SelectPathDto input)
         {
             var hasPath = await _personManager.DoesPersonHavePathAsync(input.PersonId);
@@ -139,5 +279,22 @@ namespace LifeQuest.Services.PersonService
             // Use AutoMapper to map Person to PersonResponseDto with PathId
             return _mapper.Map<PersonResponseDto>(updatedPerson);
         }
+
+
+        public async Task<PersonResponseDto> UpdateAvatarDescriptionAsync(UpdateAvatarDescriptionDto input)
+        {
+            var person = await _repository.FirstOrDefaultAsync(input.PersonId);
+            if (person == null)
+            {
+                throw new UserFriendlyException("Person not found.");
+            }
+
+            person.AvatarDescription = input.AvatarDescription;
+
+            await _repository.UpdateAsync(person);
+
+            return _mapper.Map<PersonResponseDto>(person);
+        }
+
     }
 }

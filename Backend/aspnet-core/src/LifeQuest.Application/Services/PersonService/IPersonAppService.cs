@@ -11,5 +11,8 @@ namespace LifeQuest.Services.PersonService
     {
         public Task<PersonResponseDto> GetCurrentPersonAsync(long userId);
         public Task<PersonResponseDto> updatePersonAsync(UpdatePersonDto input);
+        public Task<PersonResponseDto> GenerateAndSaveAvatarAsync(Guid personId);
+        Task<PersonResponseDto> UpdateAvatarDescriptionAsync(UpdateAvatarDescriptionDto input);
+
     }
 }

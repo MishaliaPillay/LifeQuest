@@ -23,6 +23,8 @@ namespace LifeQuest.Domain.Person
 
         public string? Avatar { get; set; }
 
+        public string? AvatarDescription { get; set; } // 🆕 Add this line
+
         public virtual ICollection<Path> Paths { get; set; } = new List<Path>();
 
         public Guid? PathId { get; set; }
