@@ -14,11 +14,12 @@ export interface UserRequestDto {
 
 export interface IAuth {
   user: UserRequestDto;
-  xp: number;
-  level: number;
+  xp?: number;
+  level?: number;
   avatar?: string;
-  id?:string;
-  pathId?:string;
+  id?: string;
+  pathId?: string;
+  avatarDescription?: string;
 }
 
 export interface ISignInRequest {
@@ -46,6 +47,7 @@ export interface IAuthActionContext {
   signIn: (SignInRequest: ISignInRequest) => Promise<ISignInResponse>;
   signUp: (Auth: IAuth) => Promise<void>;
   getCurrentPerson: (userId: number) => Promise<IAuth | null>; // Get the current user by ID
+  updateDescription: (id: string) => Promise<void>;
 }
 
 // Initial state with default values
