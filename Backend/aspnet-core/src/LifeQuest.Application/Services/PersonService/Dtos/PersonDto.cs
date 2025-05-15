@@ -15,4 +15,6 @@ namespace LifeQuest.Services.PersonService.Dtos
         public int Level { get; set; }
         public string Avatar { get; set; }
     }
+
+
 }
