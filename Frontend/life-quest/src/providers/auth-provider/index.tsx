@@ -20,6 +20,9 @@ import {
   getCurrentPersonPending,
   getCurrentPersonSuccess,
   getCurrentPersonError,
+  updateDescriptionError,
+  updateDescriptionPending,
+  updateDescriptionSuccess,
 } from "./actions";
 import axios from "axios";
 
@@ -39,7 +42,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       return response.data;
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
-        console.error("Signup error:", error.response?.data?.message || error.message);
+        console.error(
+          "Signup error:",
+          error.response?.data?.message || error.message
+        );
       } else if (error instanceof Error) {
         console.error("Signup error:", error.message);
       } else {
@@ -79,7 +85,28 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       });
   };
 
-  // Get Current Person Function
+  const updateDescription = async (
+    personId: string,
+    avatarDescription: string
+  ): Promise<void> => {
+    dispatch(updateDescriptionPending());
+
+    try {
+      const response = await axios.put(
+        "https://lifequest-backend.onrender.com/api/services/app/Person/UpdateAvatarDescription",
+        {
+          personId,
+          avatarDescription,
+        }
+      );
+
+      dispatch(updateDescriptionSuccess(response.data));
+    } catch (error) {
+      console.error("Error updating avatar description:", error);
+      dispatch(updateDescriptionError());
+    }
+  };
+
   const getCurrentPerson = async (userId: number): Promise<IAuth> => {
     dispatch(getCurrentPersonPending());
 
@@ -103,8 +130,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <AuthStateContext.Provider value={state}>
-      <AuthActionContext.Provider 
-        value={{ signUp, signIn, getCurrentPerson }}
+      <AuthActionContext.Provider
+        value={{ signUp, signIn, getCurrentPerson, updateDescription }}
       >
         {children}
       </AuthActionContext.Provider>

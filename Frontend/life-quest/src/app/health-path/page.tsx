@@ -48,7 +48,7 @@ import {
 } from "@/providers/fitnesspath/step-provider";
 
 import { IAuth } from "@/providers/auth-provider/context";
-import AvatarAnlysiss from "@/components/avatar/avatar-scan";
+import AvatarAnalysis from "@/components/avatar/avatar-scan";
 
 const { Title, Text } = Typography;
 const { TabPane } = Tabs;
@@ -849,7 +849,7 @@ export default function FitnessDashboard() {
           width={700} // adjust size as needed
           destroyOnClose={true} // optional: reset component state when closing
         >
-          <AvatarAnlysiss userLevel={person?.level ?? 1} />
+          <AvatarAnalysis userLevel={person?.level ?? 1} />
         </Modal>
       </div>
     </App>

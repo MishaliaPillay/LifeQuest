@@ -56,6 +56,20 @@ export const AuthReducer = handleActions<IAuthStateContext, IAuthStateContext>(
       isSuccess: false,
       isError: true,
     }),
+    [AuthActionEnums.updateDescriptionError]: (state, action) => ({
+      ...state,
+      ...action.payload,
+    }),
+    [AuthActionEnums.updateDescriptionPending]: (state, action) => {
+      return {
+        ...state,
+        ...action.payload,
+      };
+    },
+    [AuthActionEnums.updateDescriptionSuccess]: (state, action) => ({
+      ...state,
+      ...action.payload,
+    }),
   },
   INITIAL_STATE
 );

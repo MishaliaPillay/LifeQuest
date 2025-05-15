@@ -21,6 +21,10 @@ export enum AuthActionEnums {
   getCurrentPersonPending = "GET_CURRENT_PERSON_PENDING",
   getCurrentPersonSuccess = "GET_CURRENT_PERSON_SUCCESS",
   getCurrentPersonError = "GET_CURRENT_PERSON_ERROR",
+
+  updateDescriptionPending = "UPDATE_DESCRIPTION_PERSON_PENDING",
+  updateDescriptionSuccess = "UPDATE_DESCRIPTION_PERSON_SUCCESS",
+  updateDescriptionError = "UPDATE_DESCRIPTION_PERSON_ERROR",
 }
 
 // SIGN UP ACTIONS
@@ -83,5 +87,24 @@ export const getCurrentPersonSuccess = createAction<IAuthStateContext, IAuth>(
 
 export const getCurrentPersonError = createAction<IAuthStateContext>(
   AuthActionEnums.getCurrentPersonError,
+  () => ({ isPending: false, isSuccess: false, isError: true })
+);
+export const updateDescriptionPending = createAction<IAuthStateContext>(
+  AuthActionEnums.updateDescriptionPending,
+  () => ({ isPending: true, isSuccess: false, isError: false })
+);
+
+export const updateDescriptionSuccess = createAction<IAuthStateContext, IAuth>(
+  AuthActionEnums.updateDescriptionSuccess,
+  (Auth: IAuth) => ({
+    isPending: false,
+    isSuccess: true,
+    isError: false,
+    Auth: Auth,
+  })
+);
+
+export const updateDescriptionError = createAction<IAuthStateContext>(
+  AuthActionEnums.updateDescriptionError,
   () => ({ isPending: false, isSuccess: false, isError: true })
 );

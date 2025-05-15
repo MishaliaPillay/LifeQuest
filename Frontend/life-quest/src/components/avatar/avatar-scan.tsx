@@ -17,13 +17,11 @@ import { analyzePersonImage } from "@/utils/avatar-service";
 
 const { Title, Paragraph } = Typography;
 const { Dragger } = Upload;
-interface AvatarAnlysissProps {
+interface AvatarAnalysisProps {
   userLevel: number;
 }
 
-export default function AvatarAnlysiss({ userLevel }: AvatarAnlysissProps) {
-
-
+export default function AvatarAnalysis({ userLevel }: AvatarAnalysisProps) {
   // 1️⃣ Create a local message instance
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -38,8 +36,8 @@ export default function AvatarAnlysiss({ userLevel }: AvatarAnlysissProps) {
   useEffect(() => {
     const saved = localStorage.getItem("avatarData");
     if (saved) {
-      const {  description, skinColor, race } = JSON.parse(saved);
-     
+      const { description, skinColor, race } = JSON.parse(saved);
+
       setDescription(description);
       setSkinColor(skinColor);
       setRace(race);
@@ -63,16 +61,16 @@ export default function AvatarAnlysiss({ userLevel }: AvatarAnlysissProps) {
     setIsLoading(true);
     setDescription("");
 
-try {
-  const { description } = await analyzePersonImage(selectedImage);
-  setDescription(description);
-} catch (err: unknown) {
-  if (err instanceof Error) {
-    messageApi.error(err.message);
-  } else {
-    messageApi.error("Unknown error analyzing image");
-  }
-}
+    try {
+      const { description } = await analyzePersonImage(selectedImage);
+      setDescription(description);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        messageApi.error(err.message);
+      } else {
+        messageApi.error("Unknown error analyzing image");
+      }
+    }
 
     setIsLoading(false);
   };
@@ -84,7 +82,11 @@ try {
     }
 
     // show loading indicator keyed so we can replace it
-    messageApi.open({ key: "saving", type: "loading", content: "Saving avatar…" });
+    messageApi.open({
+      key: "saving",
+      type: "loading",
+      content: "Saving avatar…",
+    });
 
     setTimeout(() => {
       localStorage.setItem(
@@ -124,12 +126,8 @@ try {
         <p className="ant-upload-drag-icon">
           <InboxOutlined />
         </p>
-        <p className="ant-upload-text">
-          Click or drag to upload a photo
-        </p>
-        <p className="ant-upload-hint">
-          Only one image supported
-        </p>
+        <p className="ant-upload-text">Click or drag to upload a photo</p>
+        <p className="ant-upload-hint">Only one image supported</p>
       </Dragger>
 
       <Button
@@ -145,7 +143,13 @@ try {
       {imagePreview && (
         <>
           <Title level={5}>Image Preview</Title>
-          <Card bodyStyle={{ display: "flex", justifyContent: "center", padding: 16 }}>
+          <Card
+            bodyStyle={{
+              display: "flex",
+              justifyContent: "center",
+              padding: 16,
+            }}
+          >
             <img
               src={imagePreview}
               alt="Preview"
@@ -172,22 +176,22 @@ try {
             onChange={(e) => setRace(e.target.value)}
             style={{ marginBottom: 12 }}
           />
-{userLevel >= 1 && (
-  <Card className={styles.accessoryCard}>
-    <Title level={4}>Unlocked Accessories</Title>
-    <ul>
-      <li>🧢 Hat</li>
-      <li>👓 Glasses</li>
-    </ul>
-    {userLevel >= 3 && (
-      <>
-        <li>👕 Shirt</li>
-        <li>👖 Pants</li>
-        <li>👟 Shoes</li>
-      </>
-    )}
-  </Card>
-)}
+          {userLevel >= 1 && (
+            <Card className={styles.accessoryCard}>
+              <Title level={4}>Unlocked Accessories</Title>
+              <ul>
+                <li>🧢 Hat</li>
+                <li>👓 Glasses</li>
+              </ul>
+              {userLevel >= 3 && (
+                <>
+                  <li>👕 Shirt</li>
+                  <li>👖 Pants</li>
+                  <li>👟 Shoes</li>
+                </>
+              )}
+            </Card>
+          )}
 
           <Button type="primary" onClick={handleSave}>
             Save Avatar Data
