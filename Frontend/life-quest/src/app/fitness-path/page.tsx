@@ -846,7 +846,8 @@ const [person, setPerson] = useState<IAuth>(null); // ideally, type this properl
         width={700} // adjust size as needed
         destroyOnClose={true} // optional: reset component state when closing
       >
-        <AvatarAnlysiss />
+       <AvatarAnlysiss userLevel={person?.level ?? 1} />
+
       </Modal>
     </div></App>
   );

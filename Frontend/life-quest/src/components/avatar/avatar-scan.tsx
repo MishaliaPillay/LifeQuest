@@ -1,35 +1,55 @@
 "use client";
-import { useState } from "react";
 
+import { useState, useEffect } from "react";
 import {
   Button,
   Typography,
   Divider,
-
   Card,
   message,
   Upload,
   Spin,
+  Input,
 } from "antd";
 import { InboxOutlined } from "@ant-design/icons";
 import styles from "./HealthAnalysisComponent.module.css";
-const { Title, Paragraph } = Typography;
-const { Dragger } = Upload;
 import { analyzePersonImage } from "@/utils/avatar-service";
 
-export default function HealthAnalysisComponent() {
+const { Title, Paragraph } = Typography;
+const { Dragger } = Upload;
+interface AvatarAnlysissProps {
+  userLevel: number;
+}
+
+export default function AvatarAnlysiss({ userLevel }: AvatarAnlysissProps) {
+
+
+  // 1️⃣ Create a local message instance
+  const [messageApi, contextHolder] = message.useMessage();
+
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [description, setDescription] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [skinColor, setSkinColor] = useState("");
+  const [race, setRace] = useState("");
+
+  // Load saved data on mount
+  useEffect(() => {
+    const saved = localStorage.getItem("avatarData");
+    if (saved) {
+      const {  description, skinColor, race } = JSON.parse(saved);
+     
+      setDescription(description);
+      setSkinColor(skinColor);
+      setRace(race);
+    }
+  }, []);
 
   const handleImageChange = (info) => {
-    const { status } = info.file;
-
-    if (status === "done") {
-      const file = info.file.originFileObj;
+    if (info.file.status === "done") {
+      const file = info.file.originFileObj as File;
       setSelectedImage(file);
-
       const reader = new FileReader();
       reader.onload = () => setImagePreview(reader.result as string);
       reader.readAsDataURL(file);
@@ -38,46 +58,74 @@ export default function HealthAnalysisComponent() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!selectedImage) return;
 
     setIsLoading(true);
     setDescription("");
 
     try {
-      const result = await analyzePersonImage(selectedImage);
-      setDescription(result.description);
-    } catch (err) {
-      message.error(
-        err instanceof Error ? err.message : "An unknown error occurred"
-      );
+      const { description } = await analyzePersonImage(selectedImage);
+      setDescription(description);
+    } catch (err: any) {
+      messageApi.error(err.message || "Unknown error analyzing image");
     }
+
     setIsLoading(false);
+  };
+
+  const handleSave = () => {
+    if (!imagePreview || !description || !skinColor || !race) {
+      messageApi.warning("Please complete all fields before saving.");
+      return;
+    }
+
+    // show loading indicator keyed so we can replace it
+    messageApi.open({ key: "saving", type: "loading", content: "Saving avatar…" });
+
+    setTimeout(() => {
+      localStorage.setItem(
+        "avatarData",
+        JSON.stringify({ imagePreview, description, skinColor, race })
+      );
+
+      messageApi.open({
+        key: "saving",
+        type: "success",
+        content: "Avatar data saved!",
+        duration: 2,
+      });
+    }, 1500);
   };
 
   return (
     <div className={styles.container}>
+      {/* 2️⃣ Render the contextHolder once */}
+      {contextHolder}
+
       <Title level={2}>Avatar Description Generator</Title>
       <Divider />
+
       <Dragger
-        {...{
-          name: "file",
-          multiple: false,
-          accept: "image/*",
-          onChange: handleImageChange,
-          beforeUpload: (file) => {
-            const isImage = file.type.startsWith("image/");
-            if (!isImage) message.error(`${file.name} is not an image file`);
-            return isImage || Upload.LIST_IGNORE;
-          },
+        name="file"
+        multiple={false}
+        accept="image/*"
+        onChange={handleImageChange}
+        beforeUpload={(file) => {
+          const ok = file.type.startsWith("image/");
+          if (!ok) messageApi.error(`${file.name} is not an image file`);
+          return ok || Upload.LIST_IGNORE;
         }}
         className={styles.upload}
       >
         <p className="ant-upload-drag-icon">
           <InboxOutlined />
         </p>
-        <p className="ant-upload-text">Click or drag file to this area to upload</p>
-        <p className="ant-upload-hint">Support for a single image upload only</p>
+        <p className="ant-upload-text">
+          Click or drag to upload a photo
+        </p>
+        <p className="ant-upload-hint">
+          Only one image supported
+        </p>
       </Dragger>
 
       <Button
@@ -93,8 +141,12 @@ export default function HealthAnalysisComponent() {
       {imagePreview && (
         <>
           <Title level={5}>Image Preview</Title>
-          <Card bodyStyle={{ display: "flex", justifyContent: "center" }}>
-            <img src={imagePreview} alt="Preview" className={styles.previewImage} />
+          <Card bodyStyle={{ display: "flex", justifyContent: "center", padding: 16 }}>
+            <img
+              src={imagePreview}
+              alt="Preview"
+              style={{ maxHeight: 300, width: "100%", objectFit: "cover" }}
+            />
           </Card>
         </>
       )}
@@ -103,6 +155,39 @@ export default function HealthAnalysisComponent() {
         <Card className={styles.analysisContainer}>
           <Title level={3}>Person Description</Title>
           <Paragraph>{description}</Paragraph>
+
+          <Input
+            placeholder="Skin color (e.g. fair, olive, dark)"
+            value={skinColor}
+            onChange={(e) => setSkinColor(e.target.value)}
+            style={{ marginBottom: 12 }}
+          />
+          <Input
+            placeholder="Race (e.g. African, Asian, Caucasian)"
+            value={race}
+            onChange={(e) => setRace(e.target.value)}
+            style={{ marginBottom: 12 }}
+          />
+{userLevel >= 1 && (
+  <Card className={styles.accessoryCard}>
+    <Title level={4}>Unlocked Accessories</Title>
+    <ul>
+      <li>🧢 Hat</li>
+      <li>👓 Glasses</li>
+    </ul>
+    {userLevel >= 3 && (
+      <>
+        <li>👕 Shirt</li>
+        <li>👖 Pants</li>
+        <li>👟 Shoes</li>
+      </>
+    )}
+  </Card>
+)}
+
+          <Button type="primary" onClick={handleSave}>
+            Save Avatar Data
+          </Button>
         </Card>
       )}
     </div>
