@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useMemo } from "react";
 import {
-  Card,
+  Card,Skeleton,
   Col,
   Row,
   Typography,
@@ -13,7 +13,8 @@ import {
   Tag,
   Statistic,
   Tabs,
-  App,
+  App,Modal,
+  Button
 } from "antd";
 import {
   FireOutlined,
@@ -43,7 +44,9 @@ import {
   useStepsActions,
   useStepsState,
 } from "@/providers/fitnesspath/step-provider";
+
 import { IAuth } from "@/providers/auth-provider/context";
+import AvatarAnlysiss from "@/components/avatar/avatar-scan";
 
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
@@ -60,7 +63,7 @@ export default function FitnessDashboard() {
   const [loading, setLoading] = useState(true);
   const [loadingWorkouts, setLoadingWorkouts] = useState(true);
   const [loadingSteps, setLoadingSteps] = useState(true);
-
+  const [isModalOpen, setIsModalOpen] = useState(false); 
 const [person, setPerson] = useState<IAuth>(null); // ideally, type this properly if you have the model
 
   const [exercisePlan, setExercisePlan] = useState([]);
@@ -91,7 +94,7 @@ const [person, setPerson] = useState<IAuth>(null); // ideally, type this properl
   setPerson(person);
 }
 
-        console.log("eron",person)
+        console.log("eron",person.avatar)
 
         if (!person?.id) {
           message.warning("Person not found for this user.");
@@ -306,9 +309,32 @@ const [person, setPerson] = useState<IAuth>(null); // ideally, type this properl
       }}
     >
       <Title level={2} style={{ marginBottom: 24 }}>
-        Health Dashboard
+    Health Dashboard
       </Title>
 
+<Card
+  style={{
+    borderRadius: 8,
+    marginBottom: 80,
+    textAlign: "center",
+    boxShadow: "0 2px 8px rgba(0,0,0,0.09)",
+    maxHeight: 300,
+    backgroundColor: "#fff",
+    maxWidth: 300,
+    margin: "auto",
+  }}
+  cover={
+    person?.avatar ? (
+      <img
+        alt="User Avatar"
+        src={person.avatar}
+        style={{ width: 300, height: 300, objectFit: "cover", borderTopLeftRadius: 8, borderTopRightRadius: 8 }}
+      />
+    ) : (
+      <Skeleton.Image active style={{ width: 300, height: 300 }} />
+    )
+  }
+/>
       {loading ? (
         <div
           style={{
@@ -341,6 +367,13 @@ const [person, setPerson] = useState<IAuth>(null); // ideally, type this properl
     </Text>
   </Card>
 )}
+      <Button
+        type="primary"
+        onClick={() => setIsModalOpen(true)}
+        style={{ marginBottom: 24 }}
+      >
+        Open Avatar Description Generator
+      </Button>
 
 
 
@@ -829,7 +862,17 @@ const [person, setPerson] = useState<IAuth>(null); // ideally, type this properl
             </Tabs>
           </Card>
         </>
-      )}
+      )}      <Modal
+        title="Avatar Description Generator"
+        visible={isModalOpen}
+        onCancel={() => setIsModalOpen(false)}
+        footer={null}
+        width={700} // adjust size as needed
+        destroyOnClose={true} // optional: reset component state when closing
+      >
+       <AvatarAnlysiss userLevel={person?.level ?? 1} />
+
+      </Modal>
     </div></App>
   );
 }
