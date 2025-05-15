@@ -63,12 +63,16 @@ export default function AvatarAnlysiss({ userLevel }: AvatarAnlysissProps) {
     setIsLoading(true);
     setDescription("");
 
-    try {
-      const { description } = await analyzePersonImage(selectedImage);
-      setDescription(description);
-    } catch (err: any) {
-      messageApi.error(err.message || "Unknown error analyzing image");
-    }
+try {
+  const { description } = await analyzePersonImage(selectedImage);
+  setDescription(description);
+} catch (err: unknown) {
+  if (err instanceof Error) {
+    messageApi.error(err.message);
+  } else {
+    messageApi.error("Unknown error analyzing image");
+  }
+}
 
     setIsLoading(false);
   };
