@@ -252,7 +252,7 @@ const MealPlanBuilder = ({ availableMeals, healthPathId, onPlanSubmit }) => {
             return newSet;
           });
 
-          message.error("Failed to create meal");
+          message.error("Failed to create meal", error);
         }
       }
     }
