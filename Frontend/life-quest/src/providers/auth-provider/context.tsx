@@ -16,7 +16,7 @@ export interface IAuth {
   user: UserRequestDto;
   xp: number;
   level: number;
-  avatar: "url";
+  avatar?: string;
   id?:string;
   pathId?:string;
 }
