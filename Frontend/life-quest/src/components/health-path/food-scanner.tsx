@@ -254,13 +254,7 @@ export default function HealthAnalysisComponent() {
           <Paragraph>
             <strong>Food Items:</strong> {structuredData.foodItems.join(", ")}
           </Paragraph>
-          <Button
-            onClick={() => {}}
-            type="default"
-            className={styles.button}
-          >
-            Log JSON to Console
-          </Button>
+        
         </Card>
       )}
     </div>

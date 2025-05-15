@@ -162,7 +162,7 @@ const FitnessStats = () => (
           }}
         />
         <Title level={4}>3+</Title>
-        <Text type="secondary">Exercise Types</Text>
+        <Text type="secondary">Meal Types</Text>
       </Card>
     </Col>
   </Row>
@@ -230,15 +230,15 @@ const StepBasedHealthPlanner: React.FC<{
       message.success("Basic information saved!");
       setCurrent(1);
     } catch (error) {
-      console.error("Error creating fitness path:", error);
-      message.error("Failed to create fitness path.");
+      console.error("Error creating health path:", error);
+      message.error("Failed to create health path.");
     } finally {
       setSubmitting(false);
     }
   };
 
   const handleMealPlanSubmit = () => {
-    message.success("Exercise plan created!");
+    message.success("Meal plan created!");
     setCurrent(3);
   };
   const steps = [
@@ -307,7 +307,7 @@ const StepBasedHealthPlanner: React.FC<{
       content: (
         <Card style={styles.stepCard}>
           <Title level={4} style={{ marginBottom: "24px" }}>
-            Build Your Fitness Profile
+            Build Your Health Profile
           </Title>
           <Meals onMealsGenerated={handleMealsGenerated} />
           <div style={{ marginTop: "24px", textAlign: "right" }}>
@@ -338,14 +338,14 @@ const StepBasedHealthPlanner: React.FC<{
       ),
     },
     {
-      title: "Exercise Plan",
+      title: "Meal Plan",
       icon: <FireOutlined />,
       content: (
         <Card style={styles.stepCard}>
           <Title level={4} style={{ marginBottom: "24px" }}>
             Create Your Custom Workout Plan
           </Title>
-          {/*exercise builder went here */}
+          {/*Meal builder went here */}
           <MealPlanBuilder
             availableMeals={meals}
             onPlanSubmit={handleMealPlanSubmit}
@@ -371,8 +371,8 @@ const StepBasedHealthPlanner: React.FC<{
         <Card style={styles.stepCard}>
           <Result
             status="success"
-            title="Your Fitness Plan Has Been Created!"
-            subTitle="You can now start following your personalized fitness journey."
+            title="Your Health Plan Has Been Created!"
+            subTitle="You can now start following your personalized Health journey."
             icon={
               <div
                 style={{
@@ -506,7 +506,7 @@ const StepBasedHealthPlanner: React.FC<{
           />
         </Space>
         <Title level={2} style={styles.welcomeTitle}>
-          Welcome, {currentUser?.name || "Fitness Enthusiast"}!
+          Welcome, {currentUser?.name || "Nutrition Enthusiast"}!
         </Title>
         <Paragraph style={styles.welcomeText}>
           You&apos;re about to create a personalized health plan tailored
