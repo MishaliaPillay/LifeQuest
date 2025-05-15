@@ -14,17 +14,21 @@ import {
 import { InboxOutlined } from "@ant-design/icons";
 import styles from "./HealthAnalysisComponent.module.css";
 import { analyzePersonImage } from "@/utils/avatar-service";
-
+import { useAuthActions } from "@/providers/auth-provider";
 const { Title, Paragraph } = Typography;
 const { Dragger } = Upload;
 interface AvatarAnalysisProps {
   userLevel: number;
+  personId: string;
 }
 
-export default function AvatarAnalysis({ userLevel }: AvatarAnalysisProps) {
+export default function AvatarAnalysis({
+  userLevel,
+  personId,
+}: AvatarAnalysisProps) {
   // 1️⃣ Create a local message instance
   const [messageApi, contextHolder] = message.useMessage();
-
+  const { updateDescription } = useAuthActions();
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [description, setDescription] = useState("");
@@ -62,8 +66,13 @@ export default function AvatarAnalysis({ userLevel }: AvatarAnalysisProps) {
     setDescription("");
 
     try {
-      const { description } = await analyzePersonImage(selectedImage);
+      const description = await analyzePersonImage(selectedImage);
       setDescription(description);
+
+      // ✅ Send description to backend
+      await updateDescription(personId, description);
+      console.log("cheek", personId);
+      messageApi.success("Avatar description updated!");
     } catch (err: unknown) {
       if (err instanceof Error) {
         messageApi.error(err.message);

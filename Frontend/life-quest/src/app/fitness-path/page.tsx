@@ -896,7 +896,7 @@ export default function FitnessDashboard() {
           width={700} // adjust size as needed
           destroyOnClose={true} // optional: reset component state when closing
         >
-          <AvatarAnalysis userLevel={person?.level ?? 1} />
+          <AvatarAnalysis personId={person.id} userLevel={person?.level ?? 1} />
         </Modal>
       </div>
     </App>

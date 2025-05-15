@@ -92,8 +92,6 @@ export default function FitnessDashboard() {
           setPerson(person);
         }
 
-
-
         if (!person?.id) {
           message.warning("Person not found for this user.");
           return;
@@ -846,10 +844,13 @@ export default function FitnessDashboard() {
           visible={isModalOpen}
           onCancel={() => setIsModalOpen(false)}
           footer={null}
-          width={700} // adjust size as needed
-          destroyOnClose={true} // optional: reset component state when closing
+          width={700}
+          destroyOnClose={true}
         >
-          <AvatarAnalysis userLevel={person?.level ?? 1} />
+          <AvatarAnalysis
+            personId={person?.id}
+            userLevel={person?.level ?? 1}
+          />
         </Modal>
       </div>
     </App>
