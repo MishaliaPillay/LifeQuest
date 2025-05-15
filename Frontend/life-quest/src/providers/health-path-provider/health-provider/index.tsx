@@ -59,7 +59,7 @@ const getHealthPath = async (id: string): Promise<IHealthPath> => {
     const response = await instance.get(endpoint);
     const healthPath = response.data?.result;
     dispatch(getHealthPathSuccess(healthPath));
-    console.log(healthPath)
+
     return healthPath; // <-- This line fixes the error
   } catch (error) {
     console.error("Error fetching health path:", error);
@@ -78,7 +78,7 @@ const getHealthPath = async (id: string): Promise<IHealthPath> => {
     try {
       const response = await instance.post(endpoint, healthPath);
       const result = response.data?.result;
-      console.log("created path", result);
+   
       dispatch(createHealthPathSuccess(result));
       return result;
     } catch (error) {

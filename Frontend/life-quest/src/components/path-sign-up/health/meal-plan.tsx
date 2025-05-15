@@ -176,7 +176,7 @@ const DayContainer = ({ day, items, onRemoveMeal, loadingMeals }) => {
 
 const MealPlanBuilder = ({ availableMeals, healthPathId, onPlanSubmit }) => {
   const [loadingMeals, setLoadingMeals] = useState(new Set());
-  console.log("avaiis", availableMeals);
+
   const [dayMeals, setDayMeals] = useState(
     Array(10)
       .fill(null)
@@ -292,7 +292,7 @@ const MealPlanBuilder = ({ availableMeals, healthPathId, onPlanSubmit }) => {
     };
 
     try {
-      console.log("Submitting plan:", plan);
+      
       await createPlan(plan);
       setTimeout(loadingMessage, 0);
       message.success("Meal Plan created successfully!");

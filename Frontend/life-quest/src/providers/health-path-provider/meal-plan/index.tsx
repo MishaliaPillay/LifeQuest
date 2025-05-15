@@ -61,7 +61,7 @@ export const MealPlanProvider = ({
 
     try {
       const res = await instance.get(endpoint);
-      console.log("res:", res);
+  
       dispatch(getMealPlanDaysSuccess(res.data?.result));
       return { result: res.data?.result }; // return it so consumer can use it
     } catch (err) {
@@ -89,12 +89,11 @@ export const MealPlanProvider = ({
   const createPlan = async (plan: IMealPlan) => {
     dispatch(createPlanPending());
     const endpoint = `/api/services/app/MealPlan/Create`;
-    console.log("dds", plan);
+
     return instance
       .post(endpoint, plan)
       .then((res) => {
-        console.log("plan", plan);
-        console.log("responsesds", res);
+     
         dispatch(createPlanSuccess(res.data?.result));
       })
       .catch((err) => {

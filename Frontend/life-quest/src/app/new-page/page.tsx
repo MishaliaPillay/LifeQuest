@@ -108,7 +108,7 @@ const UserDashboard: React.FC = () => {
       try {
         const personData = await getCurrentPerson(userIdNum);
         if (personData?.id) {
-          console.log("person", personData.id);
+
           setPersonId(personData.id);
         } else {
           message.warning("Person ID not found.");

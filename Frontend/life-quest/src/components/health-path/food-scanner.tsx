@@ -255,7 +255,7 @@ export default function HealthAnalysisComponent() {
             <strong>Food Items:</strong> {structuredData.foodItems.join(", ")}
           </Paragraph>
           <Button
-            onClick={() => console.log(structuredData)}
+            onClick={() => {}}
             type="default"
             className={styles.button}
           >

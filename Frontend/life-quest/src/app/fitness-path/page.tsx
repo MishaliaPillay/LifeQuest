@@ -94,7 +94,7 @@ export default function FitnessDashboard() {
           setPerson(person);
         }
 
-        console.log("eron", person.avatar);
+   
 
         if (!person?.id) {
           message.warning("Person not found for this user.");
