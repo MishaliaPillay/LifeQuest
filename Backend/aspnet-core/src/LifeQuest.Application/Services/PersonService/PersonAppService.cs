@@ -132,7 +132,7 @@ namespace LifeQuest.Services.PersonService
             return _mapper.Map<PersonResponseDto>(updated);
         }
 
-        public async Task<PersonResponseDto> GenerateAndSaveAvatarAsync(Guid personId, string userPrompt)
+        public async Task<PersonResponseDto> GenerateAndSaveAvatarAsync(Guid personId)
         {
             var person = await _repository.GetAsync(personId);
             if (person == null)
@@ -143,12 +143,31 @@ namespace LifeQuest.Services.PersonService
             // Default style and safety prompt
             var defaultPrompt = "3D chibi style character, safe for work, high quality, colorful, big expressive eyes, small cute body, white background";
 
-            // Final prompt used in API call
-            var fullPrompt = string.IsNullOrWhiteSpace(userPrompt)
+            // Final prompt using AvatarDescription
+            var fullPrompt = string.IsNullOrWhiteSpace(person.AvatarDescription)
                 ? defaultPrompt
-                : $"{defaultPrompt}, {userPrompt}";
+                : $"{defaultPrompt}, {person.AvatarDescription}";
+            var apiKey = Environment.GetEnvironmentVariable("AVATAR_API_KEY");
+            if (string.IsNullOrWhiteSpace(apiKey))
+            {
+                throw new UserFriendlyException("API key is not configured.");
+            }
 
-            // Match structure exactly to their API example
+            var requestBody = new
+            {
+                key = apiKey,
+                prompt = fullPrompt,
+                negative_prompt = "...",
+                samples = "1",
+                height = "1024",
+                width = "1024",
+                safety_checker = false,
+                seed = (string?)null,
+                base64 = false,
+                webhook = (string?)null,
+                track_id = (string?)null
+            };
+
             var requestBody = new
             {
                 key = "NkF3yJlvyfwJ6wUM359xLBE6O4VF0t33Bn4i0KTnGclxb0hSejb6ktSIQb1F",
@@ -170,33 +189,20 @@ namespace LifeQuest.Services.PersonService
             try
             {
                 var response = await httpClient.PostAsync("https://modelslab.com/api/v6/realtime/text2img", httpContent);
-
-                // Log the status code for debugging
-                var statusCode = response.StatusCode;
                 if (!response.IsSuccessStatusCode)
-                {
-                    throw new UserFriendlyException($"API request failed with status code: {statusCode}");
-                }
+                    throw new UserFriendlyException($"API request failed with status code: {response.StatusCode}");
 
                 var responseString = await response.Content.ReadAsStringAsync();
-
-                // Log the raw response for debugging
                 _logger.LogInformation($"Raw API Response: {responseString}");
 
-                // First check if we got a valid JSON response
                 if (string.IsNullOrWhiteSpace(responseString))
-                {
                     throw new UserFriendlyException("Empty response received from API.");
-                }
 
-                // Parse the response as JSON and handle potential format issues
                 using var outerJson = JsonDocument.Parse(responseString);
                 var root = outerJson.RootElement;
 
-                // Check and extract the image URL using more robust approach
                 string? imageUrl = null;
 
-                // Option 1: Try the expected format
                 if (root.TryGetProperty("result", out var resultElement))
                 {
                     var resultString = resultElement.GetString();
@@ -217,7 +223,6 @@ namespace LifeQuest.Services.PersonService
                     }
                 }
 
-                // Option 2: Look for direct output property
                 if (string.IsNullOrEmpty(imageUrl) && root.TryGetProperty("output", out var directOutputElement))
                 {
                     if (directOutputElement.ValueKind == JsonValueKind.Array && directOutputElement.GetArrayLength() > 0)
@@ -226,7 +231,6 @@ namespace LifeQuest.Services.PersonService
                     }
                 }
 
-                // Option 3: Look for images property that some APIs use
                 if (string.IsNullOrEmpty(imageUrl) && root.TryGetProperty("images", out var imagesElement))
                 {
                     if (imagesElement.ValueKind == JsonValueKind.Array && imagesElement.GetArrayLength() > 0)
@@ -235,13 +239,11 @@ namespace LifeQuest.Services.PersonService
                     }
                 }
 
-                // If we still don't have an image URL, throw a detailed exception
                 if (string.IsNullOrEmpty(imageUrl))
                 {
                     throw new UserFriendlyException("Failed to extract image URL from API response. Response format may have changed.");
                 }
 
-                // Persist new avatar URL
                 person.Avatar = imageUrl;
                 await _repository.UpdateAsync(person);
                 return _mapper.Map<PersonResponseDto>(person);
