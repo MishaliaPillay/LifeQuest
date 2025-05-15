@@ -48,7 +48,7 @@ export interface IMealStateContext {
 export interface IMealActionContext {
   getMeals: () => void;
   getMeal: (id: string) => void;
-  createMeal: (meal: IMeal) => void;
+  createMeal: (meal: Partial<IMeal>) => Promise<IMeal>;
   updateMeal: (meal: IMeal) => void;
   deleteMeal: (id: string) => void;
   generateMeals: (requestData: IGenerateMealRequest) => void;

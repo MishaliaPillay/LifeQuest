@@ -27,7 +27,8 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { useMealPlanActions } from "@/providers/health-path-provider/meal-plan";
-import { IMealPlan } from "@/providers/health-path-provider/meal-plan/context";
+
+import { useMealActions } from "@/providers/health-path-provider/meal-provider";
 
 const { Title, Text } = Typography;
 const { TabPane } = Tabs;
@@ -42,6 +43,7 @@ const MealItem = ({
   servingSize,
   fats,
   calories,
+  loading = false,
 }) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id });
@@ -59,6 +61,17 @@ const MealItem = ({
 
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+      {loading && (
+        <div
+          style={{
+            position: "absolute",
+            top: 4,
+            right: 4,
+          }}
+        >
+          <Spin size="small" />
+        </div>
+      )}
       <div
         style={{
           display: "flex",
@@ -124,14 +137,16 @@ const MealItem = ({
   );
 };
 
-const DayContainer = ({ day, items, onRemoveMeal }) => {
+const DayContainer = ({ day, items, onRemoveMeal, loadingMeals }) => {
   const droppableId = `day-${day}`;
   const { setNodeRef } = useDroppable({ id: droppableId });
 
   return (
     <Card title={`Day ${day}`} size="small" ref={setNodeRef}>
       <div style={{ minHeight: 100 }}>
-        {items.length === 0 ? (
+        {loadingMeals && loadingMeals.has(day) ? (
+          <Spin tip="Loading meals..." />
+        ) : items.length === 0 ? (
           <Empty description="Drop meals here" style={{ margin: "20px 0" }} />
         ) : (
           <SortableContext
@@ -160,6 +175,8 @@ const DayContainer = ({ day, items, onRemoveMeal }) => {
 };
 
 const MealPlanBuilder = ({ availableMeals, healthPathId, onPlanSubmit }) => {
+  const [loadingMeals, setLoadingMeals] = useState(new Set());
+  console.log("avaiis", availableMeals);
   const [dayMeals, setDayMeals] = useState(
     Array(10)
       .fill(null)
@@ -167,12 +184,13 @@ const MealPlanBuilder = ({ availableMeals, healthPathId, onPlanSubmit }) => {
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { createPlan } = useMealPlanActions();
+  const { createMeal } = useMealActions();
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
   );
 
-  const handleDragEnd = (event) => {
+  const handleDragEnd = async (event) => {
     const { active, over } = event;
     if (!over) return;
 
@@ -181,31 +199,61 @@ const MealPlanBuilder = ({ availableMeals, healthPathId, onPlanSubmit }) => {
 
     if (typeof overId === "string" && overId.startsWith("day-")) {
       const dayNumber = parseInt(overId.split("-")[1]);
-      const mealToAdd = availableMeals.find((m) => m.id === activeId);
+      const mealToCopy = availableMeals.find((m) => m.id === activeId);
+      if (mealToCopy) {
+        const mealDataToCreate = {
+          name: mealToCopy.name,
+          description: mealToCopy.description || "",
+          calories: mealToCopy.calories || 0,
+          isComplete: true,
+          ingredientIds: mealToCopy.ingredientIds || [],
+        };
 
-      if (mealToAdd) {
-        const uniqueId = `${activeId}-${Date.now()}`;
+        try {
+          // Mark this meal as loading
+          setLoadingMeals((prev) => new Set(prev).add(activeId));
 
-        setDayMeals((days) =>
-          days.map((day) =>
-            day.day === dayNumber
-              ? {
-                  ...day,
-                  meals: [
-                    ...day.meals,
-                    {
-                      ...mealToAdd,
-                      id: uniqueId,
-                      mealId: mealToAdd.id,
-                      content: mealToAdd.name,
-                    },
-                  ],
-                }
-              : day
-          )
-        );
+          // Create meal in backend (async)
+          const createdMeal = await createMeal(mealDataToCreate);
 
-        message.success(`Added meal to Day ${dayNumber}`);
+          // Remove from loading set when done
+          setLoadingMeals((prev) => {
+            const newSet = new Set(prev);
+            newSet.delete(activeId);
+            return newSet;
+          });
+
+          const mealForUI = {
+            ...mealToCopy,
+            id: createdMeal.id,
+            content: mealToCopy.name,
+            description: mealToCopy.description || "",
+            ingredients: mealToCopy.ingredients || [],
+            calories: mealToCopy.calories || 0,
+          };
+
+          setDayMeals((days) =>
+            days.map((day) =>
+              day.day === dayNumber
+                ? {
+                    ...day,
+                    meals: [...day.meals, mealForUI],
+                  }
+                : day
+            )
+          );
+
+          message.success(`Added new meal to Day ${dayNumber}`);
+        } catch (error) {
+          // Remove from loading on error too
+          setLoadingMeals((prev) => {
+            const newSet = new Set(prev);
+            newSet.delete(activeId);
+            return newSet;
+          });
+
+          message.error("Failed to create meal");
+        }
       }
     }
   };
@@ -230,34 +278,32 @@ const MealPlanBuilder = ({ availableMeals, healthPathId, onPlanSubmit }) => {
     const loadingMessage = message.loading("Creating your Meal Plan...", 0);
     setIsSubmitting(true);
 
-const plan: IMealPlan = {
-  healthPathId,
-  name: "My Meal Plan",
-  status: 0, // or "Active" or any appropriate enum/value
-  meals: dayMeals.flatMap((d) => d.meals.map((m) => m.mealId)),
-  mealPlanDays: dayMeals.map((d, index) => ({
-    order: index,
-    description: `Day ${d.day}`,
-    meals: d.meals.map((m) => m.mealId),
-    score: 0,
-  })),
-};
-
-
+    const plan = {
+      healthPathId,
+      name: "My Meal Plan",
+      status: 0, // or "Active" or any appropriate enum/value
+      meals: dayMeals.flatMap((d) => d.meals.map((m) => m.id)), // Use id instead of mealId
+      mealPlanDays: dayMeals.map((d, index) => ({
+        order: index,
+        description: `Day ${d.day}`,
+        meals: d.meals.map((m) => m.id), // Use id instead of mealId
+        score: 0,
+      })),
+    };
 
     try {
+      console.log("Submitting plan:", plan);
       await createPlan(plan);
       setTimeout(loadingMessage, 0);
       message.success("Meal Plan created successfully!");
       if (onPlanSubmit) onPlanSubmit();
     } catch (error) {
       setTimeout(loadingMessage, 0);
-      message.error("Failed to create Meal Plan",error);
+      message.error("Failed to create Meal Plan", error);
     } finally {
       setIsSubmitting(false);
     }
   };
-
   return (
     <div>
       <Title level={3}>Build Your Meal Plan</Title>
@@ -309,6 +355,7 @@ const plan: IMealPlan = {
                       day={day.day}
                       items={day.meals}
                       onRemoveMeal={handleRemoveMeal}
+                      loadingMeals={loadingMeals} //
                     />
                   </Col>
                 ))}
@@ -322,6 +369,7 @@ const plan: IMealPlan = {
                       day={day.day}
                       items={day.meals}
                       onRemoveMeal={handleRemoveMeal}
+                      loadingMeals={loadingMeals} //
                     />
                   </Col>
                 ))}
