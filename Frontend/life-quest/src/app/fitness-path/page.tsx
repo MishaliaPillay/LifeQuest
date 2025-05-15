@@ -46,7 +46,7 @@ import {
   useStepsActions,
   useStepsState,
 } from "@/providers/fitnesspath/step-provider";
-
+import { useRouter } from "next/navigation";
 import { IAuth } from "@/providers/auth-provider/context";
 import AvatarAnalysis from "@/components/avatar/avatar-scan";
 
@@ -67,7 +67,7 @@ export default function FitnessDashboard() {
   const [loadingSteps, setLoadingSteps] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [person, setPerson] = useState<IAuth>(null); // ideally, type this properly if you have the model
-
+  const router = useRouter();
   const [exercisePlan, setExercisePlan] = useState([]);
 
   // Get provider hooks
@@ -344,6 +344,7 @@ export default function FitnessDashboard() {
         <Button
           type="primary"
           style={{ display: "block", margin: "20px auto" }}
+          loading={loading}
           onClick={async () => {
             if (!person?.id) {
               message.error("Person ID is missing");
@@ -352,6 +353,7 @@ export default function FitnessDashboard() {
 
             setLoading(true); // Start loading
             try {
+              router.push("/fitness-path");
               await createAvatar(person.id);
               message.success("Avatar created successfully!");
 
