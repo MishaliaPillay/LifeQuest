@@ -41,7 +41,8 @@ export default function MealPlanPage() {
   const [mealPlanId, setMealPlanId] = useState<string | null>(null);
   const [completing, setCompleting] = useState(false);
   const [selectedMeal, setSelectedMeal] = useState<IMeal | null>(null);
-
+  const [modalLoading, setModalLoading] = useState(false);
+  const [messageApi, contextHolder] = message.useMessage();
   const router = useRouter();
   const { getCurrentPerson } = useAuthActions();
   const { getHealthPath, getHealthPaths } = useHealthPathActions();
@@ -88,9 +89,17 @@ export default function MealPlanPage() {
     fetchData();
   }, []);
 
-  const handleCompleteMeal = async (mealId: string) => {
+  const handleCompleteMeal = async (
+    mealId: string,
+    closeModal: boolean = false
+  ) => {
     if (!mealId) return;
-    setCompleting(true);
+
+    if (closeModal) {
+      setModalLoading(true);
+    } else {
+      setCompleting(true);
+    }
 
     try {
       const token = sessionStorage.getItem("jwt");
@@ -99,18 +108,29 @@ export default function MealPlanPage() {
       const person = await getCurrentPerson(parseInt(id));
 
       await completeMeal(mealId, person.id);
-      message.success("Meal marked as complete!");
-      launchConfetti();
+      setTimeout(() => {
+        messageApi.success("Meal marked as complete!");
+        launchConfetti(); // Launch confetti *after* modal is closed
+      }, 300);
 
-      // Refresh
+      // Refresh meals
       if (mealPlanId) {
         const mealsResponse = await getMealPlanDaysByPlanId(mealPlanId);
         setMealPlanDays(mealsResponse?.result ?? []);
       }
+
+      // Close modal if triggered from modal
+      if (closeModal) {
+        setSelectedMeal(null);
+      }
     } catch (err) {
       message.error("Failed to mark meal as complete.");
     } finally {
-      setCompleting(false);
+      if (closeModal) {
+        setModalLoading(false);
+      } else {
+        setCompleting(false);
+      }
     }
   };
 
@@ -146,6 +166,8 @@ export default function MealPlanPage() {
 
   return (
     <div style={{ padding: "2rem" }}>
+      {" "}
+      {contextHolder}
       {loading ? (
         <Spin
           tip="Loading meal plan..."
@@ -232,7 +254,9 @@ export default function MealPlanPage() {
               <Button
                 key="complete"
                 type="primary"
-                onClick={() => handleCompleteMeal(selectedMeal?.id || "")}
+                loading={modalLoading}
+                onClick={() => handleCompleteMeal(selectedMeal?.id || "", true)}
+                disabled={selectedMeal?.isComplete}
               >
                 Complete Meal
               </Button>,
