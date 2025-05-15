@@ -20,6 +20,12 @@ import {
   getCurrentPersonPending,
   getCurrentPersonSuccess,
   getCurrentPersonError,
+  updateDescriptionError,
+  updateDescriptionPending,
+  updateDescriptionSuccess,
+  createAvatarError,
+  createAvatarPending,
+  createAvatarSuccess,
 } from "./actions";
 import axios from "axios";
 
@@ -39,7 +45,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       return response.data;
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
-        console.error("Signup error:", error.response?.data?.message || error.message);
+        console.error(
+          "Signup error:",
+          error.response?.data?.message || error.message
+        );
       } else if (error instanceof Error) {
         console.error("Signup error:", error.message);
       } else {
@@ -78,8 +87,43 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         throw error;
       });
   };
+  const createAvatar = async (personId: string): Promise<void> => {
+    dispatch(createAvatarPending());
 
-  // Get Current Person Function
+    try {
+      const endpoint = `https://lifequest-backend.onrender.com/api/services/app/Person/GenerateAndSaveAvatar?personId=${personId}`;
+      const response = await axios.post(endpoint); // assuming POST, as per naming
+
+      dispatch(createAvatarSuccess(response.data));
+    } catch (error) {
+      console.error("Error creating avatar:", error);
+      dispatch(createAvatarError());
+      throw error;
+    }
+  };
+
+  const updateDescription = async (
+    personId: string,
+    avatarDescription: string
+  ): Promise<void> => {
+    dispatch(updateDescriptionPending());
+
+    try {
+      const response = await axios.put(
+        "https://lifequest-backend.onrender.com/api/services/app/Person/UpdateAvatarDescription",
+        {
+          personId,
+          avatarDescription,
+        }
+      );
+
+      dispatch(updateDescriptionSuccess(response.data));
+    } catch (error) {
+      console.error("Error updating avatar description:", error);
+      dispatch(updateDescriptionError());
+    }
+  };
+
   const getCurrentPerson = async (userId: number): Promise<IAuth> => {
     dispatch(getCurrentPersonPending());
 
@@ -103,8 +147,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <AuthStateContext.Provider value={state}>
-      <AuthActionContext.Provider 
-        value={{ signUp, signIn, getCurrentPerson }}
+      <AuthActionContext.Provider
+        value={{
+          signUp,
+          signIn,
+          getCurrentPerson,
+          updateDescription,
+          createAvatar,
+        }}
       >
         {children}
       </AuthActionContext.Provider>

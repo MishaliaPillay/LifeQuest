@@ -18,14 +18,11 @@ async function getImageData(file: File): Promise<string> {
   });
 }
 
-export const analyzePersonImage = async (imageFile: File): Promise<{ description: string }> => {
+export const analyzePersonImage = async (imageFile: File): Promise<string> => {
   try {
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
-    // Get base64 image data from the file
     const imageData = await getImageData(imageFile);
 
-    // Create the image part expected by the API
     const imagePart = {
       inlineData: {
         data: imageData,
@@ -64,14 +61,11 @@ export const analyzePersonImage = async (imageFile: File): Promise<{ description
     });
 
     const description = result.response.text().trim();
-
-    return { description };
+    return description; // ✅ Just the string
   } catch (error: unknown) {
     console.error("Error analyzing image:", error);
-
     const errorMessage =
       error instanceof Error ? error.message : "Unknown error";
-
     throw new Error(`Failed to analyze image: ${errorMessage}`);
   }
 };

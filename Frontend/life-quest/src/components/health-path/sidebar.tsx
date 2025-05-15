@@ -4,7 +4,6 @@ import { Layout, Menu, Avatar, Drawer, Button } from "antd";
 import {
   DashboardOutlined,
   TrophyOutlined,
-
   UserOutlined,
   BarChartOutlined,
   LogoutOutlined,
@@ -81,13 +80,13 @@ const Sidebar: React.FC<SidebarProps> = ({
     },
     {
       key: "/health-path/food-scan",
-      icon: <CameraOutlined/>,
+      icon: <CameraOutlined />,
       label: <Link href="/health-path/food-scan">Scan Meal</Link>,
     },
     {
-      key: "/health-path/chat-fit",
-      icon: <MessageOutlined/>,
-      label: <Link href="/health-path/chat-fit">Chat</Link>,
+      key: "/fitness-path/chat-fit",
+      icon: <MessageOutlined />,
+      label: <Link href="/fitness-path/chat-fit">Chat</Link>,
     },
     {
       key: "/health-path/profile",
