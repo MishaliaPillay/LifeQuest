@@ -69,7 +69,7 @@ export default function FitnessDashboard() {
   const [person, setPerson] = useState<IAuth>(null); // ideally, type this properly if you have the model
   const [mealPlan, setMealPlan] = useState([]);
   const { getMealPlanDaysByPlanId } = useMealPlanActions();
-  const { getCurrentPerson } = useAuthActions();
+  const { getCurrentPerson, createAvatar } = useAuthActions();
 
   const { getHealthPath, getHealthPaths } = useHealthPathActions();
   const { getSteps } = useStepsActions();
@@ -355,6 +355,26 @@ export default function FitnessDashboard() {
             )
           }
         />
+        <Button
+          type="primary"
+          style={{ display: "block", margin: "20px auto" }}
+          onClick={() => {
+            if (!person?.id) {
+              message.error("Person ID is missing");
+              return;
+            }
+            createAvatar(person?.id)
+              .then(() => {
+                message.success("Avatar created successfully!");
+              })
+              .catch((error) => {
+                console.error("Failed to create avatar:", error);
+                message.error("Failed to create avatar.");
+              });
+          }}
+        >
+          Create Avatar
+        </Button>
         {loading ? (
           <div
             style={{

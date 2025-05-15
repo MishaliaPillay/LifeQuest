@@ -48,6 +48,7 @@ export interface IAuthActionContext {
   signUp: (Auth: IAuth) => Promise<void>;
   getCurrentPerson: (userId: number) => Promise<IAuth | null>; // Get the current user by ID
   updateDescription: (id: string, description: string) => Promise<void>;
+  createAvatar: (id: string) => Promise<void>;
 }
 
 // Initial state with default values

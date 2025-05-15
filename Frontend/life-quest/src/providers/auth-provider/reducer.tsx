@@ -70,6 +70,20 @@ export const AuthReducer = handleActions<IAuthStateContext, IAuthStateContext>(
       ...state,
       ...action.payload,
     }),
+    [AuthActionEnums.createAvatarError]: (state, action) => ({
+      ...state,
+      ...action.payload,
+    }),
+    [AuthActionEnums.createAvatarPending]: (state, action) => {
+      return {
+        ...state,
+        ...action.payload,
+      };
+    },
+    [AuthActionEnums.createAvatarSuccess]: (state, action) => ({
+      ...state,
+      ...action.payload,
+    }),
   },
   INITIAL_STATE
 );

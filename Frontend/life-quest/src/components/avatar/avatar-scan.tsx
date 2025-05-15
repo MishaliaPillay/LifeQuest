@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Button,
   Typography,
@@ -15,8 +15,10 @@ import { InboxOutlined } from "@ant-design/icons";
 import styles from "./HealthAnalysisComponent.module.css";
 import { analyzePersonImage } from "@/utils/avatar-service";
 import { useAuthActions } from "@/providers/auth-provider";
+import type { UploadChangeParam, UploadFile } from "antd/es/upload";
 const { Title, Paragraph } = Typography;
 const { Dragger } = Upload;
+
 interface AvatarAnalysisProps {
   userLevel: number;
   personId: string;
@@ -26,30 +28,19 @@ export default function AvatarAnalysis({
   userLevel,
   personId,
 }: AvatarAnalysisProps) {
-  // 1️⃣ Create a local message instance
   const [messageApi, contextHolder] = message.useMessage();
   const { updateDescription } = useAuthActions();
+
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [description, setDescription] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [skinColor, setSkinColor] = useState("");
   const [race, setRace] = useState("");
+  const [unlockedAccessories, setUnlockedAccessories] = useState<string[]>([]);
 
-  // Load saved data on mount
-  useEffect(() => {
-    const saved = localStorage.getItem("avatarData");
-    if (saved) {
-      const { description, skinColor, race } = JSON.parse(saved);
-
-      setDescription(description);
-      setSkinColor(skinColor);
-      setRace(race);
-    }
-  }, []);
-
-  const handleImageChange = (info) => {
-    if (info.file.status === "done") {
+  const handleImageChange = (info: UploadChangeParam<UploadFile>) => {
+    if (info.file.status === "done" || info.file.status === "uploading") {
       const file = info.file.originFileObj as File;
       setSelectedImage(file);
       const reader = new FileReader();
@@ -58,20 +49,34 @@ export default function AvatarAnalysis({
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleGenerateDescription = async () => {
     if (!selectedImage) return;
 
     setIsLoading(true);
-    setDescription("");
-
     try {
-      const description = await analyzePersonImage(selectedImage);
-      setDescription(description);
+      const aiDescription = await analyzePersonImage(selectedImage);
 
-      // ✅ Send description to backend
-      await updateDescription(personId, description);
-      console.log("cheek", personId);
+      const newAccessories = [...unlockedAccessories];
+      if (userLevel >= 1) {
+        if (!newAccessories.includes("Hat")) newAccessories.push("Hat");
+        if (!newAccessories.includes("Glasses")) newAccessories.push("Glasses");
+      }
+      if (userLevel >= 3) {
+        if (!newAccessories.includes("Shirt")) newAccessories.push("Shirt");
+        if (!newAccessories.includes("Pants")) newAccessories.push("Pants");
+        if (!newAccessories.includes("Shoes")) newAccessories.push("Shoes");
+      }
+
+      const accessoriesText =
+        newAccessories.length > 0
+          ? ` Accessories unlocked: ${newAccessories.join(", ")}.`
+          : "";
+
+      const finalDescription = aiDescription + accessoriesText;
+      setDescription(finalDescription);
+      setUnlockedAccessories(newAccessories);
+
+      await updateDescription(personId, finalDescription);
       messageApi.success("Avatar description updated!");
     } catch (err: unknown) {
       if (err instanceof Error) {
@@ -79,29 +84,34 @@ export default function AvatarAnalysis({
       } else {
         messageApi.error("Unknown error analyzing image");
       }
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
   };
 
-  const handleSave = () => {
+  const handleReset = () => {
+    setSelectedImage(null);
+    setImagePreview(null);
+    setDescription("");
+    setSkinColor("");
+    setRace("");
+    setUnlockedAccessories([]);
+  };
+
+  const handleSave = async () => {
     if (!imagePreview || !description || !skinColor || !race) {
       messageApi.warning("Please complete all fields before saving.");
       return;
     }
 
-    // show loading indicator keyed so we can replace it
     messageApi.open({
       key: "saving",
       type: "loading",
       content: "Saving avatar…",
     });
 
-    setTimeout(() => {
-      localStorage.setItem(
-        "avatarData",
-        JSON.stringify({ imagePreview, description, skinColor, race })
-      );
+    try {
+      await updateDescription(personId, description);
 
       messageApi.open({
         key: "saving",
@@ -109,14 +119,15 @@ export default function AvatarAnalysis({
         content: "Avatar data saved!",
         duration: 2,
       });
-    }, 1500);
+    } catch (err: unknown) {
+      console.error(err);
+      messageApi.error("Failed to save avatar to server.");
+    }
   };
 
   return (
     <div className={styles.container}>
-      {/* 2️⃣ Render the contextHolder once */}
       {contextHolder}
-
       <Title level={2}>Avatar Description Generator</Title>
       <Divider />
 
@@ -141,7 +152,7 @@ export default function AvatarAnalysis({
 
       <Button
         type="primary"
-        onClick={handleSubmit}
+        onClick={handleGenerateDescription}
         disabled={isLoading || !selectedImage}
         className={styles.button}
         size="large"
@@ -185,26 +196,26 @@ export default function AvatarAnalysis({
             onChange={(e) => setRace(e.target.value)}
             style={{ marginBottom: 12 }}
           />
-          {userLevel >= 1 && (
+
+          {unlockedAccessories.length > 0 && (
             <Card className={styles.accessoryCard}>
               <Title level={4}>Unlocked Accessories</Title>
               <ul>
-                <li>🧢 Hat</li>
-                <li>👓 Glasses</li>
+                {unlockedAccessories.includes("Hat") && <li>🧢 Hat</li>}
+                {unlockedAccessories.includes("Glasses") && <li>👓 Glasses</li>}
+                {unlockedAccessories.includes("Shirt") && <li>👕 Shirt</li>}
+                {unlockedAccessories.includes("Pants") && <li>👖 Pants</li>}
+                {unlockedAccessories.includes("Shoes") && <li>👟 Shoes</li>}
               </ul>
-              {userLevel >= 3 && (
-                <>
-                  <li>👕 Shirt</li>
-                  <li>👖 Pants</li>
-                  <li>👟 Shoes</li>
-                </>
-              )}
             </Card>
           )}
 
-          <Button type="primary" onClick={handleSave}>
-            Save Avatar Data
-          </Button>
+          <div style={{ marginTop: 16, display: "flex", gap: 8 }}>
+            <Button type="primary" onClick={handleSave}>
+              Save Avatar Data
+            </Button>
+            <Button onClick={handleReset}>Reset Form</Button>
+          </div>
         </Card>
       )}
     </div>

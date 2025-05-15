@@ -23,6 +23,9 @@ import {
   updateDescriptionError,
   updateDescriptionPending,
   updateDescriptionSuccess,
+  createAvatarError,
+  createAvatarPending,
+  createAvatarSuccess,
 } from "./actions";
 import axios from "axios";
 
@@ -84,6 +87,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         throw error;
       });
   };
+  const createAvatar = async (personId: string): Promise<void> => {
+    dispatch(createAvatarPending());
+
+    try {
+      const endpoint = `https://lifequest-backend.onrender.com/api/services/app/Person/GenerateAndSaveAvatar?personId=${personId}`;
+      const response = await axios.post(endpoint); // assuming POST, as per naming
+
+      dispatch(createAvatarSuccess(response.data));
+    } catch (error) {
+      console.error("Error creating avatar:", error);
+      dispatch(createAvatarError());
+      throw error;
+    }
+  };
 
   const updateDescription = async (
     personId: string,
@@ -131,7 +148,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   return (
     <AuthStateContext.Provider value={state}>
       <AuthActionContext.Provider
-        value={{ signUp, signIn, getCurrentPerson, updateDescription }}
+        value={{
+          signUp,
+          signIn,
+          getCurrentPerson,
+          updateDescription,
+          createAvatar,
+        }}
       >
         {children}
       </AuthActionContext.Provider>

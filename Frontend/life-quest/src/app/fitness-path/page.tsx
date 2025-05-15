@@ -72,7 +72,7 @@ export default function FitnessDashboard() {
 
   // Get provider hooks
   const { getExercisePlan } = useActivityTypeActions();
-  const { getCurrentPerson } = useAuthActions();
+  const { getCurrentPerson, createAvatar } = useAuthActions();
   const { getFitnessPaths } = useFitnessPathActions();
   const { getSteps } = useStepsActions();
   const { steps } = useStepsState();
@@ -340,7 +340,38 @@ export default function FitnessDashboard() {
               <Skeleton.Image active style={{ width: 300, height: 300 }} />
             )
           }
-        />
+        />{" "}
+        <Button
+          type="primary"
+          style={{ display: "block", margin: "20px auto" }}
+          onClick={async () => {
+            if (!person?.id) {
+              message.error("Person ID is missing");
+              return;
+            }
+
+            setLoading(true); // Start loading
+            try {
+              await createAvatar(person.id);
+              message.success("Avatar created successfully!");
+
+              // Refresh person data to update avatar
+              const token = sessionStorage.getItem("jwt");
+              const id = getId(token);
+              const updatedPerson = await getCurrentPerson(parseInt(id));
+              if (updatedPerson?.xp !== undefined) {
+                setPerson(updatedPerson); // Set updated avatar
+              }
+            } catch (error) {
+              console.error("Failed to create avatar:", error);
+              message.error("Failed to create avatar.");
+            } finally {
+              setLoading(false); // Stop loading
+            }
+          }}
+        >
+          Create Avatar
+        </Button>
         {loading ? (
           <div
             style={{
@@ -896,7 +927,10 @@ export default function FitnessDashboard() {
           width={700} // adjust size as needed
           destroyOnClose={true} // optional: reset component state when closing
         >
-          <AvatarAnalysis personId={person.id} userLevel={person?.level ?? 1} />
+          <AvatarAnalysis
+            personId={person?.id}
+            userLevel={person?.level ?? 1}
+          />
         </Modal>
       </div>
     </App>
